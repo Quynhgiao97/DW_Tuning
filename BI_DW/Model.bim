@@ -17768,7 +17768,7 @@
         "measures": [
           {
             "name": "Hyperlink",
-            "expression": " SELECTEDVALUE('Fact - Quality Control Comments'[External comments])"
+            "expression": " SELECTEDVALUE('Fact - Quality Control Comments'[External comments]  )"
           }
         ]
       }
