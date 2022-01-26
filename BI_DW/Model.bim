@@ -17,6 +17,7 @@
           "authentication": null,
           "query": null
         },
+        "options": {},
         "credential": {
           "AuthenticationKind": "UsernamePassword",
           "kind": "SQL",
@@ -38,6 +39,7 @@
           "authentication": null,
           "query": null
         },
+        "options": {},
         "credential": {
           "AuthenticationKind": "UsernamePassword",
           "kind": "SQL",
@@ -555,6 +557,16 @@
             "name": "Standard Weight",
             "dataType": "double",
             "sourceColumn": "Standard Weight"
+          },
+          {
+            "name": "THANTAI_GRP",
+            "dataType": "string",
+            "sourceColumn": "THANTAI_GRP"
+          },
+          {
+            "name": "TT_NET_WEIGHT",
+            "dataType": "string",
+            "sourceColumn": "TT_NET_WEIGHT"
           }
         ],
         "partitions": [
@@ -629,6 +641,8 @@
                 "      ,[RPT_BASIC_MATERIAL]",
                 "      ,IsGoldBar",
                 ",STANDARD_WEIGHT",
+                ",THANTAI_GRP,",
+                "TT_NET_WEIGHT",
                 "  FROM [dbo].[W_VW_PRODUCT_D] with (nolock)\"),",
                 "       #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"PROD_NUM\", \"Product Number\"}, {\"PRODUCT_NAME\", \"Product Name\"}, {\"PRODUCT_TYPE_CODE\", \"Product Type Code\"}, {\"PRODUCT_TYPE_NAME\", \"Product Type Name\"}, {\"PROD_GRP\", \"Product Group\"}, {\"PROD_GRP_NAME\", \"Product Group Name\"}, {\"PROD_GRP1\", \"Product Group LV1\"}, {\"PROD_GRP1_NAME\", \"Product Group Name LV1\"}, {\"PROD_GRP2\", \"Product Group LV2\"}, {\"PROD_GRP2_NAME\", \"Product Group Name LV2\"}, {\"PROD_GRP3\", \"Product Group LV3\"}, {\"PROD_GRP3_NAME\", \"Product Group Name LV3\"}, {\"PROD_GRP4\", \"Product Group LV4\"}, {\"PROD_GRP4_NAME\", \"Product Group Name LV4\"}, {\"PROD_GRP5\", \"Product Group LV5\"}, {\"PROD_GRP5_NAME\", \"Product Group Name LV5\"}, {\"PROD_GRP6\", \"Product Group LV6\"}, {\"PROD_GRP6_NAME\", \"Product Group Name LV6\"}, {\"PROD_GRP7\", \"Product Group LV7\"}, {\"PROD_GRP7_NAME\", \"Product Group Name LV7\"}, {\"COLOR\", \"Color\"}, {\"ITEM_SIZE\", \"Item Size\"}, {\"BASE_UOM_CODE\", \"Base UOM Code\"}, {\"PURITY_OF_GOLD\", \"Purity of Gold\"}}),",
                 "    #\"Removed Columns2\" = Table.RemoveColumns(#\"Renamed Columns\",{\"Product Group Name\", \"Product Group LV1\", \"Product Group Name LV1\", \"Product Group LV4\", \"Product Group Name LV4\"}),",
@@ -1113,6 +1127,11 @@
             "name": "DAL_Group",
             "dataType": "int64",
             "sourceColumn": "DAL_Group"
+          },
+          {
+            "name": "TT_PROVINCE",
+            "dataType": "string",
+            "sourceColumn": "TT_PROVINCE"
           }
         ],
         "partitions": [
@@ -5674,6 +5693,16 @@
               "",
               "\t"
             ]
+          },
+          {
+            "name": "INTEGRATION_ID",
+            "dataType": "string",
+            "sourceColumn": "INTEGRATION_ID"
+          },
+          {
+            "name": "STK_KEEPING_GROUP",
+            "dataType": "string",
+            "sourceColumn": "STK_KEEPING_GROUP"
           }
         ],
         "partitions": [
@@ -8094,11 +8123,6 @@
             "sourceColumn": "Type Plant"
           },
           {
-            "name": "CUST_TYPE_COMPANY",
-            "dataType": "string",
-            "sourceColumn": "CUST_TYPE_COMPANY"
-          },
-          {
             "name": "Invoice_Hour",
             "dataType": "string",
             "isHidden": true,
@@ -8317,7 +8341,7 @@
                 "      ,[CUST_TYPE_YEAR]",
                 "      ,[SALES_PERSON]",
                 "      ,[DOC_CONDITION_NUM]",
-                "      ,[CUST_TYPE_COMPANY]",
+                "--      ,[CUST_TYPE_COMPANY]",
                 "      ,[PAYMENT_TERM_WID]",
                 "      ,[Group_age]",
                 "      ,[PRODUCT_INVENTORY_WID]",
@@ -8344,9 +8368,10 @@
                 "    #\"Renamed Columns2\" = Table.RenameColumns(#\"Renamed Columns1\",{{\"CUSTOMER_SOLD_TO_WID\", \"Customer WID\"}}),",
                 "    #\"Renamed Columns3\" = Table.RenameColumns(#\"Renamed Columns2\",{{\"INVOICE_Q10_QTY\", \"Q10\"}, {\"Invoice Quantity\", \"Qty\"}}),",
                 "    #\"Replaced Value\" = Table.ReplaceValue(#\"Renamed Columns3\",null,\"#Not assign\",Replacer.ReplaceValue,{\"PROGRAM_CODE\"}),",
-                "    #\"Renamed Columns4\" = Table.RenameColumns(#\"Replaced Value\",{{\"PROFIT_AMT\", \"Profit Amount\"}})",
+                "    #\"Renamed Columns4\" = Table.RenameColumns(#\"Replaced Value\",{{\"PROFIT_AMT\", \"Profit Amount\"}}),",
+                "    #\"Filtered Rows\" = Table.SelectRows(#\"Renamed Columns4\", each ([Invoice Type] <> \"ZS2\" and [Invoice Type] <> \"ZRE\"))",
                 "in",
-                "    #\"Renamed Columns4\""
+                "    #\"Filtered Rows\""
               ]
             },
             "annotations": [
@@ -8396,7 +8421,7 @@
                   "      ,[CUST_TYPE_YEAR]",
                   "      ,[SALES_PERSON]",
                   "      ,[DOC_CONDITION_NUM]",
-                  "      ,[CUST_TYPE_COMPANY]",
+                  "--      ,[CUST_TYPE_COMPANY]",
                   "      ,[PAYMENT_TERM_WID]",
                   "      ,[Group_age]",
                   "      ,[PRODUCT_INVENTORY_WID]",
@@ -8423,9 +8448,10 @@
                   "    #\"Renamed Columns2\" = Table.RenameColumns(#\"Renamed Columns1\",{{\"CUSTOMER_SOLD_TO_WID\", \"Customer WID\"}}),",
                   "    #\"Renamed Columns3\" = Table.RenameColumns(#\"Renamed Columns2\",{{\"INVOICE_Q10_QTY\", \"Q10\"}, {\"Invoice Quantity\", \"Qty\"}}),",
                   "    #\"Replaced Value\" = Table.ReplaceValue(#\"Renamed Columns3\",null,\"#Not assign\",Replacer.ReplaceValue,{\"PROGRAM_CODE\"}),",
-                  "    #\"Renamed Columns4\" = Table.RenameColumns(#\"Replaced Value\",{{\"PROFIT_AMT\", \"Profit Amount\"}})",
+                  "    #\"Renamed Columns4\" = Table.RenameColumns(#\"Replaced Value\",{{\"PROFIT_AMT\", \"Profit Amount\"}}),",
+                  "    #\"Filtered Rows\" = Table.SelectRows(#\"Renamed Columns4\", each ([Invoice Type] <> \"ZS2\" and [Invoice Type] <> \"ZRE\"))",
                   "in",
-                  "    #\"Renamed Columns4\"</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
+                  "    #\"Filtered Rows\"</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
                 ]
               }
             ]
@@ -8479,7 +8505,7 @@
                 "      ,[CUST_TYPE_YEAR]",
                 "      ,[SALES_PERSON]",
                 "      ,[DOC_CONDITION_NUM]",
-                "      ,[CUST_TYPE_COMPANY]",
+                "--      ,[CUST_TYPE_COMPANY]",
                 "      ,[PAYMENT_TERM_WID]",
                 "      ,[Group_age]",
                 "      ,[PRODUCT_INVENTORY_WID]",
@@ -8506,9 +8532,10 @@
                 "    #\"Renamed Columns2\" = Table.RenameColumns(#\"Renamed Columns1\",{{\"CUSTOMER_SOLD_TO_WID\", \"Customer WID\"}}),",
                 "    #\"Renamed Columns3\" = Table.RenameColumns(#\"Renamed Columns2\",{{\"INVOICE_Q10_QTY\", \"Q10\"}, {\"Invoice Quantity\", \"Qty\"}}),",
                 "    #\"Replaced Value\" = Table.ReplaceValue(#\"Renamed Columns3\",null,\"#Not assign\",Replacer.ReplaceValue,{\"PROGRAM_CODE\"}),",
-                "    #\"Renamed Columns4\" = Table.RenameColumns(#\"Replaced Value\",{{\"PROFIT_AMT\", \"Profit Amount\"}})",
+                "    #\"Renamed Columns4\" = Table.RenameColumns(#\"Replaced Value\",{{\"PROFIT_AMT\", \"Profit Amount\"}}),",
+                "    #\"Filtered Rows\" = Table.SelectRows(#\"Renamed Columns4\", each ([Invoice Type] <> \"ZS2\" and [Invoice Type] <> \"ZRE\"))",
                 "in",
-                "    #\"Renamed Columns4\""
+                "    #\"Filtered Rows\""
               ]
             },
             "annotations": [
@@ -8558,7 +8585,7 @@
                   "      ,[CUST_TYPE_YEAR]",
                   "      ,[SALES_PERSON]",
                   "      ,[DOC_CONDITION_NUM]",
-                  "      ,[CUST_TYPE_COMPANY]",
+                  "--      ,[CUST_TYPE_COMPANY]",
                   "      ,[PAYMENT_TERM_WID]",
                   "      ,[Group_age]",
                   "      ,[PRODUCT_INVENTORY_WID]",
@@ -8585,9 +8612,10 @@
                   "    #\"Renamed Columns2\" = Table.RenameColumns(#\"Renamed Columns1\",{{\"CUSTOMER_SOLD_TO_WID\", \"Customer WID\"}}),",
                   "    #\"Renamed Columns3\" = Table.RenameColumns(#\"Renamed Columns2\",{{\"INVOICE_Q10_QTY\", \"Q10\"}, {\"Invoice Quantity\", \"Qty\"}}),",
                   "    #\"Replaced Value\" = Table.ReplaceValue(#\"Renamed Columns3\",null,\"#Not assign\",Replacer.ReplaceValue,{\"PROGRAM_CODE\"}),",
-                  "    #\"Renamed Columns4\" = Table.RenameColumns(#\"Replaced Value\",{{\"PROFIT_AMT\", \"Profit Amount\"}})",
+                  "    #\"Renamed Columns4\" = Table.RenameColumns(#\"Replaced Value\",{{\"PROFIT_AMT\", \"Profit Amount\"}}),",
+                  "    #\"Filtered Rows\" = Table.SelectRows(#\"Renamed Columns4\", each ([Invoice Type] <> \"ZS2\" and [Invoice Type] <> \"ZRE\"))",
                   "in",
-                  "    #\"Renamed Columns4\"</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
+                  "    #\"Filtered Rows\"</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
                 ]
               }
             ]
@@ -8641,7 +8669,7 @@
                 "      ,[CUST_TYPE_YEAR]",
                 "      ,[SALES_PERSON]",
                 "      ,[DOC_CONDITION_NUM]",
-                "      ,[CUST_TYPE_COMPANY]",
+                "--      ,[CUST_TYPE_COMPANY]",
                 "      ,[PAYMENT_TERM_WID]",
                 "      ,[Group_age]",
                 "      ,[PRODUCT_INVENTORY_WID]",
@@ -8668,9 +8696,10 @@
                 "    #\"Renamed Columns2\" = Table.RenameColumns(#\"Renamed Columns1\",{{\"CUSTOMER_SOLD_TO_WID\", \"Customer WID\"}}),",
                 "    #\"Renamed Columns3\" = Table.RenameColumns(#\"Renamed Columns2\",{{\"INVOICE_Q10_QTY\", \"Q10\"}, {\"Invoice Quantity\", \"Qty\"}}),",
                 "    #\"Replaced Value\" = Table.ReplaceValue(#\"Renamed Columns3\",null,\"#Not assign\",Replacer.ReplaceValue,{\"PROGRAM_CODE\"}),",
-                "    #\"Renamed Columns4\" = Table.RenameColumns(#\"Replaced Value\",{{\"PROFIT_AMT\", \"Profit Amount\"}})",
+                "    #\"Renamed Columns4\" = Table.RenameColumns(#\"Replaced Value\",{{\"PROFIT_AMT\", \"Profit Amount\"}}),",
+                "    #\"Filtered Rows\" = Table.SelectRows(#\"Renamed Columns4\", each ([Invoice Type] <> \"ZS2\" and [Invoice Type] <> \"ZRE\"))",
                 "in",
-                "    #\"Renamed Columns4\""
+                "    #\"Filtered Rows\""
               ]
             },
             "annotations": [
@@ -8720,7 +8749,7 @@
                   "      ,[CUST_TYPE_YEAR]",
                   "      ,[SALES_PERSON]",
                   "      ,[DOC_CONDITION_NUM]",
-                  "      ,[CUST_TYPE_COMPANY]",
+                  "--      ,[CUST_TYPE_COMPANY]",
                   "      ,[PAYMENT_TERM_WID]",
                   "      ,[Group_age]",
                   "      ,[PRODUCT_INVENTORY_WID]",
@@ -8747,9 +8776,10 @@
                   "    #\"Renamed Columns2\" = Table.RenameColumns(#\"Renamed Columns1\",{{\"CUSTOMER_SOLD_TO_WID\", \"Customer WID\"}}),",
                   "    #\"Renamed Columns3\" = Table.RenameColumns(#\"Renamed Columns2\",{{\"INVOICE_Q10_QTY\", \"Q10\"}, {\"Invoice Quantity\", \"Qty\"}}),",
                   "    #\"Replaced Value\" = Table.ReplaceValue(#\"Renamed Columns3\",null,\"#Not assign\",Replacer.ReplaceValue,{\"PROGRAM_CODE\"}),",
-                  "    #\"Renamed Columns4\" = Table.RenameColumns(#\"Replaced Value\",{{\"PROFIT_AMT\", \"Profit Amount\"}})",
+                  "    #\"Renamed Columns4\" = Table.RenameColumns(#\"Replaced Value\",{{\"PROFIT_AMT\", \"Profit Amount\"}}),",
+                  "    #\"Filtered Rows\" = Table.SelectRows(#\"Renamed Columns4\", each ([Invoice Type] <> \"ZS2\" and [Invoice Type] <> \"ZRE\"))",
                   "in",
-                  "    #\"Renamed Columns4\"</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
+                  "    #\"Filtered Rows\"</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
                 ]
               }
             ]
@@ -8803,7 +8833,7 @@
                 "      ,[CUST_TYPE_YEAR]",
                 "      ,[SALES_PERSON]",
                 "      ,[DOC_CONDITION_NUM]",
-                "      ,[CUST_TYPE_COMPANY]",
+                "--      ,[CUST_TYPE_COMPANY]",
                 "      ,[PAYMENT_TERM_WID]",
                 "      ,[Group_age]",
                 "      ,[PRODUCT_INVENTORY_WID]",
@@ -8830,9 +8860,10 @@
                 "    #\"Renamed Columns2\" = Table.RenameColumns(#\"Renamed Columns1\",{{\"CUSTOMER_SOLD_TO_WID\", \"Customer WID\"}}),",
                 "    #\"Renamed Columns3\" = Table.RenameColumns(#\"Renamed Columns2\",{{\"INVOICE_Q10_QTY\", \"Q10\"}, {\"Invoice Quantity\", \"Qty\"}}),",
                 "    #\"Replaced Value\" = Table.ReplaceValue(#\"Renamed Columns3\",null,\"#Not assign\",Replacer.ReplaceValue,{\"PROGRAM_CODE\"}),",
-                "    #\"Renamed Columns4\" = Table.RenameColumns(#\"Replaced Value\",{{\"PROFIT_AMT\", \"Profit Amount\"}})",
+                "    #\"Renamed Columns4\" = Table.RenameColumns(#\"Replaced Value\",{{\"PROFIT_AMT\", \"Profit Amount\"}}),",
+                "    #\"Filtered Rows\" = Table.SelectRows(#\"Renamed Columns4\", each ([Invoice Type] <> \"ZS2\" and [Invoice Type] <> \"ZRE\"))",
                 "in",
-                "    #\"Renamed Columns4\""
+                "    #\"Filtered Rows\""
               ]
             },
             "annotations": [
@@ -8882,7 +8913,7 @@
                   "      ,[CUST_TYPE_YEAR]",
                   "      ,[SALES_PERSON]",
                   "      ,[DOC_CONDITION_NUM]",
-                  "      ,[CUST_TYPE_COMPANY]",
+                  "--      ,[CUST_TYPE_COMPANY]",
                   "      ,[PAYMENT_TERM_WID]",
                   "      ,[Group_age]",
                   "      ,[PRODUCT_INVENTORY_WID]",
@@ -8909,9 +8940,10 @@
                   "    #\"Renamed Columns2\" = Table.RenameColumns(#\"Renamed Columns1\",{{\"CUSTOMER_SOLD_TO_WID\", \"Customer WID\"}}),",
                   "    #\"Renamed Columns3\" = Table.RenameColumns(#\"Renamed Columns2\",{{\"INVOICE_Q10_QTY\", \"Q10\"}, {\"Invoice Quantity\", \"Qty\"}}),",
                   "    #\"Replaced Value\" = Table.ReplaceValue(#\"Renamed Columns3\",null,\"#Not assign\",Replacer.ReplaceValue,{\"PROGRAM_CODE\"}),",
-                  "    #\"Renamed Columns4\" = Table.RenameColumns(#\"Replaced Value\",{{\"PROFIT_AMT\", \"Profit Amount\"}})",
+                  "    #\"Renamed Columns4\" = Table.RenameColumns(#\"Replaced Value\",{{\"PROFIT_AMT\", \"Profit Amount\"}}),",
+                  "    #\"Filtered Rows\" = Table.SelectRows(#\"Renamed Columns4\", each ([Invoice Type] <> \"ZS2\" and [Invoice Type] <> \"ZRE\"))",
                   "in",
-                  "    #\"Renamed Columns4\"</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
+                  "    #\"Filtered Rows\"</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
                 ]
               }
             ]
@@ -11303,11 +11335,6 @@
             "formatString": "#,0"
           },
           {
-            "name": "CMR #Qty",
-            "expression": "SUM('Fact - Camera POS Transaction'[INVOICED_QTY])",
-            "formatString": "#,0"
-          },
-          {
             "name": "CMR .Net Amt",
             "expression": [
               " CALCULATE([. All Net Amt],",
@@ -12442,80 +12469,6 @@
                 ]
               }
             ]
-          }
-        ]
-      },
-      {
-        "name": "Fact - Camera POS Transaction",
-        "isHidden": true,
-        "columns": [
-          {
-            "name": "HOUR",
-            "dataType": "string",
-            "sourceColumn": "HOUR"
-          },
-          {
-            "name": "PLANT_WID",
-            "dataType": "int64",
-            "sourceColumn": "Plant_WID",
-            "summarizeBy": "none"
-          },
-          {
-            "name": "INVOICED_QTY",
-            "dataType": "double",
-            "sourceColumn": "INVOICED_QTY"
-          },
-          {
-            "name": "NET_AMT",
-            "dataType": "double",
-            "sourceColumn": "NET_AMT",
-            "formatString": "0"
-          },
-          {
-            "name": "PRODUCT_WID",
-            "dataType": "int64",
-            "sourceColumn": "PRODUCT_WID",
-            "summarizeBy": "none"
-          },
-          {
-            "name": "Date_WID",
-            "dataType": "int64",
-            "sourceColumn": "Date_WID",
-            "summarizeBy": "none"
-          },
-          {
-            "name": "Customer_WID",
-            "dataType": "int64",
-            "sourceColumn": "Customer_WID",
-            "summarizeBy": "none"
-          },
-          {
-            "name": "PERSON_WID",
-            "dataType": "string",
-            "sourceColumn": "PERSON_WID"
-          }
-        ],
-        "partitions": [
-          {
-            "name": "Partition",
-            "dataView": "full",
-            "source": {
-              "type": "m",
-              "expression": [
-                "let",
-                "Source =  Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",",
-                "\t\"SELECT TOP 1 [Date_WID],",
-                "\t[HOUR],",
-                "\t[Customer_WID],",
-                "CONCAT_WS('_','PA', [PERSON_WID] )\t[PERSON_WID] ,",
-                "\t[Plant_WID],",
-                "\t[INVOICED_QTY],",
-                "\t[NET_AMT],",
-                "\t[PRODUCT_WID] FROM [PNJ_ROLAP].DBO.[W_VW_PA_POS_TRX_F]\")",
-                "in",
-                "    Source"
-              ]
-            }
           }
         ]
       },
@@ -16928,7 +16881,7 @@
           },
           {
             "name": "PLANT_FEEDBACK_DATE",
-            "dataType": "dateTime",
+            "dataType": "int64",
             "sourceColumn": "PLANT_FEEDBACK_DATE",
             "formatString": "yyyy-MM-dd",
             "annotations": [
@@ -16940,7 +16893,7 @@
           },
           {
             "name": "FEEDBACK_DATE",
-            "dataType": "dateTime",
+            "dataType": "int64",
             "sourceColumn": "FEEDBACK_DATE",
             "formatString": "yyyy-MM-dd",
             "annotations": [
@@ -17034,6 +16987,11 @@
             "name": "Root Cause",
             "dataType": "string",
             "sourceColumn": "Root Cause"
+          },
+          {
+            "name": "Conclusion",
+            "dataType": "string",
+            "sourceColumn": "Conclusion"
           }
         ],
         "partitions": [
@@ -17049,7 +17007,7 @@
                 "    #\"Removed Columns\" = Table.RemoveColumns(dbo_W_CUSTOMER_FEEDBACK_F,{\"INTEGRATION_ID\", \"BATCH_WID\"}),",
                 "    #\"Renamed Columns1\" = Table.RenameColumns(#\"Removed Columns\",{{\"NG_QUYET_DINH\", \"Decision Maker\"}, {\"HD_XU_LY\", \"Solution\"}, {\"DV_XU_LY_LOI\", \"Resolved By\"}, {\"DV_PHAT_SINH_LOI\", \"Issued By\"}}),",
                 "    #\"Removed Columns1\" = Table.RemoveColumns(#\"Renamed Columns1\",{\"DATASOURCE_NUM_ID\"}),",
-                "    #\"Renamed Columns\" = Table.RenameColumns(#\"Removed Columns1\",{{\"NGUYEN_NHAN\", \"Root Cause\"}, {\"HDKP\", \"Actions\"}})",
+                "    #\"Renamed Columns\" = Table.RenameColumns(#\"Removed Columns1\",{{\"NGUYEN_NHAN\", \"Root Cause\"}, {\"HDKP\", \"Actions\"}, {\"KET_LUAN\", \"Conclusion\"}})",
                 "in",
                 "    #\"Renamed Columns\""
               ]
@@ -17066,7 +17024,11 @@
             "name": "GR .Net Qty (F. Goods)",
             "expression": [
               " CALCULATE(sum('Fact - Inventory Transaction'[STOCK_QTY]),",
-              "'Dim - Movement Type'[MVMNT_TYPE_CODE] in {\"101\", \"102\"})"
+              "FILTER('Dim - Movement Type',",
+              "\t'Dim - Movement Type'[MVMNT_TYPE_CODE] in {\"101\", \"102\"}),",
+              "FILTER('Fact - Inventory Transaction', 'Fact - Inventory Transaction'[PLANT_WID] = 455)",
+              ")\t",
+              ""
             ],
             "formatString": "#,0"
           },
@@ -17682,69 +17644,32 @@
         ]
       },
       {
-        "name": "Dim - Product TT",
-        "columns": [
-          {
-            "name": "ROW_WID",
-            "dataType": "string",
-            "sourceColumn": "ROW_WID"
-          },
-          {
-            "name": "PROD_NUM",
-            "dataType": "string",
-            "sourceColumn": "PROD_NUM"
-          },
-          {
-            "name": "PRODUCT_NAME",
-            "dataType": "string",
-            "sourceColumn": "PRODUCT_NAME"
-          },
-          {
-            "name": "PURITY_OF_GOLD",
-            "dataType": "string",
-            "sourceColumn": "PURITY_OF_GOLD"
-          },
-          {
-            "name": "NET_WEIGHT",
-            "dataType": "string",
-            "sourceColumn": "NET_WEIGHT"
-          },
-          {
-            "name": "THANTAI_GRP",
-            "dataType": "string",
-            "sourceColumn": "THANTAI_GRP"
-          }
-        ],
-        "partitions": [
-          {
-            "name": "Partition",
-            "dataView": "full",
-            "source": {
-              "type": "m",
-              "expression": [
-                "let",
-                "    Source = #\"SQL/192 168 3 31;PNJ_ROLAP\",",
-                "    dbo_W_PRODUCT_TT_D = Source{[Schema=\"dbo\",Item = \"W_PRODUCT_TT_D\"]}[Data],",
-                "    #\"Removed Columns\" = Table.RemoveColumns(dbo_W_PRODUCT_TT_D,{\"TENANT_ID\", \"DATASOURCE_NUM_ID\"})",
-                "in",
-                "    #\"Removed Columns\""
-              ]
-            }
-          }
-        ]
-      },
-      {
         "name": "Fact - Quality Control Comments",
         "columns": [
           {
             "name": "Date_key",
-            "dataType": "string",
+            "dataType": "int64",
             "sourceColumn": "Date_key"
           },
           {
-            "name": "External comments",
+            "name": "MONTH_KEY",
             "dataType": "string",
-            "sourceColumn": "External comments"
+            "sourceColumn": "MONTH_KEY"
+          },
+          {
+            "name": "Daily comments",
+            "dataType": "string",
+            "sourceColumn": "Daily comments"
+          },
+          {
+            "name": "Monthly comments",
+            "dataType": "string",
+            "sourceColumn": "Monthly comments"
+          },
+          {
+            "name": "FILE_NAME_PREFIX",
+            "dataType": "string",
+            "sourceColumn": "FILE_NAME_PREFIX"
           }
         ],
         "partitions": [
@@ -17755,8 +17680,9 @@
               "type": "m",
               "expression": [
                 "let",
-                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\" SELECT CONCAT(Date_key,'01')Date_key, FULL_PATH FROM W_NGUYENNHAN_HDKP_F\"),",
-                "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"FULL_PATH\", \"External comments\"}})",
+                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\" SELECT Date_key,MONTH_KEY, FULL_PATH_DATE_KEY,FILE_NAME_PREFIX,",
+                " FULL_PATH_MONTH_KEY FROM W_NGUYENNHAN_HDKP_F \"),",
+                "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"FULL_PATH_DATE_KEY\", \"Daily comments\"}, {\"FULL_PATH_MONTH_KEY\", \"Monthly comments\"}})",
                 "    ",
                 "\t",
                 "in",
@@ -17767,8 +17693,12 @@
         ],
         "measures": [
           {
-            "name": "Hyperlink",
-            "expression": " SELECTEDVALUE('Fact - Quality Control Comments'[External comments])"
+            "name": "Daily Hyperlink",
+            "expression": " SELECTEDVALUE('Fact - Quality Control Comments'[Daily comments] )"
+          },
+          {
+            "name": "Monthly Hyperlink",
+            "expression": " DISTINCT('Fact - Quality Control Comments'[Monthly comments] )"
           }
         ]
       }
@@ -18361,13 +18291,6 @@
         "toColumn": "ROW_WID"
       },
       {
-        "name": "5a9208ab-751c-4b03-9942-5e9dd19a1081",
-        "fromTable": "Fact - Camera POS Transaction",
-        "fromColumn": "PRODUCT_WID",
-        "toTable": "Dim - Product",
-        "toColumn": "ROW_WID"
-      },
-      {
         "name": "6c9a78cc-841d-4260-a2d5-0d038bdfd2e5",
         "fromTable": "Fact - SC Recommend",
         "fromColumn": "PRODUCT_WID",
@@ -18391,13 +18314,6 @@
       {
         "name": "0703c7fc-948d-4761-81d5-57ae3566b3d5",
         "fromTable": "Fact - Camera InStore",
-        "fromColumn": "PERSON_WID",
-        "toTable": "Dim - Camera Person",
-        "toColumn": "ROW_WID"
-      },
-      {
-        "name": "927095d0-6f08-4c25-a7ba-0308e8cbf77b",
-        "fromTable": "Fact - Camera POS Transaction",
         "fromColumn": "PERSON_WID",
         "toTable": "Dim - Camera Person",
         "toColumn": "ROW_WID"
@@ -18444,13 +18360,6 @@
         "fromTable": "Fact - Employee Plan",
         "fromColumn": "Effect_from",
         "toTable": "Dim - Time",
-        "toColumn": "ROW_WID"
-      },
-      {
-        "name": "c58dfd07-5b18-4da6-ac46-ab7c186b8dc8",
-        "fromTable": "Fact - Camera POS Transaction",
-        "fromColumn": "PLANT_WID",
-        "toTable": "Dim - Plant",
         "toColumn": "ROW_WID"
       },
       {
@@ -19105,13 +19014,6 @@
         "toColumn": "ROW_WID"
       },
       {
-        "name": "a3e016b0-2375-4c78-aac4-2d10762bc0dd",
-        "fromTable": "Fact - All Sales Invoice Line",
-        "fromColumn": "PRODUCT_WID",
-        "toTable": "Dim - Product TT",
-        "toColumn": "ROW_WID"
-      },
-      {
         "name": "c05be6df-437d-4f3c-898f-a0a8139cf702",
         "fromTable": "Fact - Condition",
         "fromColumn": "ConditionID",
@@ -19544,9 +19446,6 @@
               },
               {
                 "name": "COMPANY_WID"
-              },
-              {
-                "name": "CUST_TYPE_COMPANY"
               },
               {
                 "name": "DELIVERY_PRIORITY"
@@ -21633,6 +21532,12 @@
               },
               {
                 "name": "Total Weight"
+              },
+              {
+                "name": "INTEGRATION_ID"
+              },
+              {
+                "name": "STK_KEEPING_GROUP"
               }
             ]
           },
@@ -21946,6 +21851,9 @@
               },
               {
                 "name": "DAL_Group"
+              },
+              {
+                "name": "TT_PROVINCE"
               }
             ],
             "measures": [
@@ -23252,9 +23160,6 @@
               },
               {
                 "name": "COMPANY_WID"
-              },
-              {
-                "name": "CUST_TYPE_COMPANY"
               },
               {
                 "name": "Customer WID"
