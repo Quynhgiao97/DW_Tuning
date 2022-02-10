@@ -7038,9 +7038,10 @@
           {
             "name": ". MKT Net Amt",
             "expression": [
-              "CALCULATE([. Net Amt], FILTER(ALLEXCEPT('Fact - Sales Invoice Line', 'Dim - Plant'[REGION], 'Dim - Plant'[TIER], 'Dim - Plant'[PLANT KIND],'Fact - Sales Invoice Line'[Customer Type (Month)],'Fact - Sales Invoice Line'[Customer Type (Year)],  'Dim - Product'[RPT_Product Group 4 Name], 'Dim - Product'[RPT_Product Group 2 Name], 'Dim - Product'[RPT - Product Group 7 Name], 'Dim - Product'[Co-Operate Brand],'Dim - Customer'[CUST_CARD_DESC], 'Dim - Plant'[PLANT NAME],'Fact - Sales Invoice Line'[Group Age], 'Dim - Plant'[Sales District Name], 'Fact - Sales Invoice Line'[CUST_CARD_DESC], 'Dim - Customer'[GENDER]), 'Fact - Sales Invoice Line'[Program Category] = SELECTEDVALUE( 'Dim - Program'[Program_Category] )  &&",
-              "VALUE('Fact - Sales Invoice Line'[MKT.Year]) = value(SELECTEDVALUE('Dim - Program'[MKT.Year])) &&",
-              " 'Fact - Sales Invoice Line'[Program Category] <> BLANK()))",
+              "CALCULATE([. ALL Net Amt], FILTER(ALLEXCEPT('Fact - All Sales Invoice Line', 'Dim - Plant'[REGION], 'Dim - Plant'[TIER], 'Dim - Plant'[PLANT KIND],",
+              " 'Fact - All Sales Invoice Line'[Customer Type (Month)],'Fact - All Sales Invoice Line'[Customer Type (Year)],  'Dim - Product'[RPT_Product Group 4 Name], 'Dim - Product'[RPT_Product Group 2 Name], 'Dim - Product'[RPT - Product Group 7 Name], 'Dim - Product'[Co-Operate Brand],'Dim - Customer'[CUST_CARD_DESC], 'Dim - Plant'[PLANT NAME],'Fact - All Sales Invoice Line'[Group_age], 'Dim - Plant'[Sales District Name], 'Fact - All Sales Invoice Line'[CUST_CARD_DESC], 'Dim - Customer'[GENDER]), 'Fact - All Sales Invoice Line'[INVOICED_ON_DT_WID] >= MIN('Dim - Program'[EFFECTIVE_FROM_DT] )  &&",
+              "'Fact - ALL Sales Invoice Line'[INVOICED_ON_DT_WID] <= MAX('Dim - Program'[EFFECTIVE_TO_DT]))",
+              ")",
               ""
             ],
             "formatString": "#,0"
@@ -7083,7 +7084,7 @@
           },
           {
             "name": "% MKT Net Amt (CK)",
-            "expression": "\tDIVIDE([. Net Amt], [. MKT Net Amt (CK)], 0) -1",
+            "expression": "\tDIVIDE([. All Net Amt], [. MKT Net Amt (CK)], 0) -1",
             "formatString": "0.00%;-0.00%;0.00%"
           },
           {
@@ -8125,7 +8126,6 @@
           {
             "name": "Invoice_Hour",
             "dataType": "string",
-            "isHidden": true,
             "sourceColumn": "Invoice_Hour"
           },
           {
@@ -8236,11 +8236,6 @@
             "summarizeBy": "none"
           },
           {
-            "name": "STORAGE_LOC_CODE",
-            "dataType": "string",
-            "sourceColumn": "STORAGE_LOC_CODE"
-          },
-          {
             "name": "INVOICED_BASE_QTY",
             "dataType": "double",
             "sourceColumn": "INVOICED_BASE_QTY"
@@ -8260,11 +8255,6 @@
             "dataType": "int64",
             "sourceColumn": "PAYMENT_TERM_WID",
             "summarizeBy": "none"
-          },
-          {
-            "name": "PAYMENT_TERMS_CODE",
-            "dataType": "int64",
-            "sourceColumn": "PAYMENT_TERMS_CODE"
           },
           {
             "name": "ConditionID",
@@ -8290,6 +8280,11 @@
             "name": "MKT_CUSTOMER",
             "dataType": "string",
             "sourceColumn": "MKT_CUSTOMER"
+          },
+          {
+            "name": "LUNAR_DT",
+            "dataType": "dateTime",
+            "sourceColumn": "LUNAR_DT"
           }
         ],
         "partitions": [
@@ -8361,8 +8356,9 @@
                 "      ,[PROFIT_AMT]",
                 ",CUST_CARD_DESC",
                 ",MKT_CUSTOMER",
+                ",LUNAR_DT",
                 "  FROM [PNJ_ROLAP].[dbo].[W_VW_SALES_INVOICE_LINE_F] ",
-                "  WHERE [INVOICED_ON_DT_WID] >= 20210101\") ,",
+                "  WHERE [INVOICED_ON_DT_WID] >= 20210101 and [INVOICED_ON_DT_WID] <= 20211231\") ,",
                 "    #\"Renamed Columns\" = Table.RenameColumns(#\"Source\",{{\"INVOICE_NUM\", \"Invoice Number\"}, {\"INVOICED_QTY\", \"Invoice Quantity\"}, {\"NET_AMT\", \"Net Amount\"}, {\"COST_AMT\", \"Cost Amount\"}, {\"TAX_AMT\", \"Tax Amount\"}, {\"DISCOUNT_AMT\", \"Discount Amount\"},  {\"GROSS_WEIGHT\", \"Gross Weight\"}, {\"NET_WEIGHT\", \"Net Weight\"},   {\"CHANNEL_CODE\", \"Channel Code\"},   {\"INVOICE_TYPE\", \"Invoice Type\"},   {\"LABOUR_COST\", \"Labour Cost\"}, {\"ORTHER_AMT\", \"Other Amount\"}, {\"GOLD_AMT\", \"Gold Amount\"}}),",
                 "    #\"Renamed Columns1\" = Table.RenameColumns(#\"Renamed Columns\",{{\"PRICE_RANGE\", \"Price Range\"}, {\"TYPE_PLANT\", \"Type Plant\"}, {\"CUST_TYPE_MONTH\", \"Customer Type (Month)\"}, {\"CUST_TYPE_YEAR\", \"Customer Type (Year)\"}}),",
                 "    #\"Renamed Columns2\" = Table.RenameColumns(#\"Renamed Columns1\",{{\"CUSTOMER_SOLD_TO_WID\", \"Customer WID\"}}),",
@@ -8441,14 +8437,15 @@
                   "      ,[PROFIT_AMT]",
                   ",CUST_CARD_DESC",
                   ",MKT_CUSTOMER",
+                  ",LUNAR_DT",
                   "  FROM [PNJ_ROLAP].[dbo].[W_VW_SALES_INVOICE_LINE_F] ",
-                  "  WHERE [INVOICED_ON_DT_WID] >= 20210101\") ,",
+                  "  WHERE [INVOICED_ON_DT_WID] >= 20210101 and [INVOICED_ON_DT_WID] <= 20211231\") ,",
                   "    #\"Renamed Columns\" = Table.RenameColumns(#\"Source\",{{\"INVOICE_NUM\", \"Invoice Number\"}, {\"INVOICED_QTY\", \"Invoice Quantity\"}, {\"NET_AMT\", \"Net Amount\"}, {\"COST_AMT\", \"Cost Amount\"}, {\"TAX_AMT\", \"Tax Amount\"}, {\"DISCOUNT_AMT\", \"Discount Amount\"},  {\"GROSS_WEIGHT\", \"Gross Weight\"}, {\"NET_WEIGHT\", \"Net Weight\"},   {\"CHANNEL_CODE\", \"Channel Code\"},   {\"INVOICE_TYPE\", \"Invoice Type\"},   {\"LABOUR_COST\", \"Labour Cost\"}, {\"ORTHER_AMT\", \"Other Amount\"}, {\"GOLD_AMT\", \"Gold Amount\"}}),",
                   "    #\"Renamed Columns1\" = Table.RenameColumns(#\"Renamed Columns\",{{\"PRICE_RANGE\", \"Price Range\"}, {\"TYPE_PLANT\", \"Type Plant\"}, {\"CUST_TYPE_MONTH\", \"Customer Type (Month)\"}, {\"CUST_TYPE_YEAR\", \"Customer Type (Year)\"}}),",
                   "    #\"Renamed Columns2\" = Table.RenameColumns(#\"Renamed Columns1\",{{\"CUSTOMER_SOLD_TO_WID\", \"Customer WID\"}}),",
                   "    #\"Renamed Columns3\" = Table.RenameColumns(#\"Renamed Columns2\",{{\"INVOICE_Q10_QTY\", \"Q10\"}, {\"Invoice Quantity\", \"Qty\"}}),",
                   "    #\"Replaced Value\" = Table.ReplaceValue(#\"Renamed Columns3\",null,\"#Not assign\",Replacer.ReplaceValue,{\"PROGRAM_CODE\"}),",
-                  "    #\"Renamed Columns4\" = Table.RenameColumns(#\"Replaced Value\",{{\"PROFIT_AMT\", \"Profit Amount\"}}),",
+                  "    #\"Renamed Columns4\" = Table.RenameColumns(#\"Replaced Value\",{{\"PROFIT_AMT\", \"Profit Amount\"}, {\"LUNAR_DT\", \"Lunar Date\" }}),",
                   "    #\"Filtered Rows\" = Table.SelectRows(#\"Renamed Columns4\", each ([Invoice Type] <> \"ZS2\" and [Invoice Type] <> \"ZRE\"))",
                   "in",
                   "    #\"Filtered Rows\"</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
@@ -8525,6 +8522,7 @@
                 "      ,[PROFIT_AMT]",
                 ",CUST_CARD_DESC",
                 ",MKT_CUSTOMER",
+                ",LUNAR_DT",
                 "  FROM [PNJ_ROLAP].[dbo].[W_VW_SALES_INVOICE_LINE_F] ",
                 "  WHERE [INVOICED_ON_DT_WID] < 20210101 and [INVOICED_ON_DT_WID] >= 20200101\") ,",
                 "    #\"Renamed Columns\" = Table.RenameColumns(#\"Source\",{{\"INVOICE_NUM\", \"Invoice Number\"}, {\"INVOICED_QTY\", \"Invoice Quantity\"}, {\"NET_AMT\", \"Net Amount\"}, {\"COST_AMT\", \"Cost Amount\"}, {\"TAX_AMT\", \"Tax Amount\"}, {\"DISCOUNT_AMT\", \"Discount Amount\"},  {\"GROSS_WEIGHT\", \"Gross Weight\"}, {\"NET_WEIGHT\", \"Net Weight\"},   {\"CHANNEL_CODE\", \"Channel Code\"},   {\"INVOICE_TYPE\", \"Invoice Type\"},   {\"LABOUR_COST\", \"Labour Cost\"}, {\"ORTHER_AMT\", \"Other Amount\"}, {\"GOLD_AMT\", \"Gold Amount\"}}),",
@@ -8605,6 +8603,7 @@
                   "      ,[PROFIT_AMT]",
                   ",CUST_CARD_DESC",
                   ",MKT_CUSTOMER",
+                  ",LUNAR_DT",
                   "  FROM [PNJ_ROLAP].[dbo].[W_VW_SALES_INVOICE_LINE_F] ",
                   "  WHERE [INVOICED_ON_DT_WID] < 20210101 and [INVOICED_ON_DT_WID] >= 20200101\") ,",
                   "    #\"Renamed Columns\" = Table.RenameColumns(#\"Source\",{{\"INVOICE_NUM\", \"Invoice Number\"}, {\"INVOICED_QTY\", \"Invoice Quantity\"}, {\"NET_AMT\", \"Net Amount\"}, {\"COST_AMT\", \"Cost Amount\"}, {\"TAX_AMT\", \"Tax Amount\"}, {\"DISCOUNT_AMT\", \"Discount Amount\"},  {\"GROSS_WEIGHT\", \"Gross Weight\"}, {\"NET_WEIGHT\", \"Net Weight\"},   {\"CHANNEL_CODE\", \"Channel Code\"},   {\"INVOICE_TYPE\", \"Invoice Type\"},   {\"LABOUR_COST\", \"Labour Cost\"}, {\"ORTHER_AMT\", \"Other Amount\"}, {\"GOLD_AMT\", \"Gold Amount\"}}),",
@@ -8689,6 +8688,7 @@
                 "      ,[PROFIT_AMT]",
                 ",CUST_CARD_DESC",
                 ",MKT_CUSTOMER",
+                ",LUNAR_DT",
                 "  FROM [PNJ_ROLAP].[dbo].[W_VW_SALES_INVOICE_LINE_F] ",
                 "  WHERE [INVOICED_ON_DT_WID] >= 20190101 and [INVOICED_ON_DT_WID] < 20200101\") ,",
                 "    #\"Renamed Columns\" = Table.RenameColumns(#\"Source\",{{\"INVOICE_NUM\", \"Invoice Number\"}, {\"INVOICED_QTY\", \"Invoice Quantity\"}, {\"NET_AMT\", \"Net Amount\"}, {\"COST_AMT\", \"Cost Amount\"}, {\"TAX_AMT\", \"Tax Amount\"}, {\"DISCOUNT_AMT\", \"Discount Amount\"},  {\"GROSS_WEIGHT\", \"Gross Weight\"}, {\"NET_WEIGHT\", \"Net Weight\"},   {\"CHANNEL_CODE\", \"Channel Code\"},   {\"INVOICE_TYPE\", \"Invoice Type\"},   {\"LABOUR_COST\", \"Labour Cost\"}, {\"ORTHER_AMT\", \"Other Amount\"}, {\"GOLD_AMT\", \"Gold Amount\"}}),",
@@ -8769,6 +8769,7 @@
                   "      ,[PROFIT_AMT]",
                   ",CUST_CARD_DESC",
                   ",MKT_CUSTOMER",
+                  ",LUNAR_DT",
                   "  FROM [PNJ_ROLAP].[dbo].[W_VW_SALES_INVOICE_LINE_F] ",
                   "  WHERE [INVOICED_ON_DT_WID] >= 20190101 and [INVOICED_ON_DT_WID] < 20200101\") ,",
                   "    #\"Renamed Columns\" = Table.RenameColumns(#\"Source\",{{\"INVOICE_NUM\", \"Invoice Number\"}, {\"INVOICED_QTY\", \"Invoice Quantity\"}, {\"NET_AMT\", \"Net Amount\"}, {\"COST_AMT\", \"Cost Amount\"}, {\"TAX_AMT\", \"Tax Amount\"}, {\"DISCOUNT_AMT\", \"Discount Amount\"},  {\"GROSS_WEIGHT\", \"Gross Weight\"}, {\"NET_WEIGHT\", \"Net Weight\"},   {\"CHANNEL_CODE\", \"Channel Code\"},   {\"INVOICE_TYPE\", \"Invoice Type\"},   {\"LABOUR_COST\", \"Labour Cost\"}, {\"ORTHER_AMT\", \"Other Amount\"}, {\"GOLD_AMT\", \"Gold Amount\"}}),",
@@ -8853,8 +8854,175 @@
                 "      ,[PROFIT_AMT]",
                 ",CUST_CARD_DESC",
                 ",MKT_CUSTOMER",
+                ",LUNAR_DT",
                 "  FROM [PNJ_ROLAP].[dbo].[W_VW_SALES_INVOICE_LINE_F] ",
                 "  WHERE [INVOICED_ON_DT_WID] < 20190101\") ,",
+                "    #\"Renamed Columns\" = Table.RenameColumns(#\"Source\",{{\"INVOICE_NUM\", \"Invoice Number\"}, {\"INVOICED_QTY\", \"Invoice Quantity\"}, {\"NET_AMT\", \"Net Amount\"}, {\"COST_AMT\", \"Cost Amount\"}, {\"TAX_AMT\", \"Tax Amount\"}, {\"DISCOUNT_AMT\", \"Discount Amount\"},  {\"GROSS_WEIGHT\", \"Gross Weight\"}, {\"NET_WEIGHT\", \"Net Weight\"},   {\"CHANNEL_CODE\", \"Channel Code\"},   {\"INVOICE_TYPE\", \"Invoice Type\"},   {\"LABOUR_COST\", \"Labour Cost\"}, {\"ORTHER_AMT\", \"Other Amount\"}, {\"GOLD_AMT\", \"Gold Amount\"}}),",
+                "    #\"Renamed Columns1\" = Table.RenameColumns(#\"Renamed Columns\",{{\"PRICE_RANGE\", \"Price Range\"}, {\"TYPE_PLANT\", \"Type Plant\"}, {\"CUST_TYPE_MONTH\", \"Customer Type (Month)\"}, {\"CUST_TYPE_YEAR\", \"Customer Type (Year)\"}}),",
+                "    #\"Renamed Columns2\" = Table.RenameColumns(#\"Renamed Columns1\",{{\"CUSTOMER_SOLD_TO_WID\", \"Customer WID\"}}),",
+                "    #\"Renamed Columns3\" = Table.RenameColumns(#\"Renamed Columns2\",{{\"INVOICE_Q10_QTY\", \"Q10\"}, {\"Invoice Quantity\", \"Qty\"}}),",
+                "    #\"Replaced Value\" = Table.ReplaceValue(#\"Renamed Columns3\",null,\"#Not assign\",Replacer.ReplaceValue,{\"PROGRAM_CODE\"}),",
+                "    #\"Renamed Columns4\" = Table.RenameColumns(#\"Replaced Value\",{{\"PROFIT_AMT\", \"Profit Amount\" }}),",
+                "    #\"Filtered Rows\" = Table.SelectRows(#\"Renamed Columns4\", each ([Invoice Type] <> \"ZS2\" and [Invoice Type] <> \"ZRE\"))",
+                "in",
+                "    #\"Filtered Rows\""
+              ]
+            },
+            "annotations": [
+              {
+                "name": "QueryEditorSerialization",
+                "value": [
+                  "<?xml version=\"1.0\" encoding=\"UTF-16\"?><Gemini xmlns=\"QueryEditorSerialization\"><AnnotationContent><![CDATA[<RSQueryCommandText>let",
+                  "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"SELECT [INVOICED_ON_DT_WID]",
+                  "      ,[INVOICE_NUM]",
+                  "      ,[PRODUCT_WID]",
+                  "      ,[INVOICED_QTY]",
+                  "      ,[INVOICED_BASE_QTY]",
+                  "--      ,[GROSS_AMT]",
+                  "      ,[NET_AMT]",
+                  "      ,[UNIT_PRICE]",
+                  "      ,[COST_AMT]",
+                  "      ,[TAX_AMT]",
+                  "--      ,[EXCHANGE_RATE]",
+                  " --     ,[INVOICE_ITEM]",
+                  "      ,[DISCOUNT_AMT]",
+                  "--      ,[SALES_UOM_CODE]",
+                  "      ,[GROSS_WEIGHT]",
+                  "      ,[NET_WEIGHT]",
+                  "--      ,[WEIGHT_UOM]",
+                  "      ,[PAYMENT_METHOD_CODE]",
+                  "      ,[CHANNEL_CODE]",
+                  "      ,[SALES_ORDER_NUM]",
+                  "--      ,[SALES_ORDER_ITEM]",
+                  "      ,[INVOICE_TYPE]",
+                  "      ,[CUSTOMER_SOLD_TO_WID]",
+                  "--      ,[TAX_CODE]",
+                  "--      ,[CREATED_ON_DT]",
+                  "--      ,[BATCH]",
+                  " --     ,[ORIGINAL_VALUE]",
+                  "      ,[COMPANY_WID]",
+                  "      ,[PLANT_WID]",
+                  "      ,[INVOICE_Q10_QTY]",
+                  "      ,[PROD_CAT_WID]",
+                  "      ,[LABOUR_COST]",
+                  "      ,[GOLD_AMT]",
+                  "      ,[ORTHER_AMT]",
+                  "      ,[PRICE_RANGE]",
+                  "      ,[Invoice_Hour]",
+                  "--      ,[Age_trans]",
+                  "      ,[TYPE_PLANT]",
+                  "      ,[CUST_TYPE_MONTH]",
+                  "      ,[CUST_TYPE_YEAR]",
+                  "      ,[SALES_PERSON]",
+                  "      ,[DOC_CONDITION_NUM]",
+                  "--      ,[CUST_TYPE_COMPANY]",
+                  "      ,[PAYMENT_TERM_WID]",
+                  "      ,[Group_age]",
+                  "      ,[PRODUCT_INVENTORY_WID]",
+                  "      ,[HAOLAI_AMT]",
+                  "      ,[DELIVERY_PRIORITY]",
+                  "      ,[SHIPPING_CONDITION]",
+                  "      ,[PROGRAM_CODE]",
+                  "      ,[PAYMENT_TERMS_CODE]",
+                  "      ,[KOL_AMT]",
+                  "      ,[PROGRAM_NAME]",
+                  "      ,CUSTOMER_PAYER_WID",
+                  "      ,TRAFFIC",
+                  "      ,Palexy_AGEID",
+                  "      ,STORAGE_LOC_CODE",
+                  "      ,ConditionID",
+                  "      ,[SLOC_WID]",
+                  "      ,[PROFIT_AMT]",
+                  ",CUST_CARD_DESC",
+                  ",MKT_CUSTOMER",
+                  ",LUNAR_DT",
+                  "  FROM [PNJ_ROLAP].[dbo].[W_VW_SALES_INVOICE_LINE_F] ",
+                  "  WHERE [INVOICED_ON_DT_WID] < 20190101\") ,",
+                  "    #\"Renamed Columns\" = Table.RenameColumns(#\"Source\",{{\"INVOICE_NUM\", \"Invoice Number\"}, {\"INVOICED_QTY\", \"Invoice Quantity\"}, {\"NET_AMT\", \"Net Amount\"}, {\"COST_AMT\", \"Cost Amount\"}, {\"TAX_AMT\", \"Tax Amount\"}, {\"DISCOUNT_AMT\", \"Discount Amount\"},  {\"GROSS_WEIGHT\", \"Gross Weight\"}, {\"NET_WEIGHT\", \"Net Weight\"},   {\"CHANNEL_CODE\", \"Channel Code\"},   {\"INVOICE_TYPE\", \"Invoice Type\"},   {\"LABOUR_COST\", \"Labour Cost\"}, {\"ORTHER_AMT\", \"Other Amount\"}, {\"GOLD_AMT\", \"Gold Amount\"}}),",
+                  "    #\"Renamed Columns1\" = Table.RenameColumns(#\"Renamed Columns\",{{\"PRICE_RANGE\", \"Price Range\"}, {\"TYPE_PLANT\", \"Type Plant\"}, {\"CUST_TYPE_MONTH\", \"Customer Type (Month)\"}, {\"CUST_TYPE_YEAR\", \"Customer Type (Year)\"}}),",
+                  "    #\"Renamed Columns2\" = Table.RenameColumns(#\"Renamed Columns1\",{{\"CUSTOMER_SOLD_TO_WID\", \"Customer WID\"}}),",
+                  "    #\"Renamed Columns3\" = Table.RenameColumns(#\"Renamed Columns2\",{{\"INVOICE_Q10_QTY\", \"Q10\"}, {\"Invoice Quantity\", \"Qty\"}}),",
+                  "    #\"Replaced Value\" = Table.ReplaceValue(#\"Renamed Columns3\",null,\"#Not assign\",Replacer.ReplaceValue,{\"PROGRAM_CODE\"}),",
+                  "    #\"Renamed Columns4\" = Table.RenameColumns(#\"Replaced Value\",{{\"PROFIT_AMT\", \"Profit Amount\" }}),",
+                  "    #\"Filtered Rows\" = Table.SelectRows(#\"Renamed Columns4\", each ([Invoice Type] <> \"ZS2\" and [Invoice Type] <> \"ZRE\"))",
+                  "in",
+                  "    #\"Filtered Rows\"</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Partition",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"SELECT [INVOICED_ON_DT_WID]",
+                "      ,[INVOICE_NUM]",
+                "      ,[PRODUCT_WID]",
+                "      ,[INVOICED_QTY]",
+                "      ,[INVOICED_BASE_QTY]",
+                "--      ,[GROSS_AMT]",
+                "      ,[NET_AMT]",
+                "      ,[UNIT_PRICE]",
+                "      ,[COST_AMT]",
+                "      ,[TAX_AMT]",
+                "--      ,[EXCHANGE_RATE]",
+                " --     ,[INVOICE_ITEM]",
+                "      ,[DISCOUNT_AMT]",
+                "--      ,[SALES_UOM_CODE]",
+                "      ,[GROSS_WEIGHT]",
+                "      ,[NET_WEIGHT]",
+                "--      ,[WEIGHT_UOM]",
+                "      ,[PAYMENT_METHOD_CODE]",
+                "      ,[CHANNEL_CODE]",
+                "      ,[SALES_ORDER_NUM]",
+                "--      ,[SALES_ORDER_ITEM]",
+                "      ,[INVOICE_TYPE]",
+                "      ,[CUSTOMER_SOLD_TO_WID]",
+                "--      ,[TAX_CODE]",
+                "--      ,[CREATED_ON_DT]",
+                "--      ,[BATCH]",
+                " --     ,[ORIGINAL_VALUE]",
+                "      ,[COMPANY_WID]",
+                "      ,[PLANT_WID]",
+                "      ,[INVOICE_Q10_QTY]",
+                "      ,[PROD_CAT_WID]",
+                "      ,[LABOUR_COST]",
+                "      ,[GOLD_AMT]",
+                "      ,[ORTHER_AMT]",
+                "      ,[PRICE_RANGE]",
+                "      ,[Invoice_Hour]",
+                "--      ,[Age_trans]",
+                "      ,[TYPE_PLANT]",
+                "      ,[CUST_TYPE_MONTH]",
+                "      ,[CUST_TYPE_YEAR]",
+                "      ,[SALES_PERSON]",
+                "      ,[DOC_CONDITION_NUM]",
+                "--      ,[CUST_TYPE_COMPANY]",
+                "      ,[PAYMENT_TERM_WID]",
+                "      ,[Group_age]",
+                "      ,[PRODUCT_INVENTORY_WID]",
+                "      ,[HAOLAI_AMT]",
+                "      ,[DELIVERY_PRIORITY]",
+                "      ,[SHIPPING_CONDITION]",
+                "      ,[PROGRAM_CODE]",
+                "      ,[PAYMENT_TERMS_CODE]",
+                "      ,[KOL_AMT]",
+                "      ,[PROGRAM_NAME]",
+                "      ,CUSTOMER_PAYER_WID",
+                "      ,TRAFFIC",
+                "      ,Palexy_AGEID",
+                "      ,STORAGE_LOC_CODE",
+                "      ,ConditionID",
+                "      ,[SLOC_WID]",
+                "      ,[PROFIT_AMT]",
+                ",CUST_CARD_DESC",
+                ",MKT_CUSTOMER",
+                ",LUNAR_DT",
+                "  FROM [PNJ_ROLAP].[dbo].[W_VW_SALES_INVOICE_LINE_F] ",
+                "  WHERE [INVOICED_ON_DT_WID] >= 20220101\") ,",
                 "    #\"Renamed Columns\" = Table.RenameColumns(#\"Source\",{{\"INVOICE_NUM\", \"Invoice Number\"}, {\"INVOICED_QTY\", \"Invoice Quantity\"}, {\"NET_AMT\", \"Net Amount\"}, {\"COST_AMT\", \"Cost Amount\"}, {\"TAX_AMT\", \"Tax Amount\"}, {\"DISCOUNT_AMT\", \"Discount Amount\"},  {\"GROSS_WEIGHT\", \"Gross Weight\"}, {\"NET_WEIGHT\", \"Net Weight\"},   {\"CHANNEL_CODE\", \"Channel Code\"},   {\"INVOICE_TYPE\", \"Invoice Type\"},   {\"LABOUR_COST\", \"Labour Cost\"}, {\"ORTHER_AMT\", \"Other Amount\"}, {\"GOLD_AMT\", \"Gold Amount\"}}),",
                 "    #\"Renamed Columns1\" = Table.RenameColumns(#\"Renamed Columns\",{{\"PRICE_RANGE\", \"Price Range\"}, {\"TYPE_PLANT\", \"Type Plant\"}, {\"CUST_TYPE_MONTH\", \"Customer Type (Month)\"}, {\"CUST_TYPE_YEAR\", \"Customer Type (Year)\"}}),",
                 "    #\"Renamed Columns2\" = Table.RenameColumns(#\"Renamed Columns1\",{{\"CUSTOMER_SOLD_TO_WID\", \"Customer WID\"}}),",
@@ -8933,8 +9101,9 @@
                   "      ,[PROFIT_AMT]",
                   ",CUST_CARD_DESC",
                   ",MKT_CUSTOMER",
+                  ",LUNAR_DT",
                   "  FROM [PNJ_ROLAP].[dbo].[W_VW_SALES_INVOICE_LINE_F] ",
-                  "  WHERE [INVOICED_ON_DT_WID] < 20190101\") ,",
+                  "  WHERE [INVOICED_ON_DT_WID] >= 20220101\") ,",
                   "    #\"Renamed Columns\" = Table.RenameColumns(#\"Source\",{{\"INVOICE_NUM\", \"Invoice Number\"}, {\"INVOICED_QTY\", \"Invoice Quantity\"}, {\"NET_AMT\", \"Net Amount\"}, {\"COST_AMT\", \"Cost Amount\"}, {\"TAX_AMT\", \"Tax Amount\"}, {\"DISCOUNT_AMT\", \"Discount Amount\"},  {\"GROSS_WEIGHT\", \"Gross Weight\"}, {\"NET_WEIGHT\", \"Net Weight\"},   {\"CHANNEL_CODE\", \"Channel Code\"},   {\"INVOICE_TYPE\", \"Invoice Type\"},   {\"LABOUR_COST\", \"Labour Cost\"}, {\"ORTHER_AMT\", \"Other Amount\"}, {\"GOLD_AMT\", \"Gold Amount\"}}),",
                   "    #\"Renamed Columns1\" = Table.RenameColumns(#\"Renamed Columns\",{{\"PRICE_RANGE\", \"Price Range\"}, {\"TYPE_PLANT\", \"Type Plant\"}, {\"CUST_TYPE_MONTH\", \"Customer Type (Month)\"}, {\"CUST_TYPE_YEAR\", \"Customer Type (Year)\"}}),",
                   "    #\"Renamed Columns2\" = Table.RenameColumns(#\"Renamed Columns1\",{{\"CUSTOMER_SOLD_TO_WID\", \"Customer WID\"}}),",
@@ -11298,16 +11467,6 @@
             "formatString": "#,0"
           },
           {
-            "name": "CMR #Purchaser",
-            "expression": [
-              "CALCULATE(",
-              "DISTINCTCOUNT('Fact - Camera InStore'[PERSON_WID]),",
-              "FILTER('Fact - Camera InStore', 'Fact - Camera InStore'[action_type] = \"do_transaction\"))"
-            ],
-            "formatString": "#,0",
-            "isHidden": true
-          },
-          {
             "name": "CMR CR",
             "expression": [
               " ",
@@ -11434,7 +11593,7 @@
             "expression": [
               " ",
               "VAR Non_VL= CALCULATE(DISTINCTCOUNT( 'Fact - All Sales Invoice Line'[Customer WID] ),",
-              "FILTER('Fact - All Sales Invoice Line', NOT 'Fact - All Sales Invoice Line'[Invoice Type] IN {\"ZRE\", \"ZS2\", \"ZPI\"}  &&  'Fact - All Sales Invoice Line'[TRAFFIC] = 1 && 'Fact - All Sales Invoice Line'[Channel Code] in {\"10\", \"20\"} ),",
+              "FILTER('Fact - All Sales Invoice Line',  'Fact - All Sales Invoice Line'[TRAFFIC] = 1 && 'Fact - All Sales Invoice Line'[Channel Code] in {\"10\", \"20\"} ),",
               "FILTER('Dim - Customer', NOT 'Dim - Customer'[CUST_CARD_DESC] in {\"One-time\"}))",
               "",
               "VAR VL = CALCULATE(",
@@ -11442,7 +11601,7 @@
               "\tGROUPBY('Fact - All Sales Invoice Line', 'Fact - All Sales Invoice Line'[Customer WID], ",
               "\t\t'Fact - All Sales Invoice Line'[INVOICED_ON_DT_WID],",
               "\t\t'Fact - All Sales Invoice Line'[Invoice Number])),",
-              "FILTER('Fact - All Sales Invoice Line', NOT 'Fact - All Sales Invoice Line'[Invoice Type] IN {\"ZRE\", \"ZS2\",  \"ZPI\"} &&  'Fact - All Sales Invoice Line'[TRAFFIC] = 1  && 'Fact - All Sales Invoice Line'[Channel Code] in {\"10\", \"20\"}  ),",
+              "FILTER('Fact - All Sales Invoice Line',   'Fact - All Sales Invoice Line'[TRAFFIC] = 1  && 'Fact - All Sales Invoice Line'[Channel Code] in {\"10\", \"20\"}  ),",
               "FILTER('Dim - Customer', 'Dim - Customer'[CUST_CARD_DESC] in {\"One-time\"})",
               ")",
               "",
@@ -11474,8 +11633,7 @@
               "\t\t'Fact - All Sales Invoice Line'[PLANT_WID], ",
               "\t\t'Fact - All Sales Invoice Line'[Customer WID],",
               "\t\t'Fact - All Sales Invoice Line'[INVOICED_ON_DT_WID])),",
-              "\tFILTER('Fact - All Sales Invoice Line', NOT 'Fact - All Sales Invoice Line'[Invoice Type] IN {\"ZRE\", \"ZS2\", \"ZPI\"}  &&",
-              "\t\t  'Fact - All Sales Invoice Line'[TRAFFIC] = 1  && 'Fact - All Sales Invoice Line'[Channel Code] in {\"10\", \"20\"}  ),",
+              "\tFILTER('Fact - All Sales Invoice Line', 'Fact - All Sales Invoice Line'[TRAFFIC] = 1  && 'Fact - All Sales Invoice Line'[Channel Code] in {\"10\", \"20\"}  ),",
               "\tFILTER('Dim - Customer', NOT 'Dim - Customer'[CUST_CARD_DESC] in {\"One-time\"}))",
               "",
               "VAR VL =  CALCULATE(",
@@ -11485,8 +11643,7 @@
               "\t\t'Fact - All Sales Invoice Line'[Customer WID],",
               "\t\t'Fact - All Sales Invoice Line'[INVOICED_ON_DT_WID],",
               "\t\t'Fact - All Sales Invoice Line'[Invoice Number])),",
-              "\tFILTER('Fact - All Sales Invoice Line', NOT 'Fact - All Sales Invoice Line'[Invoice Type] IN {\"ZRE\", \"ZS2\", \"ZPI\"}  &&",
-              "\t\t  'Fact - All Sales Invoice Line'[TRAFFIC] = 1  && 'Fact - All Sales Invoice Line'[Channel Code] in {\"10\", \"20\"}  ),",
+              "\tFILTER('Fact - All Sales Invoice Line', 'Fact - All Sales Invoice Line'[TRAFFIC] = 1  && 'Fact - All Sales Invoice Line'[Channel Code] in {\"10\", \"20\"}  ),",
               "\tFILTER('Dim - Customer', 'Dim - Customer'[CUST_CARD_DESC] in {\"One-time\"}))",
               "",
               "",
@@ -16869,6 +17026,16 @@
               "expression": "{BLANK()}"
             }
           }
+        ],
+        "measures": [
+          {
+            "name": "LN .Net Amt",
+            "expression": [
+              "CALCULATE([. Net Amt], ",
+              "\tUSERELATIONSHIP('Dim - Time (Lunar)'[Lunar Date], 'Fact - All Sales Invoice Line'[Lunar Date]))",
+              ""
+            ]
+          }
         ]
       },
       {
@@ -16883,25 +17050,13 @@
             "name": "PLANT_FEEDBACK_DATE",
             "dataType": "int64",
             "sourceColumn": "PLANT_FEEDBACK_DATE",
-            "formatString": "yyyy-MM-dd",
-            "annotations": [
-              {
-                "name": "Format",
-                "value": "<Format Format=\"DateTimeCustom\"><DateTimes><DateTime LCID=\"1033\" Group=\"ShortDate\" FormatString=\"yyyy-MM-dd\" /></DateTimes></Format>"
-              }
-            ]
+            "formatString": "0"
           },
           {
             "name": "FEEDBACK_DATE",
             "dataType": "int64",
             "sourceColumn": "FEEDBACK_DATE",
-            "formatString": "yyyy-MM-dd",
-            "annotations": [
-              {
-                "name": "Format",
-                "value": "<Format Format=\"DateTimeCustom\"><DateTimes><DateTime LCID=\"1033\" Group=\"ShortDate\" FormatString=\"yyyy-MM-dd\" /></DateTimes></Format>"
-              }
-            ]
+            "formatString": "0"
           },
           {
             "name": "PLANT_WID",
@@ -18879,13 +19034,6 @@
         "toColumn": "ROW_WID"
       },
       {
-        "name": "8df68212-6231-4623-bb67-3edffe6c0dc9",
-        "fromTable": "Fact - Customer Feedback",
-        "fromColumn": "FEEDBACK_DATE",
-        "toTable": "Dim - Time",
-        "toColumn": "Date"
-      },
-      {
         "name": "d45e7fa3-d4e0-4f86-afc1-c61d84d17b95",
         "fromTable": "Fact - Customer Feedback",
         "fromColumn": "PLANT_WID",
@@ -19024,6 +19172,13 @@
         "name": "6bbb3f53-018a-41b2-b18f-339229a47c91",
         "fromTable": "Fact - Quality Control Comments",
         "fromColumn": "Date_key",
+        "toTable": "Dim - Time",
+        "toColumn": "ROW_WID"
+      },
+      {
+        "name": "98044183-c482-4d5d-930b-ac9d10f53f43",
+        "fromTable": "Fact - Customer Feedback",
+        "fromColumn": "FEEDBACK_DATE",
         "toTable": "Dim - Time",
         "toColumn": "ROW_WID"
       }
