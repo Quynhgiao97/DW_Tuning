@@ -8041,13 +8041,6 @@
             "summarizeBy": "none"
           },
           {
-            "name": "PROD_CAT_WID",
-            "dataType": "int64",
-            "isHidden": true,
-            "sourceColumn": "PROD_CAT_WID",
-            "summarizeBy": "none"
-          },
-          {
             "name": "Invoice Number",
             "dataType": "string",
             "sourceColumn": "Invoice Number"
@@ -8282,7 +8275,7 @@
             "sourceColumn": "MKT_CUSTOMER"
           },
           {
-            "name": "LUNAR_DT",
+            "name": "Lunar Date",
             "dataType": "dateTime",
             "sourceColumn": "LUNAR_DT"
           }
@@ -8324,7 +8317,7 @@
                 "      ,[COMPANY_WID]",
                 "      ,[PLANT_WID]",
                 "      ,[INVOICE_Q10_QTY]",
-                "      ,[PROD_CAT_WID]",
+                "--      ,[PROD_CAT_WID]",
                 "      ,[LABOUR_COST]",
                 "      ,[GOLD_AMT]",
                 "      ,[ORTHER_AMT]",
@@ -8405,7 +8398,7 @@
                   "      ,[COMPANY_WID]",
                   "      ,[PLANT_WID]",
                   "      ,[INVOICE_Q10_QTY]",
-                  "      ,[PROD_CAT_WID]",
+                  "--      ,[PROD_CAT_WID]",
                   "      ,[LABOUR_COST]",
                   "      ,[GOLD_AMT]",
                   "      ,[ORTHER_AMT]",
@@ -8445,7 +8438,7 @@
                   "    #\"Renamed Columns2\" = Table.RenameColumns(#\"Renamed Columns1\",{{\"CUSTOMER_SOLD_TO_WID\", \"Customer WID\"}}),",
                   "    #\"Renamed Columns3\" = Table.RenameColumns(#\"Renamed Columns2\",{{\"INVOICE_Q10_QTY\", \"Q10\"}, {\"Invoice Quantity\", \"Qty\"}}),",
                   "    #\"Replaced Value\" = Table.ReplaceValue(#\"Renamed Columns3\",null,\"#Not assign\",Replacer.ReplaceValue,{\"PROGRAM_CODE\"}),",
-                  "    #\"Renamed Columns4\" = Table.RenameColumns(#\"Replaced Value\",{{\"PROFIT_AMT\", \"Profit Amount\"}, {\"LUNAR_DT\", \"Lunar Date\" }}),",
+                  "    #\"Renamed Columns4\" = Table.RenameColumns(#\"Replaced Value\",{{\"PROFIT_AMT\", \"Profit Amount\"}}),",
                   "    #\"Filtered Rows\" = Table.SelectRows(#\"Renamed Columns4\", each ([Invoice Type] <> \"ZS2\" and [Invoice Type] <> \"ZRE\"))",
                   "in",
                   "    #\"Filtered Rows\"</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
@@ -8490,7 +8483,7 @@
                 "      ,[COMPANY_WID]",
                 "      ,[PLANT_WID]",
                 "      ,[INVOICE_Q10_QTY]",
-                "      ,[PROD_CAT_WID]",
+                "--      ,[PROD_CAT_WID]",
                 "      ,[LABOUR_COST]",
                 "      ,[GOLD_AMT]",
                 "      ,[ORTHER_AMT]",
@@ -8571,7 +8564,7 @@
                   "      ,[COMPANY_WID]",
                   "      ,[PLANT_WID]",
                   "      ,[INVOICE_Q10_QTY]",
-                  "      ,[PROD_CAT_WID]",
+                  "--      ,[PROD_CAT_WID]",
                   "      ,[LABOUR_COST]",
                   "      ,[GOLD_AMT]",
                   "      ,[ORTHER_AMT]",
@@ -8656,7 +8649,7 @@
                 "      ,[COMPANY_WID]",
                 "      ,[PLANT_WID]",
                 "      ,[INVOICE_Q10_QTY]",
-                "      ,[PROD_CAT_WID]",
+                "--      ,[PROD_CAT_WID]",
                 "      ,[LABOUR_COST]",
                 "      ,[GOLD_AMT]",
                 "      ,[ORTHER_AMT]",
@@ -8737,7 +8730,7 @@
                   "      ,[COMPANY_WID]",
                   "      ,[PLANT_WID]",
                   "      ,[INVOICE_Q10_QTY]",
-                  "      ,[PROD_CAT_WID]",
+                  "--      ,[PROD_CAT_WID]",
                   "      ,[LABOUR_COST]",
                   "      ,[GOLD_AMT]",
                   "      ,[ORTHER_AMT]",
@@ -8822,7 +8815,7 @@
                 "      ,[COMPANY_WID]",
                 "      ,[PLANT_WID]",
                 "      ,[INVOICE_Q10_QTY]",
-                "      ,[PROD_CAT_WID]",
+                "--      ,[PROD_CAT_WID]",
                 "      ,[LABOUR_COST]",
                 "      ,[GOLD_AMT]",
                 "      ,[ORTHER_AMT]",
@@ -8903,7 +8896,7 @@
                   "      ,[COMPANY_WID]",
                   "      ,[PLANT_WID]",
                   "      ,[INVOICE_Q10_QTY]",
-                  "      ,[PROD_CAT_WID]",
+                  "--      ,[PROD_CAT_WID]",
                   "      ,[LABOUR_COST]",
                   "      ,[GOLD_AMT]",
                   "      ,[ORTHER_AMT]",
@@ -8988,7 +8981,7 @@
                 "      ,[COMPANY_WID]",
                 "      ,[PLANT_WID]",
                 "      ,[INVOICE_Q10_QTY]",
-                "      ,[PROD_CAT_WID]",
+                "--      ,[PROD_CAT_WID]",
                 "      ,[LABOUR_COST]",
                 "      ,[GOLD_AMT]",
                 "      ,[ORTHER_AMT]",
@@ -9069,7 +9062,7 @@
                   "      ,[COMPANY_WID]",
                   "      ,[PLANT_WID]",
                   "      ,[INVOICE_Q10_QTY]",
-                  "      ,[PROD_CAT_WID]",
+                  "--      ,[PROD_CAT_WID]",
                   "      ,[LABOUR_COST]",
                   "      ,[GOLD_AMT]",
                   "      ,[ORTHER_AMT]",
@@ -17050,13 +17043,16 @@
             "name": "PLANT_FEEDBACK_DATE",
             "dataType": "int64",
             "sourceColumn": "PLANT_FEEDBACK_DATE",
-            "formatString": "0"
+            "formatString": "0",
+            "summarizeBy": "none"
           },
           {
             "name": "FEEDBACK_DATE",
             "dataType": "int64",
+            "isHidden": true,
             "sourceColumn": "FEEDBACK_DATE",
-            "formatString": "0"
+            "formatString": "0",
+            "summarizeBy": "none"
           },
           {
             "name": "PLANT_WID",
@@ -19181,6 +19177,13 @@
         "fromColumn": "FEEDBACK_DATE",
         "toTable": "Dim - Time",
         "toColumn": "ROW_WID"
+      },
+      {
+        "name": "b89ed3bc-3ee2-45ee-8731-99672c25b35b",
+        "fromTable": "Fact - All Sales Invoice Line",
+        "fromColumn": "Lunar Date",
+        "toTable": "Dim - Time (Lunar)",
+        "toColumn": "Lunar Date"
       }
     ],
     "perspectives": [
@@ -19622,9 +19625,6 @@
               },
               {
                 "name": "PLANT_WID"
-              },
-              {
-                "name": "PROD_CAT_WID"
               },
               {
                 "name": "PRODUCT_INVENTORY_WID"
@@ -20525,9 +20525,6 @@
               },
               {
                 "name": "PLANT_WID"
-              },
-              {
-                "name": "PROD_CAT_WID"
               },
               {
                 "name": "PRODUCT_WID"
@@ -23369,9 +23366,6 @@
               },
               {
                 "name": "PLANT_WID"
-              },
-              {
-                "name": "PROD_CAT_WID"
               },
               {
                 "name": "PRODUCT_INVENTORY_WID"
