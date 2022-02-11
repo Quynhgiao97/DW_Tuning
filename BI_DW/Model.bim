@@ -8282,7 +8282,7 @@
             "sourceColumn": "MKT_CUSTOMER"
           },
           {
-            "name": "LUNAR_DT",
+            "name": "Lunar Date",
             "dataType": "dateTime",
             "sourceColumn": "LUNAR_DT"
           }
@@ -17050,13 +17050,16 @@
             "name": "PLANT_FEEDBACK_DATE",
             "dataType": "int64",
             "sourceColumn": "PLANT_FEEDBACK_DATE",
-            "formatString": "0"
+            "formatString": "0",
+            "summarizeBy": "none"
           },
           {
             "name": "FEEDBACK_DATE",
             "dataType": "int64",
+            "isHidden": true,
             "sourceColumn": "FEEDBACK_DATE",
-            "formatString": "0"
+            "formatString": "0",
+            "summarizeBy": "none"
           },
           {
             "name": "PLANT_WID",
@@ -19181,6 +19184,13 @@
         "fromColumn": "FEEDBACK_DATE",
         "toTable": "Dim - Time",
         "toColumn": "ROW_WID"
+      },
+      {
+        "name": "b89ed3bc-3ee2-45ee-8731-99672c25b35b",
+        "fromTable": "Fact - All Sales Invoice Line",
+        "fromColumn": "Lunar Date",
+        "toTable": "Dim - Time (Lunar)",
+        "toColumn": "Lunar Date"
       }
     ],
     "perspectives": [
