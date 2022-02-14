@@ -17607,6 +17607,11 @@
             "name": "Work Center",
             "dataType": "string",
             "sourceColumn": "Work Center"
+          },
+          {
+            "name": "RHODIUM",
+            "dataType": "string",
+            "sourceColumn": "RHODIUM"
           }
         ],
         "partitions": [
@@ -17621,9 +17626,9 @@
                 "    dbo_W_VW_PLATING_LIQUID = Source{[Schema=\"dbo\",Item=\"W_VW_PLATING_LIQUID\"]}[Data],",
                 "    #\"Removed Columns\" = Table.RemoveColumns(dbo_W_VW_PLATING_LIQUID,{\"DATE_KEY\"}),",
                 "    #\"Renamed Columns\" = Table.RenameColumns(#\"Removed Columns\",{{\"TTL_GRP_TEST\", \"Total Group Test\"}}),",
-                "    #\"Changed Type\" = Table.TransformColumnTypes(#\"Renamed Columns\",{{\"ARGUNA 621\", type text}, {\"AURUNA 215-1\", type text}, {\"AURUNA 215-2\", type text}, {\"AURUNA 554-5 Y05\", type text}, {\"PALLADIUM\", type text}, {\"PINK GOLD MICRON\", type text}, {\"AURUNA 554-1 YELLOW\", type text}, {\"AURUNA 554-4 GREEN\", type text}, {\"AURUNA 554-2 PINK\", type text}, {\"AURUNA 554-3 YELLOW\", type text}, {\"COPPERLUMER\", type text}, {\"CUPRACID\", type text}, {\"NICKEL\", type text}}),",
-                "    #\"Replaced Value\" = Table.ReplaceValue(#\"Changed Type\",\"0\",\"Không\",Replacer.ReplaceText,{\"ARGUNA 621\", \"AURUNA 215-1\", \"AURUNA 215-2\", \"AURUNA 554-5 Y05\", \"PALLADIUM\", \"PINK GOLD MICRON\", \"AURUNA 554-1 YELLOW\", \"AURUNA 554-4 GREEN\", \"AURUNA 554-2 PINK\", \"AURUNA 554-3 YELLOW\", \"COPPERLUMER\",\"CUPRACID\",\"NICKEL\" }),",
-                "    #\"Replaced Value1\" = Table.ReplaceValue(#\"Replaced Value\",\"1\",\"Đạt\",Replacer.ReplaceText,{\"ARGUNA 621\", \"AURUNA 215-1\", \"AURUNA 215-2\", \"AURUNA 554-5 Y05\", \"PALLADIUM\", \"PINK GOLD MICRON\", \"AURUNA 554-1 YELLOW\", \"AURUNA 554-4 GREEN\", \"AURUNA 554-2 PINK\", \"AURUNA 554-3 YELLOW\", \"COPPERLUMER\", \"CUPRACID\", \"NICKEL\"}),",
+                "    #\"Changed Type\" = Table.TransformColumnTypes(#\"Renamed Columns\",{{\"ARGUNA 621\", type text}, {\"AURUNA 215-1\", type text}, {\"AURUNA 215-2\", type text}, {\"AURUNA 554-5 Y05\", type text}, {\"PALLADIUM\", type text}, {\"PINK GOLD MICRON\", type text}, {\"AURUNA 554-1 YELLOW\", type text}, {\"AURUNA 554-4 GREEN\", type text}, {\"AURUNA 554-2 PINK\", type text}, {\"AURUNA 554-3 YELLOW\", type text}, {\"COPPERLUMER\", type text}, {\"CUPRACID\", type text}, {\"NICKEL\", type text}, {\"RHODIUM\", type text} }),",
+                "    #\"Replaced Value\" = Table.ReplaceValue(#\"Changed Type\",\"0\",\"Không\",Replacer.ReplaceText,{\"ARGUNA 621\", \"AURUNA 215-1\", \"AURUNA 215-2\", \"AURUNA 554-5 Y05\", \"PALLADIUM\", \"PINK GOLD MICRON\", \"AURUNA 554-1 YELLOW\", \"AURUNA 554-4 GREEN\", \"AURUNA 554-2 PINK\", \"AURUNA 554-3 YELLOW\", \"COPPERLUMER\",\"CUPRACID\",\"NICKEL\",\"RHODIUM\" }),",
+                "    #\"Replaced Value1\" = Table.ReplaceValue(#\"Replaced Value\",\"1\",\"Đạt\",Replacer.ReplaceText,{\"ARGUNA 621\", \"AURUNA 215-1\", \"AURUNA 215-2\", \"AURUNA 554-5 Y05\", \"PALLADIUM\", \"PINK GOLD MICRON\", \"AURUNA 554-1 YELLOW\", \"AURUNA 554-4 GREEN\", \"AURUNA 554-2 PINK\", \"AURUNA 554-3 YELLOW\", \"COPPERLUMER\", \"CUPRACID\", \"NICKEL\", \"RHODIUM\"}),",
                 "    #\"Renamed Columns1\" = Table.RenameColumns(#\"Replaced Value1\",{{\"WORK_CENTER_GRP\", \"Work Center\"}})",
                 "in",
                 "    #\"Renamed Columns1\""
@@ -19022,6 +19027,13 @@
         "fromColumn": "Lunar Date",
         "toTable": "Dim - Time (Lunar)",
         "toColumn": "Lunar Date"
+      },
+      {
+        "name": "a1a07248-55b5-4b8e-b9ce-dfc5d631ec94",
+        "fromTable": "Fact - Plating Liquid",
+        "fromColumn": "DATE",
+        "toTable": "Dim - Time",
+        "toColumn": "Date"
       }
     ],
     "perspectives": [
@@ -23573,6 +23585,10 @@
           {
             "memberName": "PNJCORP\\thuy.nt12",
             "memberId": "S-1-5-21-3941070233-2248949771-1228141224-16659"
+          },
+          {
+            "memberName": "PNJCORP\\nam.tl",
+            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-28446"
           }
         ]
       },
