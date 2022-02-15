@@ -17,7 +17,6 @@
           "authentication": null,
           "query": null
         },
-        "options": {},
         "credential": {
           "AuthenticationKind": "UsernamePassword",
           "kind": "SQL",
@@ -39,7 +38,6 @@
           "authentication": null,
           "query": null
         },
-        "options": {},
         "credential": {
           "AuthenticationKind": "UsernamePassword",
           "kind": "SQL",
@@ -6023,15 +6021,6 @@
             ]
           },
           {
-            "name": "PNJP AP GR .Net Qty",
-            "expression": [
-              "CALCULATE(Sum( 'Fact - Actual Production'[Actual QTY]),",
-              "FILTER('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"In\" &&",
-              "'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\", \"1102\", \"1103\", \"1104\", \"1105\", \"1106\"}))"
-            ],
-            "formatString": "#,0"
-          },
-          {
             "name": "QC %Cancel .Q10",
             "expression": [
               "",
@@ -11264,6 +11253,7 @@
             "dataType": "int64",
             "isNameInferred": true,
             "isDataTypeInferred": true,
+            "isHidden": true,
             "sourceColumn": "[Value]"
           }
         ],
@@ -12663,13 +12653,6 @@
             "formatString": "0.00 %;-0.00 %;0.00 %"
           },
           {
-            "type": "calculated",
-            "name": "Store_date",
-            "dataType": "string",
-            "isDataTypeInferred": true,
-            "expression": " [DATE_WID] & \"_\" & [PLANT_WID]"
-          },
-          {
             "name": "AMT",
             "dataType": "double",
             "sourceColumn": "AMT"
@@ -12718,6 +12701,16 @@
             "name": "Dwell Time",
             "dataType": "double",
             "sourceColumn": "Dwell Time"
+          },
+          {
+            "name": "Layer",
+            "dataType": "string",
+            "sourceColumn": "Layer"
+          },
+          {
+            "name": "Store_date",
+            "dataType": "string",
+            "sourceColumn": "Store_date"
           }
         ],
         "partitions": [
@@ -12729,20 +12722,7 @@
               "expression": [
                 "let",
                 "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;DW_RAW\",",
-                "\t\" SELECT S1.DATE_WID,",
-                "\tS1.PLANT_WID,",
-                "\tS1.VISIT,",
-                "\tS1.INTERACTION,",
-                "\tCASE WHEN S1.Interact_time IS NULL THEN 0 ELSE S1.Interact_time END Interact_time,",
-                "--\tS1.do_transaction,",
-                "\tCASE WHEN S1.AMT IS NULL THEN 0 ELSE S1.AMT END AMT,",
-                "\tCASE WHEN S1.CUSTOMERS IS NULL THEN 0 ELSE S1.CUSTOMERS END CUSTOMERS,",
-                "--\tS1.CUSTOMERS,",
-                "\tCASE WHEN S1.QTY IS NULL THEN 0 ELSE S1.QTY END QTY,",
-                "\tS2.Dwell_Time FROM W_PA_INTERACTIVE_BASELINE_F S1",
-                "\tINNER JOIN (SELECT F1.DATE_WID , AVG(1.0*(endtime - starttime)/1000) Dwell_Time, F1.PLANT_WID FROM W_PA_PERSON_D F0",
-                "\t\t\t\tINNER JOIN (SELECT PLANT_WID,PERSON_WID, DATE_WID FROM W_PA_ICA_BASELINE_F) F1 ON F0.ROW_WID =F1.PERSON_WID",
-                "\t\tGROUP BY F1.DATE_WID,PLANT_WID) S2 ON S1.DATE_WID = S2.DATE_WID AND S1.PLANT_WID = S2.PLANT_WID;  \"),",
+                "\t\" SELECT * FROM W_VW_ICA_CVR_F;  \"),",
                 "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"Interact_time\", \"Interaction Time\"}, {\"Dwell_Time\", \"Dwell Time\"}}) ",
                 "",
                 "in",
@@ -14858,7 +14838,7 @@
         ]
       },
       {
-        "name": "Fact - Style Store CVR",
+        "name": "Fact - Style Store CVR0",
         "columns": [
           {
             "name": "DATE_WID",
@@ -14966,7 +14946,7 @@
                 "\tS1.VISIT,",
                 "\tS1.INTERACTION,",
                 "\tS1.Interact_time,",
-                "\tS1.do_transaction,",
+                "--\tS1.do_transaction,",
                 "\tS1.AMT,",
                 "\tS1.CUSTOMERS,",
                 "\tS1.QTY,",
@@ -14978,8 +14958,7 @@
                 "\t\tGROUP BY F1.DATE_WID) S2 ON S1.DATE_WID = S2.DATE_WID\"),",
                 "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"Dwell_Time\", \"Dwell Time\"}, {\"Interact_time\", \"Interaction Time\"}})",
                 "in",
-                "    #\"Renamed Columns\"",
-                ""
+                "    #\"Renamed Columns\""
               ]
             }
           }
@@ -14991,9 +14970,9 @@
               " ",
               "VAR CorrelTable = ",
               "FILTER (",
-              "\tSELECTCOLUMNS('Fact - Style Store CVR', \"KeyIDs\", VALUES('Fact - Style Store CVR'[Store_date]),",
-              "\t\t\"Value_X\", 'Fact - Style Store CVR'[Dwell Time],",
-              "\t\t\"Value_Y\",  'Fact - Style Store CVR'[Basket Value]),",
+              "\tSELECTCOLUMNS('Fact - Style Store CVR0', \"KeyIDs\", VALUES('Fact - Style Store CVR0'[Store_date]),",
+              "\t\t\"Value_X\", 'Fact - Style Store CVR0'[Dwell Time],",
+              "\t\t\"Value_Y\",  'Fact - Style Store CVR0'[Basket Value]),",
               "\tAND (",
               "\t            NOT ( ISBLANK ( [Value_X] ) ),",
               "\t            NOT ( ISBLANK ( [Value_Y] ) ))",
@@ -15020,9 +14999,9 @@
               " ",
               "VAR CorrelTable = ",
               "FILTER (",
-              "\tSELECTCOLUMNS('Fact - Style Store CVR', \"KeyIDs\", VALUES('Fact - Style Store CVR'[Store_date]),",
-              "\t\t\"Value_X\", 'Fact - Style Store CVR'[Staff CVR],",
-              "\t\t\"Value_Y\",  'Fact - Style Store CVR'[Basket Value]),",
+              "\tSELECTCOLUMNS('Fact - Style Store CVR0', \"KeyIDs\", VALUES('Fact - Style Store CVR0'[Store_date]),",
+              "\t\t\"Value_X\", 'Fact - Style Store CVR0'[Staff CVR],",
+              "\t\t\"Value_Y\",  'Fact - Style Store CVR0'[Basket Value]),",
               "\tAND (",
               "\t            NOT ( ISBLANK ( [Value_X] ) ),",
               "\t            NOT ( ISBLANK ( [Value_Y] ) ))",
@@ -15049,9 +15028,9 @@
               " ",
               "VAR CorrelTable = ",
               "FILTER (",
-              "\tSELECTCOLUMNS('Fact - Style Store CVR', \"KeyIDs\", VALUES('Fact - Style Store CVR'[Store_date]),",
-              "\t\t\"Value_X\", 'Fact - Style Store CVR'[Interaction Time],",
-              "\t\t\"Value_Y\",  'Fact - Style Store CVR'[Basket Value]),",
+              "\tSELECTCOLUMNS('Fact - Style Store CVR0', \"KeyIDs\", VALUES('Fact - Style Store CVR0'[Store_date]),",
+              "\t\t\"Value_X\", 'Fact - Style Store CVR0'[Interaction Time],",
+              "\t\t\"Value_Y\",  'Fact - Style Store CVR0'[Basket Value]),",
               "\tAND (",
               "\t            NOT ( ISBLANK ( [Value_X] ) ),",
               "\t            NOT ( ISBLANK ( [Value_Y] ) ))",
@@ -15078,9 +15057,9 @@
               " ",
               "VAR CorrelTable = ",
               "FILTER (",
-              "\tSELECTCOLUMNS('Fact - Style Store CVR', \"KeyIDs\", VALUES('Fact - Style Store CVR'[Store_date]),",
-              "\t\t\"Value_X\", 'Fact - Style Store CVR'[Interaction Rate],",
-              "\t\t\"Value_Y\",  'Fact - Style Store CVR'[Basket Value]),",
+              "\tSELECTCOLUMNS('Fact - Style Store CVR0', \"KeyIDs\", VALUES('Fact - Style Store CVR0'[Store_date]),",
+              "\t\t\"Value_X\", 'Fact - Style Store CVR0'[Interaction Rate],",
+              "\t\t\"Value_Y\",  'Fact - Style Store CVR0'[Basket Value]),",
               "\tAND (",
               "\t            NOT ( ISBLANK ( [Value_X] ) ),",
               "\t            NOT ( ISBLANK ( [Value_Y] ) ))",
@@ -15107,9 +15086,9 @@
               " ",
               "VAR CorrelTable = ",
               "FILTER (",
-              "\tSELECTCOLUMNS('Fact - Style Store CVR', \"KeyIDs\", VALUES('Fact - Style Store CVR'[Store_date]),",
-              "\t\t\"Value_X\", 'Fact - Style Store CVR'[Staff CVR],",
-              "\t\t\"Value_Y\",  'Fact - Style Store CVR'[Conversion Rate]),",
+              "\tSELECTCOLUMNS('Fact - Style Store CVR0', \"KeyIDs\", VALUES('Fact - Style Store CVR0'[Store_date]),",
+              "\t\t\"Value_X\", 'Fact - Style Store CVR0'[Staff CVR],",
+              "\t\t\"Value_Y\",  'Fact - Style Store CVR0'[Conversion Rate]),",
               "\tAND (",
               "\t            NOT ( ISBLANK ( [Value_X] ) ),",
               "\t            NOT ( ISBLANK ( [Value_Y] ) ))",
@@ -15136,9 +15115,9 @@
               " ",
               "VAR CorrelTable = ",
               "FILTER (",
-              "\tSELECTCOLUMNS('Fact - Style Store CVR', \"KeyIDs\", VALUES('Fact - Style Store CVR'[Store_date]),",
-              "\t\t\"Value_X\", 'Fact - Style Store CVR'[Dwell Time],",
-              "\t\t\"Value_Y\",  'Fact - Style Store CVR'[Conversion Rate]),",
+              "\tSELECTCOLUMNS('Fact - Style Store CVR0', \"KeyIDs\", VALUES('Fact - Style Store CVR0'[Store_date]),",
+              "\t\t\"Value_X\", 'Fact - Style Store CVR0'[Dwell Time],",
+              "\t\t\"Value_Y\",  'Fact - Style Store CVR0'[Conversion Rate]),",
               "\tAND (",
               "\t            NOT ( ISBLANK ( [Value_X] ) ),",
               "\t            NOT ( ISBLANK ( [Value_Y] ) ))",
@@ -15166,9 +15145,9 @@
               " ",
               "VAR CorrelTable = ",
               "FILTER (",
-              "\tSELECTCOLUMNS('Fact - Style Store CVR', \"KeyIDs\", VALUES('Fact - Style Store CVR'[Store_date]),",
-              "\t\t\"Value_X\", 'Fact - Style Store CVR'[Interaction Time],",
-              "\t\t\"Value_Y\",  'Fact - Style Store CVR'[Conversion Rate]),",
+              "\tSELECTCOLUMNS('Fact - Style Store CVR0', \"KeyIDs\", VALUES('Fact - Style Store CVR0'[Store_date]),",
+              "\t\t\"Value_X\", 'Fact - Style Store CVR0'[Interaction Time],",
+              "\t\t\"Value_Y\",  'Fact - Style Store CVR0'[Conversion Rate]),",
               "\tAND (",
               "\t            NOT ( ISBLANK ( [Value_X] ) ),",
               "\t            NOT ( ISBLANK ( [Value_Y] ) ))",
@@ -15196,9 +15175,9 @@
               " ",
               "VAR CorrelTable = ",
               "FILTER (",
-              "\tSELECTCOLUMNS('Fact - Style Store CVR', \"KeyIDs\", VALUES('Fact - Style Store CVR'[Store_date]),",
-              "\t\t\"Value_X\", 'Fact - Style Store CVR'[Interaction Rate],",
-              "\t\t\"Value_Y\",  'Fact - Style Store CVR'[Conversion Rate]),",
+              "\tSELECTCOLUMNS('Fact - Style Store CVR0', \"KeyIDs\", VALUES('Fact - Style Store CVR0'[Store_date]),",
+              "\t\t\"Value_X\", 'Fact - Style Store CVR0'[Interaction Rate],",
+              "\t\t\"Value_Y\",  'Fact - Style Store CVR0'[Conversion Rate]),",
               "\tAND (",
               "\t            NOT ( ISBLANK ( [Value_X] ) ),",
               "\t            NOT ( ISBLANK ( [Value_Y] ) ))",
@@ -15226,9 +15205,9 @@
               " ",
               "VAR CorrelTable = ",
               "FILTER (",
-              "\tSELECTCOLUMNS('Fact - Style Store CVR', \"KeyIDs\", VALUES('Fact - Style Store CVR'[Store_date]),",
-              "\t\t\"Value_X\", 'Fact - Style Store CVR'[Interaction Time],",
-              "\t\t\"Value_Y\",  'Fact - Style Store CVR'[Basket Size]),",
+              "\tSELECTCOLUMNS('Fact - Style Store CVR0', \"KeyIDs\", VALUES('Fact - Style Store CVR0'[Store_date]),",
+              "\t\t\"Value_X\", 'Fact - Style Store CVR0'[Interaction Time],",
+              "\t\t\"Value_Y\",  'Fact - Style Store CVR0'[Basket Size]),",
               "\tAND (",
               "\t            NOT ( ISBLANK ( [Value_X] ) ),",
               "\t            NOT ( ISBLANK ( [Value_Y] ) ))",
@@ -15255,9 +15234,9 @@
               " ",
               "VAR CorrelTable = ",
               "FILTER (",
-              "\tSELECTCOLUMNS('Fact - Style Store CVR', \"KeyIDs\", VALUES('Fact - Style Store CVR'[Store_date]),",
-              "\t\t\"Value_X\", 'Fact - Style Store CVR'[Staff CVR],",
-              "\t\t\"Value_Y\",  'Fact - Style Store CVR'[Basket Size]),",
+              "\tSELECTCOLUMNS('Fact - Style Store CVR0', \"KeyIDs\", VALUES('Fact - Style Store CVR0'[Store_date]),",
+              "\t\t\"Value_X\", 'Fact - Style Store CVR0'[Staff CVR],",
+              "\t\t\"Value_Y\",  'Fact - Style Store CVR0'[Basket Size]),",
               "\tAND (",
               "\t            NOT ( ISBLANK ( [Value_X] ) ),",
               "\t            NOT ( ISBLANK ( [Value_Y] ) ))",
@@ -15285,9 +15264,9 @@
               " ",
               "VAR CorrelTable = ",
               "FILTER (",
-              "\tSELECTCOLUMNS('Fact - Style Store CVR', \"KeyIDs\", VALUES('Fact - Style Store CVR'[Store_date]),",
-              "\t\t\"Value_X\", 'Fact - Style Store CVR'[Interaction Rate],",
-              "\t\t\"Value_Y\",  'Fact - Style Store CVR'[Basket Size]),",
+              "\tSELECTCOLUMNS('Fact - Style Store CVR0', \"KeyIDs\", VALUES('Fact - Style Store CVR0'[Store_date]),",
+              "\t\t\"Value_X\", 'Fact - Style Store CVR0'[Interaction Rate],",
+              "\t\t\"Value_Y\",  'Fact - Style Store CVR0'[Basket Size]),",
               "\tAND (",
               "\t            NOT ( ISBLANK ( [Value_X] ) ),",
               "\t            NOT ( ISBLANK ( [Value_Y] ) ))",
@@ -17012,11 +16991,9 @@
           {
             "name": "GR .Net Qty (F. Goods)",
             "expression": [
-              " CALCULATE(sum('Fact - Inventory Transaction'[STOCK_QTY]),",
-              "FILTER('Dim - Movement Type',",
-              "\t'Dim - Movement Type'[MVMNT_TYPE_CODE] in {\"101\", \"102\"}),",
-              "FILTER('Fact - Inventory Transaction', 'Fact - Inventory Transaction'[PLANT_WID] = 455)",
-              ")\t",
+              " CALCULATE(Sum( 'Fact - Actual Production'[Actual QTY]),",
+              "FILTER('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"In\" &&",
+              "'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\", \"1102\", \"1104\", \"1105\", \"1106\"}))\t",
               ""
             ],
             "formatString": "#,0"
@@ -18335,13 +18312,6 @@
         "toColumn": "ROW_WID"
       },
       {
-        "name": "2b41801f-eaf3-4f54-b8bf-304769b9c1f6",
-        "fromTable": "CVR by Store by Date",
-        "fromColumn": "DATE_WID",
-        "toTable": "Dim - Time",
-        "toColumn": "ROW_WID"
-      },
-      {
         "name": "385fc21d-cfb9-4b41-9ae0-5b2097dd9b83",
         "fromTable": "Fact - All Sales Invoice Line",
         "fromColumn": "SALES_PERSON",
@@ -18613,14 +18583,14 @@
       },
       {
         "name": "d189e16e-d78c-44c6-bdac-0a03b7214754",
-        "fromTable": "Fact - Style Store CVR",
+        "fromTable": "Fact - Style Store CVR0",
         "fromColumn": "PLANT_WID",
         "toTable": "Dim - Plant",
         "toColumn": "ROW_WID"
       },
       {
         "name": "33258cae-c884-483c-8b32-e547380acd57",
-        "fromTable": "Fact - Style Store CVR",
+        "fromTable": "Fact - Style Store CVR0",
         "fromColumn": "DATE_WID",
         "toTable": "Dim - Time",
         "toColumn": "ROW_WID"
@@ -19034,6 +19004,13 @@
         "fromColumn": "DATE",
         "toTable": "Dim - Time",
         "toColumn": "Date"
+      },
+      {
+        "name": "7af94cda-3cde-4f68-846c-30a303272e39",
+        "fromTable": "CVR by Store by Date",
+        "fromColumn": "DATE_WID",
+        "toTable": "Dim - Time",
+        "toColumn": "ROW_WID"
       }
     ],
     "perspectives": [
