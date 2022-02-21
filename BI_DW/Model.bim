@@ -17152,12 +17152,6 @@
             "sourceColumn": "BASE_OF_STANDARD_VALUE"
           },
           {
-            "name": "WORK_CENTER_WID",
-            "dataType": "int64",
-            "sourceColumn": "WORK_CENTER_WID",
-            "summarizeBy": "none"
-          },
-          {
             "name": "Bán thành phẩm",
             "dataType": "string",
             "sourceColumn": "Bán thành phẩm"
