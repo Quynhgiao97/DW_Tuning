@@ -11722,7 +11722,8 @@
               "\tIF (Durations >0,",
               "        CONCATENATE ( H, CONCATENATE( \":\", CONCATENATE (M, CONCATENATE ( \":\", S ) ) ) ))",
               "        "
-            ]
+            ],
+            "formatString": "0.00"
           }
         ]
       },
@@ -12759,7 +12760,8 @@
               "",
               "RETURN",
               "    DIVIDE ( Pearson_Numerator, Pearson_Denominator )"
-            ]
+            ],
+            "formatString": "0.00"
           },
           {
             "name": "Corr. Interaction Rate and Basket value",
@@ -12788,7 +12790,8 @@
               "",
               "RETURN",
               "    DIVIDE ( Pearson_Numerator, Pearson_Denominator )"
-            ]
+            ],
+            "formatString": "0.00"
           },
           {
             "name": "Corr. Interaction Rate and Conversion Rate",
@@ -12817,7 +12820,8 @@
               "",
               "RETURN",
               "    DIVIDE ( Pearson_Numerator, Pearson_Denominator )"
-            ]
+            ],
+            "formatString": "0.00"
           },
           {
             "name": "Corr. Interaction Time and Basket size",
@@ -13026,7 +13030,8 @@
               "",
               "RETURN",
               "    DIVIDE ( Pearson_Numerator, Pearson_Denominator )"
-            ]
+            ],
+            "formatString": "0.00"
           }
         ]
       },
@@ -14991,7 +14996,8 @@
               "",
               "RETURN",
               "    DIVIDE ( Pearson_Numerator, Pearson_Denominator )"
-            ]
+            ],
+            "formatString": "0.00"
           },
           {
             "name": "Style Corr. Staff CVR and Basket value",
@@ -15020,7 +15026,8 @@
               "",
               "RETURN",
               "    DIVIDE ( Pearson_Numerator, Pearson_Denominator )"
-            ]
+            ],
+            "formatString": "0.00"
           },
           {
             "name": "Style Corr. Interaction Time and Basket value",
@@ -15049,7 +15056,8 @@
               "",
               "RETURN",
               "    DIVIDE ( Pearson_Numerator, Pearson_Denominator )"
-            ]
+            ],
+            "formatString": "0.00"
           },
           {
             "name": "Style Corr. Interaction Rate and Basket value",
@@ -15078,7 +15086,8 @@
               "",
               "RETURN",
               "    DIVIDE ( Pearson_Numerator, Pearson_Denominator )"
-            ]
+            ],
+            "formatString": "0.00"
           },
           {
             "name": "Style Corr. Staff CVR and Conversion Rate",
@@ -15107,7 +15116,8 @@
               "",
               "RETURN",
               "    DIVIDE ( Pearson_Numerator, Pearson_Denominator )"
-            ]
+            ],
+            "formatString": "0.00"
           },
           {
             "name": "Style Corr. Dwell Time and Conversion Rate",
@@ -15137,7 +15147,8 @@
               "RETURN",
               "    DIVIDE ( Pearson_Numerator, Pearson_Denominator )",
               ""
-            ]
+            ],
+            "formatString": "0.00"
           },
           {
             "name": "Style Corr. Interaction Time and Conversion Rate",
@@ -15167,7 +15178,8 @@
               "RETURN",
               "    DIVIDE ( Pearson_Numerator, Pearson_Denominator )",
               ""
-            ]
+            ],
+            "formatString": "0.00"
           },
           {
             "name": "Style Corr. Interaction Rate and Conversion Rate",
@@ -15197,7 +15209,8 @@
               "RETURN",
               "    DIVIDE ( Pearson_Numerator, Pearson_Denominator )",
               ""
-            ]
+            ],
+            "formatString": "0.00"
           },
           {
             "name": "Style Corr. Interaction Time and Basket Size",
@@ -15226,7 +15239,8 @@
               "",
               "RETURN",
               "    DIVIDE ( Pearson_Numerator, Pearson_Denominator )"
-            ]
+            ],
+            "formatString": "0.00"
           },
           {
             "name": "Style Corr. Staff CVR and Basket Size",
@@ -15256,7 +15270,8 @@
               "RETURN",
               "    DIVIDE ( Pearson_Numerator, Pearson_Denominator )",
               ""
-            ]
+            ],
+            "formatString": "0.00"
           },
           {
             "name": "Style Corr. Interaction Rate and Basket Size",
@@ -15286,7 +15301,8 @@
               "RETURN",
               "    DIVIDE ( Pearson_Numerator, Pearson_Denominator )",
               ""
-            ]
+            ],
+            "formatString": "0.00"
           }
         ]
       },
@@ -17025,7 +17041,7 @@
               "    CALCULATE( [# Feedback] , ",
               "\t\tALLSELECTED( 'Dim - Production Deffects'[Deffect Description],",
               "\t\t'Dim - Production Deffects'[Deffect Group]),",
-              "\t\tALLSELECTED('Dim - Work Center'[WORK_CENTER_NUM])",
+              "\t\tALLSELECTED('Fact - Customer Feedback'[FEEDBACK_TYPE])",
               "\t\t)",
               "RETURN",
               "    CALCULATE([# Feedback] ,",
@@ -17061,6 +17077,10 @@
               ""
             ],
             "formatString": "#,0"
+          },
+          {
+            "name": "# Feedback2",
+            "expression": "SUM([FEEDBACK_QTY]) + RAND()"
           }
         ]
       },
@@ -17085,11 +17105,6 @@
             "summarizeBy": "none"
           },
           {
-            "name": "MRP_CONTROLLER_WID",
-            "dataType": "int64",
-            "sourceColumn": "MRP_CONTROLLER_WID"
-          },
-          {
             "name": "Allocated Qty",
             "dataType": "double",
             "sourceColumn": "Allocated Qty"
@@ -17111,19 +17126,9 @@
             "sourceColumn": "SALES_ORDER_NUM"
           },
           {
-            "name": "SALES_ORDER_ITEM",
-            "dataType": "string",
-            "sourceColumn": "SALES_ORDER_ITEM"
-          },
-          {
             "name": "SALES_ORDER_TYPE",
             "dataType": "string",
             "sourceColumn": "SALES_ORDER_TYPE"
-          },
-          {
-            "name": "N_ORDER_TYPE",
-            "dataType": "string",
-            "sourceColumn": "N_ORDER_TYPE"
           },
           {
             "name": "ACTUAL_DEL_DT",
@@ -17153,11 +17158,6 @@
             "summarizeBy": "none"
           },
           {
-            "name": "STANDARD_TEXT_KEY",
-            "dataType": "string",
-            "sourceColumn": "STANDARD_TEXT_KEY"
-          },
-          {
             "name": "Bán thành phẩm",
             "dataType": "string",
             "sourceColumn": "Bán thành phẩm"
@@ -17171,6 +17171,11 @@
             "name": "COMPONENT_QTY",
             "dataType": "double",
             "sourceColumn": "COMPONENT_QTY"
+          },
+          {
+            "name": "OPERATION_CODE",
+            "dataType": "string",
+            "sourceColumn": "OPERATION_CODE"
           }
         ],
         "partitions": [
@@ -18861,13 +18866,6 @@
         "fromTable": "Fact - Capacity Planned Order",
         "fromColumn": "PRODUCT_WID",
         "toTable": "Dim - Product",
-        "toColumn": "ROW_WID"
-      },
-      {
-        "name": "78bed7d4-052b-444f-9e77-343c31d7e592",
-        "fromTable": "Fact - Capacity Planned Order",
-        "fromColumn": "WORK_CENTER_WID",
-        "toTable": "Dim - Work Center",
         "toColumn": "ROW_WID"
       },
       {
