@@ -17116,27 +17116,6 @@
             "summarizeBy": "none"
           },
           {
-            "name": "Production Order",
-            "dataType": "string",
-            "sourceColumn": "Production Order"
-          },
-          {
-            "name": "SALES_ORDER_NUM",
-            "dataType": "string",
-            "sourceColumn": "SALES_ORDER_NUM"
-          },
-          {
-            "name": "SALES_ORDER_TYPE",
-            "dataType": "string",
-            "sourceColumn": "SALES_ORDER_TYPE"
-          },
-          {
-            "name": "ACTUAL_DEL_DT",
-            "dataType": "int64",
-            "sourceColumn": "ACTUAL_DEL_DT",
-            "summarizeBy": "none"
-          },
-          {
             "name": "BASE_QUANTITY",
             "dataType": "double",
             "sourceColumn": "BASE_QUANTITY"
@@ -17167,26 +17146,36 @@
             "sourceColumn": "COMPONENT_QTY"
           },
           {
-            "name": "OPERATION_CODE",
-            "dataType": "string",
-            "sourceColumn": "OPERATION_CODE"
+            "name": "WORK_CENTER_WID",
+            "dataType": "int64",
+            "sourceColumn": "WORK_CENTER_WID"
           }
         ],
         "partitions": [
           {
             "name": "Partition",
-            "dataView": "full",
             "source": {
               "type": "m",
               "expression": [
                 "let",
-                "    Source = #\"SQL/192 168 3 31;PNJ_ROLAP\",",
-                "    dbo_W_VW_CAPACITY_PLANNED_ORDER_F = Source{[Schema=\"dbo\",Item=\"W_VW_CAPACITY_PLANNED_ORDER_F\"]}[Data],",
-                "    #\"Renamed Columns\" = Table.RenameColumns(dbo_W_VW_CAPACITY_PLANNED_ORDER_F,{{\"PLANNED_ORDER\", \"Planned Order\"}, {\"ALLOCATED_QTY\", \"Allocated Qty\"}, {\"PRODUCTION_ORDER\", \"Production Order\"}, {\"BTP_PRD_CODE\", \"Bán thành phẩm\"}})",
+                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"SELECT *   FROM [PNJ_ROLAP].[dbo].[W_VW_CAPACITY_PLANNED_ORDER_F] \"),",
+                "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"PLANNED_ORDER\", \"Planned Order\"}, {\"ALLOCATED_QTY\", \"Allocated Qty\"}, {\"BTP_PRD_CODE\", \"Bán thành phẩm\"}})",
                 "in",
                 "    #\"Renamed Columns\""
               ]
-            }
+            },
+            "annotations": [
+              {
+                "name": "QueryEditorSerialization",
+                "value": [
+                  "<?xml version=\"1.0\" encoding=\"UTF-16\"?><Gemini xmlns=\"QueryEditorSerialization\"><AnnotationContent><![CDATA[<RSQueryCommandText>let",
+                  "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"SELECT *   FROM [PNJ_ROLAP].[dbo].[W_VW_CAPACITY_PLANNED_ORDER_F] WHERE [REQUIRE_DATE] >= 20220101\"),",
+                  "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"PLANNED_ORDER\", \"Planned Order\"}, {\"ALLOCATED_QTY\", \"Allocated Qty\"}, {\"PRODUCTION_ORDER\", \"Production Order\"}, {\"BTP_PRD_CODE\", \"Bán thành phẩm\"}})",
+                  "in",
+                  "    #\"Renamed Columns\"</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
+                ]
+              }
+            ]
           }
         ]
       },
@@ -18849,34 +18838,6 @@
         "toColumn": "ROW_WID"
       },
       {
-        "name": "73d7db39-3a5c-4086-ba97-b7b542506831",
-        "fromTable": "Fact - Capacity Planned Order",
-        "fromColumn": "PLANT_WID",
-        "toTable": "Dim - Plant",
-        "toColumn": "ROW_WID"
-      },
-      {
-        "name": "d53fbbac-3efd-4d0b-be9b-cdf2e750ea80",
-        "fromTable": "Fact - Capacity Planned Order",
-        "fromColumn": "PRODUCT_WID",
-        "toTable": "Dim - Product",
-        "toColumn": "ROW_WID"
-      },
-      {
-        "name": "09cf30e9-67c9-467a-83b8-943a455ba408",
-        "fromTable": "Fact - Capacity Planned Order",
-        "fromColumn": "REQUIRE_DATE",
-        "toTable": "Dim - Time",
-        "toColumn": "ROW_WID"
-      },
-      {
-        "name": "a62d677b-6137-4e9f-872e-48ce0c791789",
-        "fromTable": "Fact - Capacity Planned Order",
-        "fromColumn": "Planned Order",
-        "toTable": "Dim - Production Planned Order",
-        "toColumn": "Planned Order"
-      },
-      {
         "name": "540f0d5a-b584-414e-9793-dc3d84a9f018",
         "fromTable": "Fact - Gemstone Deffects",
         "fromColumn": "MONTH_KEY",
@@ -19002,6 +18963,34 @@
         "fromTable": "CVR by Store by Date",
         "fromColumn": "DATE_WID",
         "toTable": "Dim - Time",
+        "toColumn": "ROW_WID"
+      },
+      {
+        "name": "16cdf690-8298-44ee-985f-ad256b828453",
+        "fromTable": "Fact - Capacity Planned Order",
+        "fromColumn": "Planned Order",
+        "toTable": "Dim - Production Planned Order",
+        "toColumn": "Planned Order"
+      },
+      {
+        "name": "1ee06b7b-d850-4d7f-87b8-5ad19532f092",
+        "fromTable": "Fact - Capacity Planned Order",
+        "fromColumn": "PRODUCT_WID",
+        "toTable": "Dim - Product",
+        "toColumn": "ROW_WID"
+      },
+      {
+        "name": "0271c01f-623d-4c40-98e3-c31ba3e47498",
+        "fromTable": "Fact - Capacity Planned Order",
+        "fromColumn": "REQUIRE_DATE",
+        "toTable": "Dim - Time",
+        "toColumn": "ROW_WID"
+      },
+      {
+        "name": "e06692b4-8125-4cc5-9117-dba786de5d27",
+        "fromTable": "Fact - Capacity Planned Order",
+        "fromColumn": "WORK_CENTER_WID",
+        "toTable": "Dim - Work Center",
         "toColumn": "ROW_WID"
       }
     ],
