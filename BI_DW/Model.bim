@@ -17091,6 +17091,7 @@
             "name": "PLANT_WID",
             "dataType": "int64",
             "sourceColumn": "PLANT_WID",
+            "formatString": "0",
             "summarizeBy": "none"
           },
           {
@@ -17102,6 +17103,7 @@
             "name": "PRODUCT_WID",
             "dataType": "int64",
             "sourceColumn": "PRODUCT_WID",
+            "formatString": "0",
             "summarizeBy": "none"
           },
           {
@@ -17113,22 +17115,26 @@
             "name": "REQUIRE_DATE",
             "dataType": "int64",
             "sourceColumn": "REQUIRE_DATE",
+            "formatString": "0",
             "summarizeBy": "none"
           },
           {
             "name": "BASE_QUANTITY",
             "dataType": "double",
-            "sourceColumn": "BASE_QUANTITY"
+            "sourceColumn": "BASE_QUANTITY",
+            "formatString": "0.00"
           },
           {
             "name": "STANDARD_CONSUMPTION_VALUE",
             "dataType": "double",
-            "sourceColumn": "STANDARD_CONSUMPTION_VALUE"
+            "sourceColumn": "STANDARD_CONSUMPTION_VALUE",
+            "formatString": "0.0000"
           },
           {
             "name": "BASE_OF_STANDARD_VALUE",
             "dataType": "double",
-            "sourceColumn": "BASE_OF_STANDARD_VALUE"
+            "sourceColumn": "BASE_OF_STANDARD_VALUE",
+            "formatString": "0.00"
           },
           {
             "name": "Bán thành phẩm",
@@ -17143,12 +17149,14 @@
           {
             "name": "COMPONENT_QTY",
             "dataType": "double",
-            "sourceColumn": "COMPONENT_QTY"
+            "sourceColumn": "COMPONENT_QTY",
+            "formatString": "0.0000"
           },
           {
             "name": "WORK_CENTER_WID",
             "dataType": "int64",
-            "sourceColumn": "WORK_CENTER_WID"
+            "sourceColumn": "WORK_CENTER_WID",
+            "formatString": "0"
           }
         ],
         "partitions": [
