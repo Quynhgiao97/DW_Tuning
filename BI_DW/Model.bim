@@ -11,13 +11,12 @@
         "connectionDetails": {
           "protocol": "tds",
           "address": {
-            "server": "192.168.3.31",
+            "server": "192.168.2.19",
             "database": "PNJ_ROLAP"
           },
           "authentication": null,
           "query": null
         },
-        "options": {},
         "credential": {
           "AuthenticationKind": "UsernamePassword",
           "Username": "biread",
@@ -31,13 +30,12 @@
         "connectionDetails": {
           "protocol": "tds",
           "address": {
-            "server": "192.168.3.31",
+            "server": "192.168.2.19",
             "database": "DW_RAW"
           },
           "authentication": null,
           "query": null
         },
-        "options": {},
         "credential": {
           "AuthenticationKind": "UsernamePassword",
           "Username": "biread",
@@ -6012,13 +6010,6 @@
             ]
           },
           {
-            "name": "PNJP AP GI .Net Qty",
-            "expression": [
-              "CALCULATE(Sum('Fact - Actual Production'[Actual QTY])*-1,",
-              "'Fact - Actual Production'[TYPES] = \"Out\")"
-            ]
-          },
-          {
             "name": "QC %Cancel .Q10",
             "expression": [
               "",
@@ -6036,8 +6027,8 @@
               " CALCULATE(",
               "    CALCULATE(Sum('Fact - Actual Production'[Actual QTY]),",
               "\tFilter('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"IN\"),",
-              "\tFILTER('Fact - Actual Production', 'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\", \"1102\", \"1104\", \"1105\",\"1106\"})),",
-              "FILTER(ALL('Dim - Actual Production'), 'Dim - Actual Production'[STD Keeper Group] IN {\"KVSX1\", \"KVSX2\", \"KVSX3\", \"NM LONG HẬU\"})",
+              "\tFILTER('Fact - Actual Production', 'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\", \"1102\", \"1104\", \"1105\",\"1106\"}))",
+              "--,FILTER(ALL('Dim - Actual Production'), 'Dim - Actual Production'[STD Keeper Group] IN {\"KVSX1\", \"KVSX2\", \"KVSX3\", \"NM LONG HẬU\"})",
               ")",
               ""
             ],
