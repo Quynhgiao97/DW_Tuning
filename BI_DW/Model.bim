@@ -6115,8 +6115,7 @@
               "'Fact - Actual Production'[STK Keeper Output] = \"F1018\"))",
               ""
             ],
-            "formatString": "#,0",
-            "isHidden": true
+            "formatString": "#,0"
           },
           {
             "name": "Total Weight Avg.",
