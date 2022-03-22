@@ -11,15 +11,18 @@
         "connectionDetails": {
           "protocol": "tds",
           "address": {
-            "server": "192.168.2.19",
+            "server": "192.168.3.31",
             "database": "PNJ_ROLAP"
           },
           "authentication": null,
           "query": null
         },
+        "options": {},
         "credential": {
           "AuthenticationKind": "UsernamePassword",
-          "Username": "biread",
+          "kind": "SQL",
+          "path": "192.168.3.31;PNJ_ROLAP",
+          "Username": "Biread",
           "EncryptConnection": false
         }
       },
@@ -38,6 +41,8 @@
         },
         "credential": {
           "AuthenticationKind": "UsernamePassword",
+          "kind": "SQL",
+          "path": "192.168.2.19;DW_RAW",
           "Username": "biread",
           "EncryptConnection": false
         }
@@ -11233,489 +11238,6 @@
         ]
       },
       {
-        "name": "CMR Measures",
-        "columns": [
-          {
-            "type": "calculatedTableColumn",
-            "name": "Value",
-            "dataType": "int64",
-            "isNameInferred": true,
-            "isDataTypeInferred": true,
-            "isHidden": true,
-            "sourceColumn": "[Value]"
-          }
-        ],
-        "partitions": [
-          {
-            "name": "CalculatedTable 1",
-            "source": {
-              "type": "calculated",
-              "expression": "{BLANK()}"
-            }
-          }
-        ],
-        "measures": [
-          {
-            "name": "CMR #Visitors",
-            "expression": [
-              "CALCULATE(DISTINCTCOUNT('Fact - Camera InStore'[PERSON_WID]),",
-              "FILTER('Fact - Camera InStore', 'Fact - Camera InStore'[action_type] = \"visit\"))"
-            ],
-            "formatString": "#,0"
-          },
-          {
-            "name": "CMR #Interactive",
-            "expression": [
-              "CALCULATE(DISTINCTCOUNT('Fact - Camera InStore'[PERSON_WID]),",
-              "FILTER('Fact - Camera InStore', 'Fact - Camera InStore'[action_type] = \"interaction\"))"
-            ],
-            "formatString": "#,0"
-          },
-          {
-            "name": "CMR CR",
-            "expression": [
-              " ",
-              "DIVIDE([POS #Customer] , [CMR #Visitors],0)"
-            ],
-            "formatString": "0.0%;-0.0%;0.0%"
-          },
-          {
-            "name": "CMR Interact. Rate",
-            "expression": "  DIVIDE([CMR #Interactive], [CMR #Visitors], 0)",
-            "formatString": "0.0%;-0.0%;0.0%"
-          },
-          {
-            "name": "CMR Staff CR",
-            "expression": " DIVIDE([POS #Customer], [CMR #Interactive],0)",
-            "formatString": "0.0%;-0.0%;0.0%"
-          },
-          {
-            "name": "CMR .Interact time",
-            "expression": [
-              " CALCULATE( DIVIDE( SUM('Fact - Camera InStore'[duration]), [CMR #Visitors]),",
-              "FILTER('Fact - Camera InStore',  'Fact - Camera InStore'[action_type] = \"interaction\"),",
-              "FILTER('Dim - Time', 'Dim - Time'[ROW_WID] >= 20200701))"
-            ],
-            "formatString": "#,0"
-          },
-          {
-            "name": "CMR .Net Amt",
-            "expression": [
-              " CALCULATE([. All Net Amt],",
-              "Filter( 'Fact - All Sales Invoice Line',",
-              " 'Fact - All Sales Invoice Line'[TRAFFIC] = 1",
-              "\t\t&&  'Fact - All Sales Invoice Line'[Channel Code] in {\"10\", \"20\"})",
-              ")",
-              "",
-              "--SUM('Fact - Camera POS Transaction'[NET_AMT])"
-            ],
-            "formatString": "#,0"
-          },
-          {
-            "name": "CMR .Ticket size",
-            "expression": [
-              " CALCULATE(DIVIDE( [. All Net Amt], [POS #Tranx], 0),",
-              "FILTER( 'Fact - All Sales Invoice Line',",
-              " 'Fact - All Sales Invoice Line'[TRAFFIC] = 1  && 'Fact - All Sales Invoice Line'[Channel Code] in {\"10\", \"20\"} )",
-              " )",
-              "",
-              "/*",
-              "",
-              "\tVAR Tranx = COUNTROWS(GROUPBY('Fact - Camera POS Transaction', 'Fact - Camera POS Transaction'[PLANT_WID], 'Fact - Camera POS Transaction'[Customer_WID],",
-              "\t 'Fact - Camera POS Transaction'[Date_WID]))",
-              "\t ",
-              "\t RETURN DIVIDE([CMR .Net Amt], TRANX,0)",
-              "\t */"
-            ],
-            "formatString": "#,0"
-          },
-          {
-            "name": "CMR Basket size",
-            "expression": [
-              "",
-              "CALCULATE(DIVIDE( [# All Qty], [POS #Tranx],0),",
-              "FILTER( 'Fact - All Sales Invoice Line', 'Fact - All Sales Invoice Line'[TRAFFIC] = 1 && 'Fact - All Sales Invoice Line'[CHANNEL CODE] in {\"10\", \"20\"})",
-              ")",
-              "",
-              "/*",
-              "\tVAR Tranx = COUNTROWS(GROUPBY('Fact - Camera POS Transaction', 'Fact - Camera POS Transaction'[PLANT_WID], 'Fact - Camera POS Transaction'[Customer_WID],",
-              "\t 'Fact - Camera POS Transaction'[Date_WID]))",
-              "\t ",
-              "\t RETURN DIVIDE([CMR #Qty], TRANX,0)",
-              "\t ",
-              "*/\t "
-            ],
-            "formatString": "0.0"
-          },
-          {
-            "name": "CMR AVG Dwell time",
-            "expression": [
-              " ",
-              "",
-              "",
-              "VAR Durations = INT(CALCULATE(AVERAGE('Dim - Camera Person'[Dwell_Time]),",
-              "\tFilter('Dim - Camera Person', 'Dim - Camera Person'[Dwell_Time] <> BLANK()),",
-              "\tCROSSFILTER('Fact - Camera InStore'[PERSON_WID], 'Dim - Camera Person'[ROW_WID], Both)))",
-              "\t",
-              "VAR Days =",
-              "\tINT ( Durations / 86400)",
-              "VAR Hours =",
-              "    INT ( MOD( Durations - ( Days * 86400),86400) / 3600)",
-              "VAR Minutes =",
-              "    INT (MOD (MOD( Durations - (Days * 86400 ),86400 ), 3600 ) / 60)",
-              "VAR Seconds =",
-              "    ROUNDUP(MOD ( MOD( MOD ( Durations - (Days * 86400 ),86400 ), 3600 ), 60), 0) ",
-              "VAR D = ",
-              "\tIF ( LEN ( Days ) = 1,",
-              "\t\tCONCATENATE ( \"0\", Days ),",
-              "\t\tCONCATENATE ( \"\", Days )",
-              "\t  )",
-              "VAR H =",
-              "    IF ( LEN ( Hours ) = 1, ",
-              "        CONCATENATE ( \"0\", Hours ),",
-              "        CONCATENATE ( \"\", Hours )",
-              "      )",
-              "VAR M =",
-              "    IF (",
-              "        LEN ( Minutes ) = 1,",
-              "        CONCATENATE ( \"0\", Minutes ),",
-              "        CONCATENATE ( \"\", Minutes )",
-              "    )",
-              "VAR S =",
-              "    IF (",
-              "        LEN ( Seconds ) = 1,",
-              "        CONCATENATE ( \"0\", Seconds ),",
-              "        CONCATENATE ( \"\", Seconds )",
-              "    )",
-              "RETURN",
-              "\tIF (Durations >0,",
-              "        CONCATENATE ( H, CONCATENATE( \":\", CONCATENATE (M, CONCATENATE ( \":\", S ) ) ) ))",
-              "        "
-            ]
-          },
-          {
-            "name": "POS #Customer",
-            "expression": [
-              " ",
-              "VAR Non_VL= CALCULATE(DISTINCTCOUNT( 'Fact - All Sales Invoice Line'[Customer WID] ),",
-              "FILTER('Fact - All Sales Invoice Line',  'Fact - All Sales Invoice Line'[TRAFFIC] = 1 && 'Fact - All Sales Invoice Line'[Channel Code] in {\"10\", \"20\"} ),",
-              "FILTER('Dim - Customer', NOT 'Dim - Customer'[CUST_CARD_DESC] in {\"One-time\"}))",
-              "",
-              "VAR VL = CALCULATE(",
-              "\tCOUNTROWS(",
-              "\tGROUPBY('Fact - All Sales Invoice Line', 'Fact - All Sales Invoice Line'[Customer WID], ",
-              "\t\t'Fact - All Sales Invoice Line'[INVOICED_ON_DT_WID],",
-              "\t\t'Fact - All Sales Invoice Line'[Invoice Number])),",
-              "FILTER('Fact - All Sales Invoice Line',   'Fact - All Sales Invoice Line'[TRAFFIC] = 1  && 'Fact - All Sales Invoice Line'[Channel Code] in {\"10\", \"20\"}  ),",
-              "FILTER('Dim - Customer', 'Dim - Customer'[CUST_CARD_DESC] in {\"One-time\"})",
-              ")",
-              "",
-              "",
-              "RETURN VL + Non_VL",
-              "",
-              "/*",
-              "",
-              "RETURN CALCULATE(TOTAL,",
-              "\tTREATAS(SELECTCOLUMNS('Fact - Camera InStore',",
-              "\t\"DateID\",'Fact - Camera InStore'[DATE_WID],",
-              "\t\"PlantID\",'Fact - Camera InStore'[Plant_wid]),",
-              "\t'Dim - Camera StoreDate'[DATE_WID],",
-              "\t'Dim - Camera StoreDate'[PLANT_WID]),",
-              "\tCROSSFILTER('Dim - Plant'[ROW_WID], 'Fact - Camera InStore'[Plant_wid],Both),",
-              "\tTREATAS(VALUES( 'Fact - Camera InStore'[DATE_WID]),  'Fact - All Sales Invoice Line'[INVOICED_ON_DT_WID])",
-              "\t)",
-              "\t*/"
-            ],
-            "formatString": "#,0"
-          },
-          {
-            "name": "POS #Tranx",
-            "expression": [
-              "  ",
-              "VAR Non_VL= CALCULATE(",
-              "\tCOUNTROWS(",
-              "\t\tGROUPBY('Fact - ALL Sales Invoice Line', ",
-              "\t\t'Fact - All Sales Invoice Line'[PLANT_WID], ",
-              "\t\t'Fact - All Sales Invoice Line'[Customer WID],",
-              "\t\t'Fact - All Sales Invoice Line'[INVOICED_ON_DT_WID])),",
-              "\tFILTER('Fact - All Sales Invoice Line', 'Fact - All Sales Invoice Line'[TRAFFIC] = 1  && 'Fact - All Sales Invoice Line'[Channel Code] in {\"10\", \"20\"} && 'Fact - All Sales Invoice Line'[INVOICED_ON_DT_WID] >=20200101  ),",
-              "\tFILTER('Dim - Customer', NOT 'Dim - Customer'[CUST_CARD_DESC] in {\"One-time\"}))",
-              "",
-              "VAR VL =  CALCULATE(",
-              "\tCOUNTROWS(",
-              "\t\tGROUPBY('Fact - ALL Sales Invoice Line', ",
-              "\t\t'Fact - All Sales Invoice Line'[PLANT_WID], ",
-              "\t\t'Fact - All Sales Invoice Line'[Customer WID],",
-              "\t\t'Fact - All Sales Invoice Line'[INVOICED_ON_DT_WID],",
-              "\t\t'Fact - All Sales Invoice Line'[Invoice Number])),",
-              "\tFILTER('Fact - All Sales Invoice Line', 'Fact - All Sales Invoice Line'[TRAFFIC] = 1  && 'Fact - All Sales Invoice Line'[Channel Code] in {\"10\", \"20\"} && 'Fact - All Sales Invoice Line'[INVOICED_ON_DT_WID] >=20200101  ),",
-              "\tFILTER('Dim - Customer', 'Dim - Customer'[CUST_CARD_DESC] in {\"One-time\"}))",
-              "",
-              "",
-              "",
-              "RETURN Non_VL + VL"
-            ],
-            "formatString": "#,0"
-          },
-          {
-            "name": "CMR Non Buyer",
-            "expression": " [CMR #Visitors]-[POS #Customer]",
-            "formatString": "#,0"
-          },
-          {
-            "name": "CMR AVG CR (Hour)",
-            "expression": [
-              "AVERAGEX(",
-              "\tSUMMARIZECOLUMNS('Dim - Time'[Date], 'Dim - Camera Hour'[Hrs]",
-              "\t",
-              "",
-              "\t\t),",
-              "\t\t[CMR CR]",
-              "\t\t)",
-              "",
-              "",
-              ""
-            ],
-            "formatString": "0.0%;-0.0%;0.0%"
-          },
-          {
-            "name": "CMR AVG CR (Date)",
-            "expression": [
-              "AVERAGEX(",
-              "\tSUMMARIZE('Dim - Time', 'Dim - Time'[Date]),",
-              "\t\tCALCULATE([CMR CR])",
-              "\t\t)",
-              ""
-            ],
-            "formatString": "0.0%;-0.0%;0.0%"
-          },
-          {
-            "name": "CMR AVG Section",
-            "expression": [
-              "",
-              "VAR Durations = INT(CALCULATE(",
-              "\tDIVIDE(sum('Fact - Camera InStore'[Duration]), DISTINCTCOUNT('Fact - Camera InStore'[PERSON_WID]),0),",
-              "\tFILTER('Fact - Camera InStore', 'Fact - Camera InStore'[action_type] = \"Visit\"))",
-              "\t)",
-              "VAR Days =",
-              "\tINT ( Durations / 86400)",
-              "VAR Hours =",
-              "    INT ( MOD( Durations - ( Days * 86400),86400) / 3600)",
-              "VAR Minutes =",
-              "    INT (MOD (MOD( Durations - (Days * 86400 ),86400 ), 3600 ) / 60)",
-              "VAR Seconds =",
-              "    ROUNDUP(MOD ( MOD( MOD ( Durations - (Days * 86400 ),86400 ), 3600 ), 60), 0) ",
-              "VAR D = ",
-              "\tIF ( LEN ( Days ) = 1,",
-              "\t\tCONCATENATE ( \"0\", Days ),",
-              "\t\tCONCATENATE ( \"\", Days )",
-              "\t  )",
-              "VAR H =",
-              "    IF ( LEN ( Hours ) = 1, ",
-              "        CONCATENATE ( \"0\", Hours ),",
-              "        CONCATENATE ( \"\", Hours )",
-              "      )",
-              "VAR M =",
-              "    IF (",
-              "        LEN ( Minutes ) = 1,",
-              "        CONCATENATE ( \"0\", Minutes ),",
-              "        CONCATENATE ( \"\", Minutes )",
-              "    )",
-              "VAR S =",
-              "    IF (",
-              "        LEN ( Seconds ) = 1,",
-              "        CONCATENATE ( \"0\", Seconds ),",
-              "        CONCATENATE ( \"\", Seconds )",
-              "    )",
-              "RETURN",
-              "\tIF (Durations >0,",
-              "        CONCATENATE ( H, CONCATENATE( \":\", CONCATENATE (M, CONCATENATE ( \":\", S ) ) ) ))",
-              "    ",
-              ""
-            ]
-          },
-          {
-            "name": "CMR %Interactive (Prev.)",
-            "expression": [
-              " ",
-              "",
-              "",
-              "var Compare = CALCULATE(",
-              "\t [CMR #Interactive], ",
-              "\t ALL ( 'Dim - Time' ), ",
-              "\t USERELATIONSHIP( 'Dim - Time'[Date], 'Dim - Time Compare'[Prev. Date] ) ",
-              ") --* [Normalization Factor] ",
-              "",
-              "RETURN IF (AND([CMR #Interactive]>0, Compare >0 ), DIVIDE([CMR #Interactive] , Compare, 0) -1,BLANK())"
-            ],
-            "formatString": "#,0.0%;-#,0.0%;#,0.0%"
-          },
-          {
-            "name": "CMR %Visitors (Prev.)",
-            "expression": [
-              " ",
-              "",
-              "VAR Compare = ",
-              "CALCULATE(",
-              "\t [CMR #Visitors], ",
-              "\t ALL ( 'Dim - Time' ), ",
-              "\t USERELATIONSHIP( 'Dim - Time'[Date], 'Dim - Time Compare'[Prev. Date] ) ",
-              ") --* [Normalization Factor]",
-              "",
-              "",
-              "RETURN IF (AND([CMR #Visitors]>0, Compare >0 ), DIVIDE([CMR #Visitors], Compare, 0) -1,BLANK())"
-            ],
-            "formatString": "#,0.0%;-#,0.0%;#,0.0%"
-          },
-          {
-            "name": "Normalization Factor",
-            "expression": " COUNTROWS ( 'Dim - Time' ) / COUNTROWS ( 'Dim - Time Compare' )",
-            "isHidden": true
-          },
-          {
-            "name": "CMR %CR (Prev.)",
-            "expression": [
-              " ",
-              "",
-              "",
-              "var Compare = CALCULATE(",
-              "\t [CMR CR], ",
-              "\t ALL ( 'Dim - Time' ), ",
-              "\t USERELATIONSHIP( 'Dim - Time'[Date], 'Dim - Time Compare'[Prev. Date] ) ",
-              ") --* [Normalization Factor] ",
-              "",
-              "RETURN IF (and([CMR CR]>0, Compare >0), DIVIDE([CMR CR] , Compare, 0) -1,BLANK())"
-            ],
-            "formatString": "0.0%;-0.0%;0.0%"
-          },
-          {
-            "name": "CMR %Net Amt (Prev.)",
-            "expression": [
-              " ",
-              "",
-              "var Compare = CALCULATE(",
-              "\t [CMR .Net Amt], ",
-              "\t ALL ( 'Dim - Time' ), ",
-              "\t USERELATIONSHIP( 'Dim - Time'[Date], 'Dim - Time Compare'[Prev. Date] ) ",
-              ") --* [Normalization Factor] ",
-              "",
-              "RETURN IF (AND([CMR .Net Amt]>0, Compare >0 ), DIVIDE([CMR .Net Amt] , Compare, 0) -1,BLANK())"
-            ],
-            "formatString": "0.0%;-0.0%;0.0%"
-          },
-          {
-            "name": "CMR %Ticket size (Prev.)",
-            "expression": [
-              " ",
-              "",
-              "var Compare = CALCULATE(",
-              "\t [CMR .Ticket size], ",
-              "\t ALL ( 'Dim - Time' ), ",
-              "\t USERELATIONSHIP( 'Dim - Time'[Date], 'Dim - Time Compare'[Prev. Date] ) ",
-              ") --* [Normalization Factor] ",
-              "",
-              "RETURN IF (AND([CMR .Ticket size]>0, Compare >0 ), DIVIDE([CMR .Ticket size] , Compare, 0) -1,BLANK())"
-            ],
-            "formatString": "0.0%;-0.0%;0.0%"
-          },
-          {
-            "name": "CMR %Basket size (Prev.)",
-            "expression": [
-              " ",
-              "",
-              "var Compare = CALCULATE(",
-              "\t [CMR Basket size], ",
-              "\t ALL ( 'Dim - Time' ), ",
-              "\t USERELATIONSHIP( 'Dim - Time'[Date], 'Dim - Time Compare'[Prev. Date] ) ",
-              ") --* [Normalization Factor] ",
-              "",
-              "RETURN IF ( And([CMR Basket size] >0, Compare >0 ) , DIVIDE([CMR Basket size] , Compare, 0) -1,BLANK())",
-              ""
-            ],
-            "formatString": "0.0%;-0.0%;0.0%"
-          },
-          {
-            "name": "CMR %Interact. Rate (Prev.)",
-            "expression": [
-              " ",
-              "",
-              "var Compare = CALCULATE(",
-              "\t [CMR Interact. Rate], ",
-              "\t ALL ( 'Dim - Time' ), ",
-              "\t USERELATIONSHIP( 'Dim - Time'[Date], 'Dim - Time Compare'[Prev. Date] ) ",
-              ") --* [Normalization Factor] ",
-              "",
-              "RETURN IF (and([CMR Interact. Rate] >0, Compare >0 ), DIVIDE([CMR Interact. Rate] , Compare, 0) -1,BLANK())",
-              ""
-            ],
-            "formatString": "0.0%;-0.0%;0.0%"
-          },
-          {
-            "name": "CMR %POS Customer (Prev.)",
-            "expression": [
-              " ",
-              "",
-              "var Compare = CALCULATE(",
-              "\t [POS #Customer], ",
-              "\t ALL ( 'Dim - Time' ), ",
-              "\t USERELATIONSHIP( 'Dim - Time'[Date], 'Dim - Time Compare'[Prev. Date] ) ",
-              ") --* [Normalization Factor] ",
-              "",
-              "RETURN IF (AND([POS #Customer] >0, Compare >0 ), DIVIDE([POS #Customer] , Compare, 0) -1,BLANK())",
-              ""
-            ],
-            "formatString": "0.0%;-0.0%;0.0%"
-          },
-          {
-            "name": "CMR Style Dwell time",
-            "expression": [
-              " ",
-              "",
-              "",
-              "VAR Durations = INT(CALCULATE(AVERAGE('Dim - Camera Person'[Style_Dwell_Time]),",
-              "\tFilter('Dim - Camera Person', 'Dim - Camera Person'[Style_Dwell_Time] <> BLANK())))",
-              "--\tCROSSFILTER('Fact - Camera InStore'[PERSON_WID], 'Dim - Camera Person'[ROW_WID], Both)))",
-              "\t",
-              "VAR Days =",
-              "\tINT ( Durations / 86400)",
-              "VAR Hours =",
-              "    INT ( MOD( Durations - ( Days * 86400),86400) / 3600)",
-              "VAR Minutes =",
-              "    INT (MOD (MOD( Durations - (Days * 86400 ),86400 ), 3600 ) / 60)",
-              "VAR Seconds =",
-              "    ROUNDUP(MOD ( MOD( MOD ( Durations - (Days * 86400 ),86400 ), 3600 ), 60), 0) ",
-              "VAR D = ",
-              "\tIF ( LEN ( Days ) = 1,",
-              "\t\tCONCATENATE ( \"0\", Days ),",
-              "\t\tCONCATENATE ( \"\", Days )",
-              "\t  )",
-              "VAR H =",
-              "    IF ( LEN ( Hours ) = 1, ",
-              "        CONCATENATE ( \"0\", Hours ),",
-              "        CONCATENATE ( \"\", Hours )",
-              "      )",
-              "VAR M =",
-              "    IF (",
-              "        LEN ( Minutes ) = 1,",
-              "        CONCATENATE ( \"0\", Minutes ),",
-              "        CONCATENATE ( \"\", Minutes )",
-              "    )",
-              "VAR S =",
-              "    IF (",
-              "        LEN ( Seconds ) = 1,",
-              "        CONCATENATE ( \"0\", Seconds ),",
-              "        CONCATENATE ( \"\", Seconds )",
-              "    )",
-              "RETURN",
-              "\tIF (Durations >0,",
-              "        CONCATENATE ( H, CONCATENATE( \":\", CONCATENATE (M, CONCATENATE ( \":\", S ) ) ) ))",
-              "        "
-            ],
-            "formatString": "0.00"
-          }
-        ]
-      },
-      {
         "name": "SD Addon",
         "columns": [
           {
@@ -17656,6 +17178,540 @@
             "expression": " DISTINCT('Fact - Quality Control Comments'[Monthly comments] )"
           }
         ]
+      },
+      {
+        "name": "CMR Measures",
+        "columns": [
+          {
+            "type": "calculatedTableColumn",
+            "name": "Value",
+            "dataType": "int64",
+            "isNameInferred": true,
+            "isDataTypeInferred": true,
+            "isHidden": true,
+            "sourceColumn": "[Value]"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "CalculatedTable 1",
+            "source": {
+              "type": "calculated",
+              "expression": "{BLANK()}"
+            }
+          }
+        ],
+        "measures": [
+          {
+            "name": "CMR #Visitors",
+            "expression": [
+              "CALCULATE(DISTINCTCOUNT('Fact - Camera InStore'[PERSON_WID]),",
+              "FILTER('Fact - Camera InStore', 'Fact - Camera InStore'[action_type] = \"visit\"))"
+            ],
+            "formatString": "#,0"
+          },
+          {
+            "name": "CMR #Interactive",
+            "expression": [
+              "CALCULATE(DISTINCTCOUNT('Fact - Camera InStore'[PERSON_WID]),",
+              "FILTER('Fact - Camera InStore', 'Fact - Camera InStore'[action_type] = \"interaction\"))"
+            ],
+            "formatString": "#,0"
+          },
+          {
+            "name": "CMR CR",
+            "expression": [
+              " ",
+              "DIVIDE([POS #Customer] , [CMR #Visitors],0)"
+            ],
+            "formatString": "0.0%;-0.0%;0.0%"
+          },
+          {
+            "name": "CMR Interact. Rate",
+            "expression": "  DIVIDE([CMR #Interactive], [CMR #Visitors], 0)",
+            "formatString": "0.0%;-0.0%;0.0%"
+          },
+          {
+            "name": "CMR Staff CR",
+            "expression": " DIVIDE([POS #Customer], [CMR #Interactive],0)",
+            "formatString": "0.0%;-0.0%;0.0%"
+          },
+          {
+            "name": "CMR .Interact time",
+            "expression": [
+              " CALCULATE( DIVIDE( SUM('Fact - Camera InStore'[duration]), [CMR #Visitors]),",
+              "FILTER('Fact - Camera InStore',  'Fact - Camera InStore'[action_type] = \"interaction\"),",
+              "FILTER('Dim - Time', 'Dim - Time'[ROW_WID] >= 20200701))"
+            ],
+            "formatString": "#,0"
+          },
+          {
+            "name": "CMR .Net Amt",
+            "expression": [
+              " CALCULATE([. All Net Amt],",
+              "Filter( 'Fact - All Sales Invoice Line',",
+              " 'Fact - All Sales Invoice Line'[TRAFFIC] = 1",
+              "\t\t&&  'Fact - All Sales Invoice Line'[Channel Code] in {\"10\", \"20\"})",
+              ")",
+              "",
+              "--SUM('Fact - Camera POS Transaction'[NET_AMT])"
+            ],
+            "formatString": "#,0"
+          },
+          {
+            "name": "CMR .Ticket size",
+            "expression": [
+              " CALCULATE(DIVIDE( [. All Net Amt], [POS #Tranx], 0),",
+              "FILTER( 'Fact - All Sales Invoice Line',",
+              " 'Fact - All Sales Invoice Line'[TRAFFIC] = 1  && 'Fact - All Sales Invoice Line'[Channel Code] in {\"10\", \"20\"} )",
+              " )",
+              "",
+              "/*",
+              "",
+              "\tVAR Tranx = COUNTROWS(GROUPBY('Fact - Camera POS Transaction', 'Fact - Camera POS Transaction'[PLANT_WID], 'Fact - Camera POS Transaction'[Customer_WID],",
+              "\t 'Fact - Camera POS Transaction'[Date_WID]))",
+              "\t ",
+              "\t RETURN DIVIDE([CMR .Net Amt], TRANX,0)",
+              "\t */"
+            ],
+            "formatString": "#,0"
+          },
+          {
+            "name": "CMR Basket size",
+            "expression": [
+              "",
+              "CALCULATE(DIVIDE( [# All Qty], [POS #Tranx],0),",
+              "FILTER( 'Fact - All Sales Invoice Line', 'Fact - All Sales Invoice Line'[TRAFFIC] = 1 && 'Fact - All Sales Invoice Line'[CHANNEL CODE] in {\"10\", \"20\"})",
+              ")",
+              "",
+              "/*",
+              "\tVAR Tranx = COUNTROWS(GROUPBY('Fact - Camera POS Transaction', 'Fact - Camera POS Transaction'[PLANT_WID], 'Fact - Camera POS Transaction'[Customer_WID],",
+              "\t 'Fact - Camera POS Transaction'[Date_WID]))",
+              "\t ",
+              "\t RETURN DIVIDE([CMR #Qty], TRANX,0)",
+              "\t ",
+              "*/\t "
+            ],
+            "formatString": "0.0"
+          },
+          {
+            "name": "CMR AVG Dwell time",
+            "expression": [
+              " ",
+              "",
+              "",
+              "VAR Durations = INT(CALCULATE(AVERAGE('Dim - Camera Person'[Dwell_Time]),",
+              "\tFilter('Dim - Camera Person', 'Dim - Camera Person'[Dwell_Time] <> BLANK()),",
+              "\tCROSSFILTER('Fact - Camera InStore'[PERSON_WID], 'Dim - Camera Person'[ROW_WID], Both)))",
+              "\t",
+              "VAR Days =",
+              "\tINT ( Durations / 86400)",
+              "VAR Hours =",
+              "    INT ( MOD( Durations - ( Days * 86400),86400) / 3600)",
+              "VAR Minutes =",
+              "    INT (MOD (MOD( Durations - (Days * 86400 ),86400 ), 3600 ) / 60)",
+              "VAR Seconds =",
+              "    ROUNDUP(MOD ( MOD( MOD ( Durations - (Days * 86400 ),86400 ), 3600 ), 60), 0) ",
+              "VAR D = ",
+              "\tIF ( LEN ( Days ) = 1,",
+              "\t\tCONCATENATE ( \"0\", Days ),",
+              "\t\tCONCATENATE ( \"\", Days )",
+              "\t  )",
+              "VAR H =",
+              "    IF ( LEN ( Hours ) = 1, ",
+              "        CONCATENATE ( \"0\", Hours ),",
+              "        CONCATENATE ( \"\", Hours )",
+              "      )",
+              "VAR M =",
+              "    IF (",
+              "        LEN ( Minutes ) = 1,",
+              "        CONCATENATE ( \"0\", Minutes ),",
+              "        CONCATENATE ( \"\", Minutes )",
+              "    )",
+              "VAR S =",
+              "    IF (",
+              "        LEN ( Seconds ) = 1,",
+              "        CONCATENATE ( \"0\", Seconds ),",
+              "        CONCATENATE ( \"\", Seconds )",
+              "    )",
+              "RETURN",
+              "\tIF (Durations >0,",
+              "        CONCATENATE ( H, CONCATENATE( \":\", CONCATENATE (M, CONCATENATE ( \":\", S ) ) ) ))",
+              "        "
+            ]
+          },
+          {
+            "name": "POS #Customer",
+            "expression": [
+              " ",
+              "VAR Non_VL= CALCULATE(DISTINCTCOUNT( 'Fact - All Sales Invoice Line'[Customer WID] ),",
+              "FILTER('Fact - All Sales Invoice Line',  'Fact - All Sales Invoice Line'[TRAFFIC] = 1 && 'Fact - All Sales Invoice Line'[Channel Code] in {\"10\", \"20\"} ),",
+              "FILTER('Dim - Customer', NOT 'Dim - Customer'[CUST_CARD_DESC] in {\"One-time\"}))",
+              "",
+              "VAR VL = CALCULATE(",
+              "\tCOUNTROWS(",
+              "\tGROUPBY('Fact - All Sales Invoice Line', 'Fact - All Sales Invoice Line'[Customer WID], ",
+              "\t\t'Fact - All Sales Invoice Line'[INVOICED_ON_DT_WID],",
+              "\t\t'Fact - All Sales Invoice Line'[Invoice Number])),",
+              "FILTER('Fact - All Sales Invoice Line',   'Fact - All Sales Invoice Line'[TRAFFIC] = 1  && 'Fact - All Sales Invoice Line'[Channel Code] in {\"10\", \"20\"}  ),",
+              "FILTER('Dim - Customer', 'Dim - Customer'[CUST_CARD_DESC] in {\"One-time\"})",
+              ")",
+              "",
+              "",
+              "RETURN VL + Non_VL",
+              "",
+              "/*",
+              "",
+              "RETURN CALCULATE(TOTAL,",
+              "\tTREATAS(SELECTCOLUMNS('Fact - Camera InStore',",
+              "\t\"DateID\",'Fact - Camera InStore'[DATE_WID],",
+              "\t\"PlantID\",'Fact - Camera InStore'[Plant_wid]),",
+              "\t'Dim - Camera StoreDate'[DATE_WID],",
+              "\t'Dim - Camera StoreDate'[PLANT_WID]),",
+              "\tCROSSFILTER('Dim - Plant'[ROW_WID], 'Fact - Camera InStore'[Plant_wid],Both),",
+              "\tTREATAS(VALUES( 'Fact - Camera InStore'[DATE_WID]),  'Fact - All Sales Invoice Line'[INVOICED_ON_DT_WID])",
+              "\t)",
+              "\t*/"
+            ],
+            "formatString": "#,0"
+          },
+          {
+            "name": "POS #Tranx",
+            "expression": [
+              "  ",
+              "VAR Non_VL= CALCULATE(",
+              "\tCOUNTROWS(",
+              "\t\tGROUPBY('Fact - ALL Sales Invoice Line', ",
+              "\t\t'Fact - All Sales Invoice Line'[PLANT_WID], ",
+              "\t\t'Fact - All Sales Invoice Line'[Customer WID],",
+              "\t\t'Fact - All Sales Invoice Line'[INVOICED_ON_DT_WID])),",
+              "\tFILTER('Fact - All Sales Invoice Line', 'Fact - All Sales Invoice Line'[TRAFFIC] = 1  && 'Fact - All Sales Invoice Line'[Channel Code] in {\"10\", \"20\"} && 'Fact - All Sales Invoice Line'[INVOICED_ON_DT_WID] >=20200101  ),",
+              "\tFILTER('Dim - Customer', NOT 'Dim - Customer'[CUST_CARD_DESC] in {\"One-time\"}))",
+              "",
+              "VAR VL =  CALCULATE(",
+              "\tCOUNTROWS(",
+              "\t\tGROUPBY('Fact - ALL Sales Invoice Line', ",
+              "\t\t'Fact - All Sales Invoice Line'[PLANT_WID], ",
+              "\t\t'Fact - All Sales Invoice Line'[Customer WID],",
+              "\t\t'Fact - All Sales Invoice Line'[INVOICED_ON_DT_WID],",
+              "\t\t'Fact - All Sales Invoice Line'[Invoice Number])),",
+              "\tFILTER('Fact - All Sales Invoice Line', 'Fact - All Sales Invoice Line'[TRAFFIC] = 1  && 'Fact - All Sales Invoice Line'[Channel Code] in {\"10\", \"20\"} && 'Fact - All Sales Invoice Line'[INVOICED_ON_DT_WID] >=20200101  ),",
+              "\tFILTER('Dim - Customer', 'Dim - Customer'[CUST_CARD_DESC] in {\"One-time\"}))",
+              "",
+              "",
+              "",
+              "RETURN Non_VL + VL"
+            ],
+            "formatString": "#,0"
+          },
+          {
+            "name": "CMR Non Buyer",
+            "expression": " [CMR #Visitors]-[POS #Customer]",
+            "formatString": "#,0"
+          },
+          {
+            "name": "CMR AVG CR (Hour)",
+            "expression": [
+              "AVERAGEX(",
+              "\tSUMMARIZECOLUMNS('Dim - Time'[Date], 'Dim - Camera Hour'[Hrs]",
+              "\t",
+              "",
+              "\t\t),",
+              "\t\t[CMR CR]",
+              "\t\t)",
+              "",
+              "",
+              ""
+            ],
+            "formatString": "0.0%;-0.0%;0.0%"
+          },
+          {
+            "name": "CMR AVG CR (Date)",
+            "expression": [
+              "AVERAGEX(",
+              "\tSUMMARIZE('Dim - Time', 'Dim - Time'[Date]),",
+              "\t\tCALCULATE([CMR CR])",
+              "\t\t)",
+              ""
+            ],
+            "formatString": "0.0%;-0.0%;0.0%"
+          },
+          {
+            "name": "CMR AVG Section",
+            "expression": [
+              "",
+              "VAR Durations = INT(CALCULATE(",
+              "\tDIVIDE(sum('Fact - Camera InStore'[Duration]), DISTINCTCOUNT('Fact - Camera InStore'[PERSON_WID]),0),",
+              "\tFILTER('Fact - Camera InStore', 'Fact - Camera InStore'[action_type] = \"Visit\"))",
+              "\t)",
+              "VAR Days =",
+              "\tINT ( Durations / 86400)",
+              "VAR Hours =",
+              "    INT ( MOD( Durations - ( Days * 86400),86400) / 3600)",
+              "VAR Minutes =",
+              "    INT (MOD (MOD( Durations - (Days * 86400 ),86400 ), 3600 ) / 60)",
+              "VAR Seconds =",
+              "    ROUNDUP(MOD ( MOD( MOD ( Durations - (Days * 86400 ),86400 ), 3600 ), 60), 0) ",
+              "VAR D = ",
+              "\tIF ( LEN ( Days ) = 1,",
+              "\t\tCONCATENATE ( \"0\", Days ),",
+              "\t\tCONCATENATE ( \"\", Days )",
+              "\t  )",
+              "VAR H =",
+              "    IF ( LEN ( Hours ) = 1, ",
+              "        CONCATENATE ( \"0\", Hours ),",
+              "        CONCATENATE ( \"\", Hours )",
+              "      )",
+              "VAR M =",
+              "    IF (",
+              "        LEN ( Minutes ) = 1,",
+              "        CONCATENATE ( \"0\", Minutes ),",
+              "        CONCATENATE ( \"\", Minutes )",
+              "    )",
+              "VAR S =",
+              "    IF (",
+              "        LEN ( Seconds ) = 1,",
+              "        CONCATENATE ( \"0\", Seconds ),",
+              "        CONCATENATE ( \"\", Seconds )",
+              "    )",
+              "RETURN",
+              "\tIF (Durations >0,",
+              "        CONCATENATE ( H, CONCATENATE( \":\", CONCATENATE (M, CONCATENATE ( \":\", S ) ) ) ))",
+              "    ",
+              ""
+            ]
+          },
+          {
+            "name": "CMR %Interactive (Prev.)",
+            "expression": [
+              " ",
+              "",
+              "",
+              "var Compare = CALCULATE(",
+              "\t [CMR #Interactive], ",
+              "\t ALL ( 'Dim - Time' ), ",
+              "\t USERELATIONSHIP( 'Dim - Time'[Date], 'Dim - Time Compare'[Prev. Date] ) ",
+              ") --* [Normalization Factor] ",
+              "",
+              "RETURN IF (AND([CMR #Interactive]>0, Compare >0 ), DIVIDE([CMR #Interactive] , Compare, 0) -1,BLANK())"
+            ],
+            "formatString": "#,0.0%;-#,0.0%;#,0.0%"
+          },
+          {
+            "name": "CMR %Visitors (Prev.)",
+            "expression": [
+              " ",
+              "",
+              "VAR Compare = ",
+              "CALCULATE(",
+              "\t [CMR #Visitors], ",
+              "\t ALL ( 'Dim - Time' ), ",
+              "\t USERELATIONSHIP( 'Dim - Time'[Date], 'Dim - Time Compare'[Prev. Date] ) ",
+              ") --* [Normalization Factor]",
+              "",
+              "",
+              "RETURN IF (AND([CMR #Visitors]>0, Compare >0 ), DIVIDE([CMR #Visitors], Compare, 0) -1,BLANK())"
+            ],
+            "formatString": "#,0.0%;-#,0.0%;#,0.0%"
+          },
+          {
+            "name": "Normalization Factor",
+            "expression": " COUNTROWS ( 'Dim - Time' ) / COUNTROWS ( 'Dim - Time Compare' )",
+            "isHidden": true
+          },
+          {
+            "name": "CMR %CR (Prev.)",
+            "expression": [
+              " ",
+              "",
+              "",
+              "var Compare = CALCULATE(",
+              "\t [CMR CR], ",
+              "\t ALL ( 'Dim - Time' ), ",
+              "\t USERELATIONSHIP( 'Dim - Time'[Date], 'Dim - Time Compare'[Prev. Date] ) ",
+              ") --* [Normalization Factor] ",
+              "",
+              "RETURN IF (and([CMR CR]>0, Compare >0), DIVIDE([CMR CR] , Compare, 0) -1,BLANK())"
+            ],
+            "formatString": "0.0%;-0.0%;0.0%"
+          },
+          {
+            "name": "CMR %Net Amt (Prev.)",
+            "expression": [
+              " ",
+              "",
+              "var Compare = CALCULATE(",
+              "\t [CMR .Net Amt], ",
+              "\t ALL ( 'Dim - Time' ), ",
+              "\t USERELATIONSHIP( 'Dim - Time'[Date], 'Dim - Time Compare'[Prev. Date] ) ",
+              ") --* [Normalization Factor] ",
+              "",
+              "RETURN IF (AND([CMR .Net Amt]>0, Compare >0 ), DIVIDE([CMR .Net Amt] , Compare, 0) -1,BLANK())"
+            ],
+            "formatString": "0.0%;-0.0%;0.0%"
+          },
+          {
+            "name": "CMR %Ticket size (Prev.)",
+            "expression": [
+              " ",
+              "",
+              "var Compare = CALCULATE(",
+              "\t [CMR .Ticket size], ",
+              "\t ALL ( 'Dim - Time' ), ",
+              "\t USERELATIONSHIP( 'Dim - Time'[Date], 'Dim - Time Compare'[Prev. Date] ) ",
+              ") --* [Normalization Factor] ",
+              "",
+              "RETURN IF (AND([CMR .Ticket size]>0, Compare >0 ), DIVIDE([CMR .Ticket size] , Compare, 0) -1,BLANK())"
+            ],
+            "formatString": "0.0%;-0.0%;0.0%"
+          },
+          {
+            "name": "CMR %Basket size (Prev.)",
+            "expression": [
+              " ",
+              "",
+              "var Compare = CALCULATE(",
+              "\t [CMR Basket size], ",
+              "\t ALL ( 'Dim - Time' ), ",
+              "\t USERELATIONSHIP( 'Dim - Time'[Date], 'Dim - Time Compare'[Prev. Date] ) ",
+              ") --* [Normalization Factor] ",
+              "",
+              "RETURN IF ( And([CMR Basket size] >0, Compare >0 ) , DIVIDE([CMR Basket size] , Compare, 0) -1,BLANK())",
+              ""
+            ],
+            "formatString": "0.0%;-0.0%;0.0%"
+          },
+          {
+            "name": "CMR %Interact. Rate (Prev.)",
+            "expression": [
+              " ",
+              "",
+              "var Compare = CALCULATE(",
+              "\t [CMR Interact. Rate], ",
+              "\t ALL ( 'Dim - Time' ), ",
+              "\t USERELATIONSHIP( 'Dim - Time'[Date], 'Dim - Time Compare'[Prev. Date] ) ",
+              ") --* [Normalization Factor] ",
+              "",
+              "RETURN IF (and([CMR Interact. Rate] >0, Compare >0 ), DIVIDE([CMR Interact. Rate] , Compare, 0) -1,BLANK())",
+              ""
+            ],
+            "formatString": "0.0%;-0.0%;0.0%"
+          },
+          {
+            "name": "CMR %POS Customer (Prev.)",
+            "expression": [
+              " ",
+              "",
+              "var Compare = CALCULATE(",
+              "\t [POS #Customer], ",
+              "\t ALL ( 'Dim - Time' ), ",
+              "\t USERELATIONSHIP( 'Dim - Time'[Date], 'Dim - Time Compare'[Prev. Date] ) ",
+              ") --* [Normalization Factor] ",
+              "",
+              "RETURN IF (AND([POS #Customer] >0, Compare >0 ), DIVIDE([POS #Customer] , Compare, 0) -1,BLANK())",
+              ""
+            ],
+            "formatString": "0.0%;-0.0%;0.0%"
+          },
+          {
+            "name": "CMR Style Dwell time",
+            "expression": [
+              " ",
+              "",
+              "",
+              "VAR Durations = INT(CALCULATE(AVERAGE('Dim - Camera Person'[Style_Dwell_Time]),",
+              "\tFilter('Dim - Camera Person', 'Dim - Camera Person'[Style_Dwell_Time] <> BLANK())))",
+              "--\tCROSSFILTER('Fact - Camera InStore'[PERSON_WID], 'Dim - Camera Person'[ROW_WID], Both)))",
+              "\t",
+              "VAR Days =",
+              "\tINT ( Durations / 86400)",
+              "VAR Hours =",
+              "    INT ( MOD( Durations - ( Days * 86400),86400) / 3600)",
+              "VAR Minutes =",
+              "    INT (MOD (MOD( Durations - (Days * 86400 ),86400 ), 3600 ) / 60)",
+              "VAR Seconds =",
+              "    ROUNDUP(MOD ( MOD( MOD ( Durations - (Days * 86400 ),86400 ), 3600 ), 60), 0) ",
+              "VAR D = ",
+              "\tIF ( LEN ( Days ) = 1,",
+              "\t\tCONCATENATE ( \"0\", Days ),",
+              "\t\tCONCATENATE ( \"\", Days )",
+              "\t  )",
+              "VAR H =",
+              "    IF ( LEN ( Hours ) = 1, ",
+              "        CONCATENATE ( \"0\", Hours ),",
+              "        CONCATENATE ( \"\", Hours )",
+              "      )",
+              "VAR M =",
+              "    IF (",
+              "        LEN ( Minutes ) = 1,",
+              "        CONCATENATE ( \"0\", Minutes ),",
+              "        CONCATENATE ( \"\", Minutes )",
+              "    )",
+              "VAR S =",
+              "    IF (",
+              "        LEN ( Seconds ) = 1,",
+              "        CONCATENATE ( \"0\", Seconds ),",
+              "        CONCATENATE ( \"\", Seconds )",
+              "    )",
+              "RETURN",
+              "\tIF (Durations >0,",
+              "        CONCATENATE ( H, CONCATENATE( \":\", CONCATENATE (M, CONCATENATE ( \":\", S ) ) ) ))",
+              "        "
+            ],
+            "formatString": "0.00"
+          }
+        ]
+      },
+      {
+        "name": "Fact - Forecasting",
+        "columns": [
+          {
+            "name": "PLANT_WID",
+            "dataType": "int64",
+            "sourceColumn": "PLANT_WID"
+          },
+          {
+            "name": "PRODUCT_WID",
+            "dataType": "int64",
+            "sourceColumn": "PRODUCT_WID"
+          },
+          {
+            "name": "DATE_KEY",
+            "dataType": "int64",
+            "sourceColumn": "DATE_KEY"
+          },
+          {
+            "name": "Forecast Value",
+            "dataType": "int64",
+            "sourceColumn": "Forecast Value"
+          },
+          {
+            "name": "IS_DMHKN",
+            "dataType": "string",
+            "sourceColumn": "IS_DMHKN"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "dataView": "full",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"SELECT [PLANT_WID]",
+                "      ,[PRODUCT_WID]",
+                "      ,[DATE_KEY]",
+                "      ,[FORECAST_VALUE]",
+                "      ,[IS_DMHKN]",
+                "  FROM [PNJ_ROLAP].[dbo].[W_VW_SALES_FORECASTING_F]\"),",
+                "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"FORECAST_VALUE\", \"Forecast Value\"}})",
+                "in",
+                "    #\"Renamed Columns\""
+              ]
+            }
+          }
+        ]
       }
     ],
     "relationships": [
@@ -18987,6 +19043,27 @@
         "fromTable": "Fact - Capacity Planned Order",
         "fromColumn": "WORK_CENTER_WID",
         "toTable": "Dim - Work Center",
+        "toColumn": "ROW_WID"
+      },
+      {
+        "name": "3ce458de-f390-4cf3-8a68-706717cda487",
+        "fromTable": "Fact - Forecasting",
+        "fromColumn": "DATE_KEY",
+        "toTable": "Dim - Time",
+        "toColumn": "ROW_WID"
+      },
+      {
+        "name": "e40bfe3f-b295-4f52-ab47-3a24d90429db",
+        "fromTable": "Fact - Forecasting",
+        "fromColumn": "PLANT_WID",
+        "toTable": "Dim - Plant",
+        "toColumn": "ROW_WID"
+      },
+      {
+        "name": "303af61d-504b-457e-8a49-9d0010068716",
+        "fromTable": "Fact - Forecasting",
+        "fromColumn": "PRODUCT_WID",
+        "toTable": "Dim - Product",
         "toColumn": "ROW_WID"
       }
     ],
