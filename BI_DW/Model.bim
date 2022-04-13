@@ -17,11 +17,10 @@
           "authentication": null,
           "query": null
         },
+        "options": {},
         "credential": {
           "AuthenticationKind": "UsernamePassword",
-          "kind": "SQL",
-          "path": "192.168.3.31;PNJ_ROLAP",
-          "Username": "biread",
+          "Username": "Biread",
           "EncryptConnection": false
         }
       },
@@ -42,7 +41,7 @@
           "AuthenticationKind": "UsernamePassword",
           "kind": "SQL",
           "path": "192.168.3.31;DW_RAW",
-          "Username": "biread",
+          "Username": "Biread",
           "EncryptConnection": false
         }
       }
@@ -7424,6 +7423,105 @@
               "FILTER('Fact - All Sales Invoice Line', 'Fact - All Sales Invoice Line'[Program Code] <> \"\" && 'Fact - All Sales Invoice Line'[Program Code] <> \"#Not assign\"))"
             ],
             "formatString": "#,0"
+          },
+          {
+            "name": ". Promotion_NetAmt",
+            "expression": [
+              " CALCULATE([. All Net Amt], 'Fact - All Sales Invoice Line'[Channel Code] <> \"60\", GROUPBY('Dim - Program', 'Dim - Program'[ROW_WID]),",
+              "                            filter('Fact - All Sales Invoice Line', 'Fact - All Sales Invoice Line'[INVOICED_ON_DT_WID] >= min('Dim - Program'[EFFECTIVE_FROM_DT]) ",
+              "                                && 'Fact - All Sales Invoice Line'[INVOICED_ON_DT_WID] <= Max('Dim - Program'[EFFECTIVE_TO_DT])))"
+            ],
+            "formatString": "0"
+          },
+          {
+            "name": "# Promotion_Trx (PC)",
+            "expression": [
+              " CALCULATE(COUNTROWS(GROUPBY('Fact - ALL Sales Invoice Line', 'Fact - All Sales Invoice Line'[INVOICED_ON_DT_WID], 'Fact - All Sales Invoice Line'[Customer WID])), ",
+              "                            filter('Fact - ALL Sales Invoice Line', 'Fact - ALL Sales Invoice Line'[INVOICED_ON_DT_WID] >= min('Dim - Program'[EFFECTIVE_FROM_DT]) ",
+              "                                && 'Fact - ALL Sales Invoice Line'[INVOICED_ON_DT_WID] <= Max('Dim - Program'[EFFECTIVE_TO_DT])))"
+            ],
+            "formatString": "#,0"
+          },
+          {
+            "name": "AVG Amt/Trx (LY)",
+            "expression": " CALCULATE([. All Net Amt (LY)]/[# All Cust Transaction (PC) (LY)])",
+            "formatString": "#,0.00"
+          },
+          {
+            "name": "% All customer",
+            "expression": " ([# All Customer]/[# All Customer (LY)])-1",
+            "formatString": "0.00%;-0.00%;0.00%"
+          },
+          {
+            "name": "% Net_Amt_FC",
+            "expression": [
+              " DIVIDE",
+              "([. All Net Amt] , if(ISBLANK([. Net_Amt_FC] ) = TRUE, 0, [. Net_Amt_FC]),0)-1"
+            ]
+          },
+          {
+            "name": "% Net Amt FC (YTD)",
+            "expression": " CALCULATE(([. Net Amt (YTD)] / [. Net Amt FC (YTD)])-1)",
+            "formatString": "0.00%;-0.00%;0.00%"
+          },
+          {
+            "name": "% Net_Amt_FC_FY",
+            "expression": [
+              " ",
+              "DIVIDE (",
+              "[. Net Amt (YTD)], if(ISBLANK([. Net Amt (FC) (Full Year)] ) = TRUE, 0, [. Net Amt (FC) (Full Year)]), 0)-1"
+            ],
+            "formatString": "0.00%;-0.00%;0.00%"
+          },
+          {
+            "name": ". Net Amt LY (YTD)",
+            "expression": " CALCULATE([. All Net Amt (LY)], DATESYTD('Dim - Time'[Date]))",
+            "formatString": "#,0.00"
+          },
+          {
+            "name": "% Net_Amt_LY",
+            "expression": "if(ISBLANK([. All Net Amt (LY)]), 1, ([. All Net Amt]/[. All Net Amt (LY)]-1 ))"
+          },
+          {
+            "name": ". Net Amt (YTD)",
+            "expression": " CALCULATE([. All Net Amt],DATESYTD('Dim - Time'[Date]))",
+            "formatString": "#,0.00"
+          },
+          {
+            "name": "AVG Qty/Trx",
+            "expression": " [# All Qty] / [# All Cust Transaction (PC)]"
+          },
+          {
+            "name": "AVG Amt/Trx",
+            "expression": " [. All Net Amt] / [# All Cust Transaction (PC)]",
+            "formatString": "0.00"
+          },
+          {
+            "name": "AVG Amt/Trx (LM)",
+            "expression": " CALCULATE([. All Net Amt (LM)]/[# All Cust Transaction (PC) (LM)])",
+            "formatString": "0.00"
+          },
+          {
+            "name": "AVG Qty/Trx (LM)",
+            "expression": " CALCULATE([# All Qty (LM)]/[# All Customer (LM)])"
+          },
+          {
+            "name": "AVG Qty/Trx (LY)",
+            "expression": " CALCULATE([# All Qty (LY)]/[# All Cust Transaction (PC) (LY)])"
+          },
+          {
+            "name": "# Q10",
+            "expression": " CALCULATE(sum('Fact - All Sales Invoice Line'[Q10]),FILTER('Fact - All Sales Invoice Line', 'Fact - All Sales Invoice Line'[Invoice Type] <> \"ZRE\" &&'Fact - All Sales Invoice Line'[Invoice Type] <> \"ZS2\" &&'Fact - All Sales Invoice Line'[Invoice Type] <> \"ZPI\" ))",
+            "formatString": "#,0.00"
+          },
+          {
+            "name": "# Q10 (LY)",
+            "expression": " CALCULATE([# Q10], DATEADD('Dim - Time'[Date], -1, YEAR))",
+            "formatString": "#,0"
+          },
+          {
+            "name": "# All Qty (YTD)",
+            "expression": " CALCULATE([# All Qty], DATESYTD('Dim - Time'[Date]))"
           }
         ]
       },
