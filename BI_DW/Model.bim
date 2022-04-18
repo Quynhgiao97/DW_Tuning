@@ -20,6 +20,8 @@
         "options": {},
         "credential": {
           "AuthenticationKind": "UsernamePassword",
+          "kind": "SQL",
+          "path": "192.168.3.31;PNJ_ROLAP",
           "Username": "Biread",
           "EncryptConnection": false
         }
@@ -947,6 +949,11 @@
             "name": "PALEXY ID",
             "dataType": "int64",
             "sourceColumn": "PALEXY ID"
+          },
+          {
+            "name": "PROVINCE",
+            "dataType": "string",
+            "sourceColumn": "PROVINCE"
           }
         ],
         "partitions": [
@@ -991,6 +998,7 @@
                 "      ,[AGING]",
                 "      ,[DALs]",
                 "      ,[DAL_Group]",
+                "      ,[PROVINCE]",
                 "  FROM [PNJ_ROLAP].[dbo].[W_VW_PLANT_D]",
                 "  where DELETE_FLG = 0 OR DELETE_FLG IS  NULL\"),",
                 "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"PLANT_CODE\", \"Plant Code\"}, {\"PLANT_NAME\", \"Plant Name\"}, {\"CHANNEL_NAME\", \"GT/MT\"}, {\"REGION\", \"Region\"}, {\"PLANT_CODE_NAME\", \"Plant Code Name\"}, {\"TIER\", \"Tier\"}, {\"DIST_CHANNEL\", \"Distribution Channel\"}, {\"PLANT_PAR_CODE\", \"Plant Parent Code\"}, {\"PLANT_TYPE\", \"Plant Type\"}, {\"PLANT_KIND\", \"Plant Kind\"}, {\"SALES_DIST\", \"Sales District Code\"}, {\"SALES_DIST_NAME\", \"Sales District Name\"}, {\"FIRST_TRX_DT\", \"First Transaction DT\"}, {\"LAST_TRX_DT\", \"Last Transaction Date\"}, {\"ORG_CODE\", \"Company Code\"}, {\"ORG_SHORT_NAME\", \"Company Short Name\"}, {\"SUB_REGION_NAME\", \"Sub-region Name\"}, {\"PALEXY_STORE_ID\", \"PALEXY ID\"}})",
@@ -5089,6 +5097,16 @@
               ]
             }
           }
+        ],
+        "measures": [
+          {
+            "name": ". Net Amt (Wholesales) (FC) (Labor)",
+            "expression": " CALCULATE(sum('Fact - Plan Revenue - PNJP'[NET_AMT]), FILTER('Fact - Plan Revenue - PNJP', 'Fact - Plan Revenue - PNJP'[INVOICE_GRP] = \"Doanh thu công\"))"
+          },
+          {
+            "name": ". Net Amt (Wholesales) (FC) (all)",
+            "expression": " CALCULATE(sum('Fact - Plan Revenue - PNJP'[NET_AMT]), FILTER('Fact - Plan Revenue - PNJP', 'Fact - Plan Revenue - PNJP'[INVOICE_GRP] = \"Doanh thu hóa đơn\"))"
+          }
         ]
       },
       {
@@ -7522,6 +7540,83 @@
           {
             "name": "# All Qty (YTD)",
             "expression": " CALCULATE([# All Qty], DATESYTD('Dim - Time'[Date]))"
+          },
+          {
+            "name": "% All Qty (LY)",
+            "expression": " CALCULATE([# All Qty]/[# All Qty (LY)] -1)"
+          },
+          {
+            "name": "% All Qty (YTD) (LY)",
+            "expression": " CALCULATE(([# All Qty (YTD)]/ [. All Qty (YTD) (LY)])-1)"
+          },
+          {
+            "name": "% All Net Amt (YTD)",
+            "expression": " CALCULATE('Fact - All Sales Invoice Line'[. Net Amt (YTD)]/'Fact - All Sales Invoice Line'[. Net Amt LY (YTD)] -1)"
+          },
+          {
+            "name": ". All Qty (YTD) (LY)",
+            "expression": " CALCULATE([# All Qty (YTD)], DATEADD('Dim - Time'[Date], -1, YEAR))"
+          },
+          {
+            "name": "AVG All NetAmt/Bill",
+            "expression": " CALCULATE([. All Net Amt]/'Fact - All Sales Invoice Line'[# Invoice])"
+          },
+          {
+            "name": "AVG All NetAmt/Bill (LY)",
+            "expression": " CALCULATE([AVG All NetAmt/Bill], DATEADD('Dim - Time'[Date], -1, YEAR))"
+          },
+          {
+            "name": ". All Net Amt (Wholesales)",
+            "expression": " CALCULATE([. All Labor Cost]-[. All HaoLai Amt] + [. All Gold Amt])",
+            "formatString": "#,0.00"
+          },
+          {
+            "name": "% All Labor Cost (LY)",
+            "expression": " CALCULATE([. All Labor Cost]/[. All Labor Cost (LY)]-1)",
+            "formatString": "#,0.00%;-#,0.00%;#,0.00%"
+          },
+          {
+            "name": ". All Net Amt (Wholesales) (LY)",
+            "expression": " CALCULATE([. All Net Amt (Wholesales)], DATEADD('Dim - Time'[Date], -1, YEAR))",
+            "formatString": "#,0.00"
+          },
+          {
+            "name": ". All Net Amt (Wholesales) (LM)",
+            "expression": " CALCULATE([. All Net Amt (Wholesales)], DATEADD('Dim - Time'[Date], -1, MONTH))",
+            "formatString": "#,0"
+          },
+          {
+            "name": "% Net AMT (Wholesales) (LY)",
+            "expression": " IFERROR(CALCULATE([. All Net Amt (Wholesales)]/[. All Net Amt (Wholesales) (LY)] - 1), 0)",
+            "formatString": "0.00%;-0.00%;0.00%"
+          },
+          {
+            "name": "% All Net Amt all (Wholesales) (FC)",
+            "expression": " CALCULATE([. All Net Amt (Wholesales)]/[. Net Amt (Wholesales) (FC) (all)])"
+          },
+          {
+            "name": "AVG All Net Amt/Cust",
+            "expression": " CALCULATE([. All Net Amt]/[# All Customer])"
+          },
+          {
+            "name": "AVG All Net Amt/Cust (LY)",
+            "expression": " CALCULATE([. All Net Amt (LY)]/[# All Customer (LY)])"
+          },
+          {
+            "name": "AVG All Net Amt/Sales Person",
+            "expression": " CALCULATE([. All Net Amt]/'Fact - All Sales Invoice Line'[# Sales Person])"
+          },
+          {
+            "name": "# Sales Person",
+            "expression": " CALCULATE(DISTINCTCOUNT('Dim - Employee'[Employee Code]), RELATEDTABLE('Fact - All Sales Invoice Line'))"
+          },
+          {
+            "name": "# Sales person (LY)",
+            "expression": " CALCULATE([# Sales Person], DATEADD('Dim - Time'[Date], -1, YEAR))"
+          },
+          {
+            "name": "AVG All Net Amt/Sales Person (LY)",
+            "expression": " CALCULATE([. All Net Amt (LY)]/[# Sales person (LY)])"
           }
         ]
       },
@@ -8073,6 +8168,399 @@
               ]
             }
           }
+        ],
+        "measures": [
+          {
+            "name": ". Impressions",
+            "expression": [
+              " CALCULATE(SUM([Impressions]),",
+              " FILTER(ALLEXCEPT('Fact - ATL', 'Fact - ATL'[Source], 'Fact - ATL'[Layer], 'Dim - Time'[Date]),",
+              "  'Fact - ATL'[Program Category] = SELECTEDVALUE('Dim - Program'[Program_Category]) &&",
+              "  VALUE('Fact - ATL'[MKT.Year]) = VALUE(SELECTEDVALUE('Dim - Program'[MKT.Year]))",
+              "))"
+            ]
+          },
+          {
+            "name": ". Click",
+            "expression": [
+              " CALCULATE(SUM([Clicks]), ",
+              " FILTER('Fact - ATL', 'Fact - ATL'[Layer] =\"Date\" &&",
+              "  'Fact - ATL'[Program Category] = SELECTEDVALUE('Dim - Program'[Program_Category]) &&",
+              "  VALUE('Fact - ATL'[MKT.Year]) = VALUE(SELECTEDVALUE('Dim - Program'[MKT.Year]))",
+              "))"
+            ]
+          },
+          {
+            "name": ". New Users IMC vs. Total",
+            "expression": " [# New Users IMC]/[# New Users]",
+            "formatString": "0.00"
+          },
+          {
+            "name": "% Reach (LY)",
+            "expression": " [. Reach]/[. Reach (LY)]-1",
+            "formatString": "0.00%;-0.00%;0.00%"
+          },
+          {
+            "name": ". Reach (LY)",
+            "expression": [
+              " ",
+              "",
+              "    VAR CK_SDate = ",
+              "  CALCULATE(VALUES('Dim - Program'[CK_DL_Sdate]),",
+              "  Filter('Dim - Program', 'Dim - Program'[PROGRAM_CATEGORY] = SELECTEDVALUE('Dim - Program'[PROGRAM_CATEGORY])",
+              "   && 'Dim - Program'[MKT.Year] = SELECTEDVALUE('Dim - Program'[MKT.Year])))",
+              "   ",
+              " VAR CK_EDate = CALCULATE(VALUES('Dim - Program'[CK_DL_Edate]),",
+              "  Filter('Dim - Program', 'Dim - Program'[PROGRAM_CATEGORY] = SELECTEDVALUE('Dim - Program'[PROGRAM_CATEGORY])",
+              "   && 'Dim - Program'[MKT.Year] = SELECTEDVALUE('Dim - Program'[MKT.Year])))",
+              "",
+              "RETURN ",
+              "CALCULATE(SUM([Reach]),",
+              " FILTER('Fact - ATL',",
+              "  'Fact - ATL'[Program Category] = SELECTEDVALUE('Dim - Program'[Program_Category]) &&",
+              "  VALUE('Fact - ATL'[MKT.Year]) = VALUE(SELECTEDVALUE('Dim - Program'[MKT.Year])-1)",
+              "))"
+            ]
+          },
+          {
+            "name": ". Reach",
+            "expression": [
+              " CALCULATE(SUM([Reach]),",
+              " FILTER(ALLEXCEPT('Fact - ATL', 'Fact - ATL'[Source], 'Fact - ATL'[Layer],'Dim - Time'[Date]),",
+              "  'Fact - ATL'[Program Category] = SELECTEDVALUE('Dim - Program'[Program_Category]) &&",
+              "  VALUE('Fact - ATL'[MKT.Year]) = VALUE(SELECTEDVALUE('Dim - Program'[MKT.Year]))",
+              "))"
+            ]
+          },
+          {
+            "name": ". Bounce IMC vs. Total (LY)",
+            "expression": " [. Bounce IMC (LY)]/[. Bounce (LY)]"
+          },
+          {
+            "name": ". Bounce IMC vs. Total",
+            "expression": " [. Bounce IMC]/[. Bounce]"
+          },
+          {
+            "name": ". Bounce IMC (LY)",
+            "expression": [
+              " CALCULATE(SUM([bounceRate])/100,",
+              " FILTER(ALLEXCEPT('Fact - ATL', 'Fact - ATL'[Layer],'Dim - Time'[Date]),  'Fact - ATL'[Source] = \"Google Analytics-IMC\" &&",
+              "  'Fact - ATL'[Program Category] = SELECTEDVALUE('Dim - Program'[Program_Category]) &&",
+              "  VALUE('Fact - ATL'[MKT.Year]) = VALUE(SELECTEDVALUE('Dim - Program'[MKT.Year])-1)",
+              "))"
+            ]
+          },
+          {
+            "name": ". Bounce IMC",
+            "expression": [
+              " CALCULATE(SUM([bounceRate])/100,",
+              " FILTER(ALLEXCEPT('Fact - ATL', 'Fact - ATL'[Layer],'Dim - Time'[Date]),  'Fact - ATL'[Source] = \"Google Analytics-IMC\" &&",
+              "  'Fact - ATL'[Program Category] = SELECTEDVALUE('Dim - Program'[Program_Category]) &&",
+              "  VALUE('Fact - ATL'[MKT.Year]) = VALUE(SELECTEDVALUE('Dim - Program'[MKT.Year]))",
+              "))"
+            ]
+          },
+          {
+            "name": ". Bounce (LY)",
+            "expression": [
+              " CALCULATE(SUM([bounceRate])/100,",
+              " FILTER(ALLEXCEPT('Fact - ATL', 'Fact - ATL'[Layer],'Dim - Time'[Date]), 'Fact - ATL'[Source] = \"Google Analytics\" &&",
+              "  'Fact - ATL'[Program Category] = SELECTEDVALUE('Dim - Program'[Program_Category]) &&",
+              "  VALUE('Fact - ATL'[MKT.Year]) = VALUE(SELECTEDVALUE('Dim - Program'[MKT.Year])-1)",
+              "))"
+            ]
+          },
+          {
+            "name": ". Bounce",
+            "expression": [
+              " CALCULATE(SUM([bounceRate])/100,",
+              " FILTER(ALLEXCEPT('Fact - ATL', 'Fact - ATL'[Layer],'Dim - Time'[Date]),  'Fact - ATL'[Source] = \"Google Analytics\" &&",
+              "  'Fact - ATL'[Program Category] = SELECTEDVALUE('Dim - Program'[Program_Category]) &&",
+              "  VALUE('Fact - ATL'[MKT.Year]) = VALUE(SELECTEDVALUE('Dim - Program'[MKT.Year]))",
+              "))"
+            ]
+          },
+          {
+            "name": "# New Users IMC",
+            "expression": [
+              "",
+              "VAR Last_date = VALUE(FORMAT(LASTDATE('Fact - Sales Invoice Line'[Invoice Date]), \"yyyymmdd\"))",
+              "",
+              "RETURN CALCULATE(SUM([newUsers]), ",
+              "FILTER(ALLEXCEPT('Fact - ATL', 'Fact - ATL'[Layer],'Dim - Time'[Date]), 'Fact - ATL'[Source] = \"Google Analytics-IMC\" &&",
+              " 'Fact - ATL'[Program Category] = SELECTEDVALUE('Dim - Program'[Program_Category]) &&",
+              " VALUE('Fact - ATL'[MKT.Year]) = VALUE(SELECTEDVALUE('Dim - Program'[MKT.Year]))",
+              "))"
+            ]
+          },
+          {
+            "name": "# Users IMC",
+            "expression": [
+              "",
+              "VAR Last_date = VALUE(FORMAT(LASTDATE('Fact - Sales Invoice Line'[Invoice Date]), \"yyyymmdd\"))",
+              "",
+              "RETURN CALCULATE(SUM([users]), ",
+              "FILTER(ALLEXCEPT('Fact - ATL', 'Fact - ATL'[Layer], 'Dim - Time'[Date]),  'Fact - ATL'[Source] = \"Google Analytics-IMC\" &&",
+              " 'Fact - ATL'[Program Category] = SELECTEDVALUE('Dim - Program'[Program_Category]) &&",
+              " VALUE('Fact - ATL'[MKT.Year]) = VALUE(SELECTEDVALUE('Dim - Program'[MKT.Year]))",
+              "))"
+            ]
+          },
+          {
+            "name": "# Days Ads. (LY)",
+            "expression": [
+              " CALCULATE(DISTINCTCOUNT([Date_key]),",
+              " FILTER(ALL('Fact - ATL'), 'Fact - ATL'[Layer] = \"Date\" && 'Fact - ATL'[Source] IN {\"Google Ads\", \"Facebook Ads\"} &&",
+              "  'Fact - ATL'[Program Category] = SELECTEDVALUE('Dim - Program'[Program_Category]) &&",
+              "  VALUE('Fact - ATL'[MKT.Year]) = VALUE(SELECTEDVALUE('Dim - Program'[MKT.Year])-1)",
+              " ))"
+            ]
+          },
+          {
+            "name": ". Users IMC vs. Total",
+            "expression": " [# Users IMC]/[# Users]"
+          },
+          {
+            "name": ". Session duration IMC vs. Total",
+            "expression": " [. Session duration IMC]/[. Session duration]"
+          },
+          {
+            "name": ". Session Duration IMC (LY)",
+            "expression": [
+              " ",
+              "",
+              "CALCULATE(SUM([SessionDuration]),",
+              "",
+              " FILTER('Fact - ATL',  'Fact - ATL'[Source] = \"Google Analytics-IMC\" &&",
+              "  'Fact - ATL'[Program Category] = SELECTEDVALUE('Dim - Program'[Program_Category]) &&",
+              "  VALUE('Fact - ATL'[MKT.Year]) = VALUE(SELECTEDVALUE('Dim - Program'[MKT.Year])-1)",
+              "))"
+            ]
+          },
+          {
+            "name": ". Session duration IMC",
+            "expression": [
+              " CALCULATE(SUM([SessionDuration]),",
+              " FILTER('Fact - ATL', 'Fact - ATL'[Source] = \"Google Analytics-IMC\" &&",
+              "  'Fact - ATL'[Program Category] = SELECTEDVALUE('Dim - Program'[Program_Category]) &&",
+              "  VALUE('Fact - ATL'[MKT.Year]) = VALUE(SELECTEDVALUE('Dim - Program'[MKT.Year]))",
+              "))"
+            ]
+          },
+          {
+            "name": ". Session Duration (LY)",
+            "expression": [
+              " ",
+              "",
+              "    VAR CK_SDate = ",
+              "  CALCULATE(VALUES('Dim - Program'[CK_DL_Sdate]),",
+              "  Filter('Dim - Program', 'Dim - Program'[PROGRAM_CATEGORY] = SELECTEDVALUE('Dim - Program'[PROGRAM_CATEGORY])",
+              "   && 'Dim - Program'[MKT.Year] = SELECTEDVALUE('Dim - Program'[MKT.Year])))",
+              "   ",
+              " VAR CK_EDate = CALCULATE(VALUES('Dim - Program'[CK_DL_Edate]),",
+              "  Filter('Dim - Program', 'Dim - Program'[PROGRAM_CATEGORY] = SELECTEDVALUE('Dim - Program'[PROGRAM_CATEGORY])",
+              "   && 'Dim - Program'[MKT.Year] = SELECTEDVALUE('Dim - Program'[MKT.Year])))",
+              "",
+              "RETURN ",
+              "CALCULATE(SUM([SessionDuration]),",
+              "DATEADD('Dim - Time'[Date], -1, YEAR),",
+              " FILTER('Fact - ATL',  'Fact - ATL'[Source] = \"Google Analytics\" &&",
+              "  'Fact - ATL'[Program Category] = SELECTEDVALUE('Dim - Program'[Program_Category]) &&",
+              "  VALUE('Fact - ATL'[MKT.Year]) = VALUE(SELECTEDVALUE('Dim - Program'[MKT.Year])-1)",
+              "))"
+            ]
+          },
+          {
+            "name": ". Session duration",
+            "expression": [
+              " CALCULATE(SUM([SessionDuration]),",
+              " FILTER('Fact - ATL', 'Fact - ATL'[Source] = \"Google Analytics\" &&",
+              "  'Fact - ATL'[Program Category] = SELECTEDVALUE('Dim - Program'[Program_Category]) &&",
+              "  VALUE('Fact - ATL'[MKT.Year]) = VALUE(SELECTEDVALUE('Dim - Program'[MKT.Year]))",
+              "))"
+            ]
+          },
+          {
+            "name": "% CTR (LY)",
+            "expression": " [. CTR]/[. CTR (LY)]-1",
+            "formatString": "0.00%;-0.00%;0.00%"
+          },
+          {
+            "name": "% Click (LY)",
+            "expression": " [. Click]/[. Click (LY)]-1",
+            "formatString": "0.00%;-0.00%;0.00%"
+          },
+          {
+            "name": "% Impressions (LY)",
+            "expression": " [. Impressions]/[. Impressions (LY)]-1",
+            "formatString": "0.00%;-0.00%;0.00%"
+          },
+          {
+            "name": ". CPC (LY)",
+            "expression": "[. Ads Spend (LY)]/ [. Click (LY)]"
+          },
+          {
+            "name": ". CTR (LY)",
+            "expression": [
+              " CALCULATE([. CTR],",
+              "FILTER(ALLEXCEPT('Fact - ATL', 'Fact - ATL'[Source], 'Fact - ATL'[Layer]), ",
+              "  'Fact - ATL'[Program Category] = SELECTEDVALUE('Dim - Program'[Program_Category]) &&",
+              " VALUE('Fact - ATL'[MKT.Year]) = VALUE(SELECTEDVALUE('Dim - Program'[MKT.Year])-1)",
+              "))"
+            ]
+          },
+          {
+            "name": ". Click (LY)",
+            "expression": [
+              " CALCULATE([. Click],",
+              "FILTER(All('Fact - ATL'),",
+              "  'Fact - ATL'[Program Category] = SELECTEDVALUE('Dim - Program'[Program_Category]) &&",
+              " VALUE('Fact - ATL'[MKT.Year]) = VALUE(SELECTEDVALUE('Dim - Program'[MKT.Year])-1)",
+              "))"
+            ]
+          },
+          {
+            "name": ". % Ads Spend",
+            "expression": " [. Ads Spend]/[. Ads Spend (LY)]-1",
+            "formatString": "0.00%;-0.00%;0.00%"
+          },
+          {
+            "name": ". Ads Spend (LY)",
+            "expression": [
+              " CALCULATE([. Ads Spend],",
+              "",
+              "FILTER(All('Fact - ATL'),",
+              "  'Fact - ATL'[Program Category] = SELECTEDVALUE('Dim - Program'[Program_Category]) &&",
+              " VALUE('Fact - ATL'[MKT.Year]) = VALUE(SELECTEDVALUE('Dim - Program'[MKT.Year])-1)",
+              "))"
+            ]
+          },
+          {
+            "name": ". Impressions (LY)",
+            "expression": [
+              " ",
+              "",
+              "    VAR CK_SDate = ",
+              "  CALCULATE(VALUES('Dim - Program'[CK_DL_Sdate]),",
+              "  Filter('Dim - Program', 'Dim - Program'[PROGRAM_CATEGORY] = SELECTEDVALUE('Dim - Program'[PROGRAM_CATEGORY])",
+              "   && 'Dim - Program'[MKT.Year] = SELECTEDVALUE('Dim - Program'[MKT.Year])))",
+              "   ",
+              " VAR CK_EDate = CALCULATE(VALUES('Dim - Program'[CK_DL_Edate]),",
+              "  Filter('Dim - Program', 'Dim - Program'[PROGRAM_CATEGORY] = SELECTEDVALUE('Dim - Program'[PROGRAM_CATEGORY])",
+              "   && 'Dim - Program'[MKT.Year] = SELECTEDVALUE('Dim - Program'[MKT.Year])))",
+              "",
+              "RETURN ",
+              "CALCULATE(SUM([Impressions]),",
+              "DATEADD('Dim - Time'[Date], -1, YEAR),",
+              "FILTER(ALL('Fact - ATL'), ",
+              "VALUE('Fact - ATL'[Date_key]) >= value(CK_SDate) && VALUE('Fact - ATL'[Date_key]) <= value(CK_EDate)))"
+            ]
+          },
+          {
+            "name": "% New Users (LY)",
+            "expression": " [# New Users]/[# New User (LY)]-1",
+            "formatString": "0.00%;-0.00%;0.00%"
+          },
+          {
+            "name": "% Users (CK)",
+            "expression": " [# Users]/[# User (LY)]-1",
+            "formatString": "0.00%;-0.00%;0.00%"
+          },
+          {
+            "name": "# New User (LY)",
+            "expression": [
+              "",
+              "    VAR CK_SDate = ",
+              "  CALCULATE(VALUES('Dim - Program'[CK_DL_Sdate]),",
+              "  Filter('Dim - Program', 'Dim - Program'[PROGRAM_CATEGORY] = SELECTEDVALUE('Dim - Program'[PROGRAM_CATEGORY])",
+              "   && 'Dim - Program'[MKT.Year] = SELECTEDVALUE('Dim - Program'[MKT.Year])))",
+              "   ",
+              " VAR CK_EDate0 = CALCULATE(VALUES('Dim - Program'[CK_DL_Edate]),",
+              "  Filter('Dim - Program', 'Dim - Program'[PROGRAM_CATEGORY] = SELECTEDVALUE('Dim - Program'[PROGRAM_CATEGORY])",
+              "   && 'Dim - Program'[MKT.Year] = SELECTEDVALUE('Dim - Program'[MKT.Year])))",
+              " VAR CK_EDate = FORMAT(DATEADD(LASTDATE('Fact - Sales Invoice Line'[Invoice Date]),-1, YEAR), \"yyyymmdd\")",
+              "",
+              "RETURN CALCULATE(SUM([newUsers]), ",
+              "FILTER(ALLEXCEPT('Fact - ATL', 'Fact - ATL'[Layer], 'Dim - Time'[Date]), 'Fact - ATL'[Source] = \"Google Analytics\" &&",
+              " 'Fact - ATL'[Program Category] = SELECTEDVALUE('Dim - Program'[Program_Category]) &&",
+              " VALUE('Fact - ATL'[MKT.Year]) = VALUE(SELECTEDVALUE('Dim - Program'[MKT.Year])-1) ",
+              "))"
+            ]
+          },
+          {
+            "name": "# User (LY)",
+            "expression": [
+              " ",
+              "",
+              "    VAR CK_SDate = ",
+              "  CALCULATE(VALUES('Dim - Program'[CK_DL_Sdate]),",
+              "  Filter('Dim - Program', 'Dim - Program'[PROGRAM_CATEGORY] = SELECTEDVALUE('Dim - Program'[PROGRAM_CATEGORY])",
+              "   && 'Dim - Program'[MKT.Year] = SELECTEDVALUE('Dim - Program'[MKT.Year])))",
+              "   ",
+              " VAR CK_EDate0 = CALCULATE(VALUES('Dim - Program'[CK_DL_Edate]),",
+              "  Filter('Dim - Program', 'Dim - Program'[PROGRAM_CATEGORY] = SELECTEDVALUE('Dim - Program'[PROGRAM_CATEGORY])",
+              "   && 'Dim - Program'[MKT.Year] = SELECTEDVALUE('Dim - Program'[MKT.Year])))",
+              " VAR CK_EDate = FORMAT(DATEADD(LASTDATE('Fact - Sales Invoice Line'[Invoice Date]),-1, YEAR), \"yyyymmdd\")",
+              "",
+              "",
+              "RETURN CALCULATE(SUM([users]), ",
+              "FILTER(ALLEXCEPT('Fact - ATL', 'Fact - ATL'[Layer],'Dim - Time'[Date]), 'Fact - ATL'[Source] = \"Google Analytics\" &&",
+              " 'Fact - ATL'[Program Category] = SELECTEDVALUE('Dim - Program'[Program_Category]) &&",
+              " VALUE('Fact - ATL'[MKT.Year]) = VALUE(SELECTEDVALUE('Dim - Program'[MKT.Year])-1) ",
+              "))"
+            ]
+          },
+          {
+            "name": "# New Users",
+            "expression": [
+              "",
+              "VAR Last_date = VALUE(FORMAT(LASTDATE('Fact - Sales Invoice Line'[Invoice Date]), \"yyyymmdd\"))",
+              "",
+              "RETURN CALCULATE(SUM([newUsers]), ",
+              "FILTER(ALLEXCEPT('Fact - ATL', 'Fact - ATL'[Layer], 'Dim - Time'[Date]), 'Fact - ATL'[Source] = \"Google Analytics\" &&",
+              " 'Fact - ATL'[Program Category] = SELECTEDVALUE('Dim - Program'[Program_Category]) &&",
+              " VALUE('Fact - ATL'[MKT.Year]) = VALUE(SELECTEDVALUE('Dim - Program'[MKT.Year])) ",
+              "))"
+            ]
+          },
+          {
+            "name": "# Users",
+            "expression": [
+              "",
+              "VAR Last_date = VALUE(FORMAT(LASTDATE('Fact - Sales Invoice Line'[Invoice Date]), \"yyyymmdd\"))",
+              "",
+              "RETURN CALCULATE(SUM([users]), ",
+              "FILTER(ALLEXCEPT('Fact - ATL', 'Fact - ATL'[Layer],'Dim - Time'[Date]), 'Fact - ATL'[Source] = \"Google Analytics\" &&",
+              " 'Fact - ATL'[Program Category] = SELECTEDVALUE('Dim - Program'[Program_Category]) &&",
+              " VALUE('Fact - ATL'[MKT.Year]) = VALUE(SELECTEDVALUE('Dim - Program'[MKT.Year])) ",
+              "))"
+            ]
+          },
+          {
+            "name": ". CPC",
+            "expression": "[. Ads Spend]/ [. Click]"
+          },
+          {
+            "name": ". CTR",
+            "expression": [
+              " CALCULATE(",
+              " DIVIDE([. Click], [. Impressions],0),",
+              "  FILTER(ALLEXCEPT('Fact - ATL', 'Fact - ATL'[Source], 'Fact - ATL'[Layer], 'Dim - Time'[Date]),",
+              "  'Fact - ATL'[Program Category] = SELECTEDVALUE('Dim - Program'[Program_Category]) &&",
+              "  VALUE('Fact - ATL'[MKT.Year]) = VALUE(SELECTEDVALUE('Dim - Program'[MKT.Year]))))"
+            ]
+          },
+          {
+            "name": ". Ads Spend",
+            "expression": [
+              " CALCULATE(SUM([Ads_Spend]),",
+              "FILTER('Fact - ATL',  'Fact - ATL'[Layer] = \"Date\" &&",
+              " 'Fact - ATL'[Program Category] = SELECTEDVALUE('Dim - Program'[Program_Category]) &&",
+              " VALUE('Fact - ATL'[MKT.Year]) = VALUE(SELECTEDVALUE('Dim - Program'[MKT.Year]))",
+              "",
+              "))"
+            ]
+          }
         ]
       },
       {
@@ -8387,6 +8875,616 @@
               "expression": "{BLANK()}"
             }
           }
+        ],
+        "measures": [
+          {
+            "name": "SC .Net Amt",
+            "expression": [
+              "",
+              "var x = MIN('Dim - Time'[Date])",
+              "VAR OPENING = CALCULATE(sum('Fact - Inventory Transaction'[NET_AMT]), FILTER(All('Dim - Time'),'Dim - Time'[Date] < X))",
+              "",
+              "VAR CLOSING =  [. Net Amount]",
+              "",
+              "VAR _COUNT = IF( OPENING <> BLANK(),1,0) +  IF(CLOSING <> BLANK(),1,0)",
+              "RETURN (OPENING + CLOSING)/_COUNT"
+            ]
+          },
+          {
+            "name": "SC %AVG #Q10 (Monthly) KT",
+            "expression": [
+              "",
+              "    VAR CK_SDate = DATEADD(FIRSTDATE( 'Dim - Time'[Date]),-1, MONTH)",
+              "    VAR CK_EDate = DATEADD(LASTDATE ( 'Dim - Time'[Date]),-1, MONTH)",
+              "",
+              "RETURN ",
+              " CALCULATE( DIVIDE([PNJP AVG .Q10 (Monthly)],",
+              "  CALCULATE(",
+              "       AVERAGEX(",
+              "           FILTER(",
+              "               ALLSELECTED( 'Dim - Time'[Date] ),",
+              "                'Dim - Time'[Date] >= CK_SDate &&",
+              "                           'Dim - Time'[Date] <= CK_EDate ",
+              "               ),",
+              "           [PNJP .Q10 (Daily)])",
+              "    ), 0)",
+              " )"
+            ],
+            "formatString": "0.00%;-0.00%;0.00%"
+          },
+          {
+            "name": "SC %AVG #Q10 (Monthly) CK",
+            "expression": [
+              "",
+              "    VAR CK_SDate = DATEADD(FIRSTDATE( 'Dim - Time'[Date]),-1,YEAR)",
+              "    VAR CK_EDate = DATEADD(LASTDATE ( 'Dim - Time'[Date]),-1, YEAR)",
+              "",
+              "",
+              "RETURN ",
+              " CALCULATE( DIVIDE([PNJP AVG .Q10 (Monthly)],",
+              "  CALCULATE(",
+              "       AVERAGEX(",
+              "           FILTER(",
+              "               ALLSELECTED( 'Dim - Time'[Date] ),",
+              "                'Dim - Time'[Date] >= CK_SDate &&",
+              "                           'Dim - Time'[Date] <= CK_EDate ",
+              "               ),",
+              "           [PNJP .Q10 (Daily)])",
+              "    ), 0)",
+              " )"
+            ],
+            "formatString": "0.00%;-0.00%;0.00%"
+          },
+          {
+            "name": "SC %AVG .Net Amt (Monthly) KT",
+            "expression": [
+              "",
+              "    VAR CK_SDate = DATEADD(FIRSTDATE( 'Dim - Time'[Date]),-1, MONTH)",
+              "    VAR CK_EDate = DATEADD(LASTDATE ( 'Dim - Time'[Date]),-1, MONTH)",
+              "",
+              "RETURN ",
+              " CALCULATE( DIVIDE([PNJP AVG .Net Amt (Monthly)],",
+              "  CALCULATE(",
+              "       AVERAGEX(",
+              "           FILTER(",
+              "               ALLSELECTED( 'Dim - Time'[Date] ),",
+              "                'Dim - Time'[Date] >= CK_SDate &&",
+              "                           'Dim - Time'[Date] <= CK_EDate ",
+              "               ),",
+              "           [PNJP .Net Amt (Daily)])",
+              "    ), 0)",
+              " )"
+            ],
+            "formatString": "0.00%;-0.00%;0.00%"
+          },
+          {
+            "name": "SC %AVG .Net Amt (Monthly) CK",
+            "expression": [
+              "",
+              "    VAR CK_SDate = DATEADD(FIRSTDATE( 'Dim - Time'[Date]),-1,YEAR)",
+              "    VAR CK_EDate = DATEADD(LASTDATE ( 'Dim - Time'[Date]),-1, YEAR)",
+              "",
+              "",
+              "RETURN ",
+              " CALCULATE( DIVIDE([PNJP AVG .Net Amt (Monthly)],",
+              "  CALCULATE(",
+              "       AVERAGEX(",
+              "           FILTER(",
+              "               ALLSELECTED( 'Dim - Time'[Date] ),",
+              "                'Dim - Time'[Date] >= CK_SDate &&",
+              "                           'Dim - Time'[Date] <= CK_EDate ",
+              "               ),",
+              "           [PNJP .Net Amt (Daily)])",
+              "    ), 0)",
+              " )"
+            ],
+            "formatString": "0.00%;-0.00%;0.00%"
+          },
+          {
+            "name": "PNJP AVG .Net Amt (Monthly)",
+            "expression": [
+              "",
+              "VAR _Min = MIN('Dim - Time'[Date])",
+              "",
+              "RETURN CALCULATE(",
+              "    AVERAGEX(",
+              "        FILTER(",
+              "            ALLSELECTED( 'Dim - Time'[Date] ),",
+              "             'Dim - Time'[Date] >= MIN('Dim - Time'[Date]) &&",
+              "                        'Dim - Time'[Date] <= MAX ('Dim - Time'[Date] )",
+              "            ),",
+              "        [PNJP .Net Amt (Daily)])",
+              " )"
+            ]
+          },
+          {
+            "name": "SC %AVG .Net Qty (Monthly) KT",
+            "expression": [
+              "",
+              "    VAR CK_SDate = DATEADD(FIRSTDATE( 'Dim - Time'[Date]),-1,MONTH)",
+              "    VAR CK_EDate = DATEADD(LASTDATE ( 'Dim - Time'[Date]),-1, MONTH)",
+              "",
+              "",
+              "",
+              "RETURN ",
+              " CALCULATE( DIVIDE([PNJP AVG .Net Qty (Monthly)],",
+              "  CALCULATE(",
+              "       AVERAGEX(",
+              "           FILTER(",
+              "               ALLSELECTED( 'Dim - Time'[Date] ),",
+              "                'Dim - Time'[Date] >= CK_SDate &&",
+              "                           'Dim - Time'[Date] <= CK_EDate ",
+              "               ),",
+              "           [PNJP .Net Qty (Daily)])",
+              "    ), 0)",
+              " )"
+            ],
+            "formatString": "0.00%;-0.00%;0.00%"
+          },
+          {
+            "name": "SC %AVG .Net Qty (Monthly) CK",
+            "expression": [
+              "",
+              "    VAR CK_SDate = DATEADD(FIRSTDATE( 'Dim - Time'[Date]),-1,YEAR)",
+              "    VAR CK_EDate = DATEADD(LASTDATE ( 'Dim - Time'[Date]),-1, YEAR)",
+              "",
+              "",
+              "",
+              "RETURN ",
+              " CALCULATE( DIVIDE([PNJP AVG .Net Qty (Monthly)],",
+              "  CALCULATE(",
+              "       AVERAGEX(",
+              "           FILTER(",
+              "               ALLSELECTED( 'Dim - Time'[Date] ),",
+              "                'Dim - Time'[Date] >= CK_SDate &&",
+              "                           'Dim - Time'[Date] <= CK_EDate ",
+              "               ),",
+              "           [PNJP .Net Qty (Daily)])",
+              "    ), 0)",
+              " )"
+            ],
+            "formatString": "0.00%;-0.00%;0.00%"
+          },
+          {
+            "name": "PNJP AVG .Net Qty (Monthly)",
+            "expression": [
+              "",
+              "VAR _Min = MIN('Dim - Time'[Date])",
+              "",
+              "RETURN CALCULATE(",
+              "    AVERAGEX(",
+              "        FILTER(",
+              "            ALLSELECTED( 'Dim - Time'[Date] ),",
+              "             'Dim - Time'[Date] >= MIN('Dim - Time'[Date]) &&",
+              "                        'Dim - Time'[Date] <= MAX ('Dim - Time'[Date] )",
+              "            ),",
+              "        [PNJP .Net Qty (Daily)])",
+              " )"
+            ]
+          },
+          {
+            "name": "SC %Plant Over Quota",
+            "expression": " [SC #Plant Over Quota]/[# All Active Plant]",
+            "formatString": "0.00%;-0.00%;0.00%"
+          },
+          {
+            "name": "SC #Plant Over Quota",
+            "expression": [
+              " ",
+              "",
+              "CALCULATE(",
+              "COUNTROWS('Dim - Plant'),",
+              "     FILTER('Dim - Plant',[. Net Amount] - [SC .Net Amt Quota (Plant)] >0) ,",
+              "     FILTER('Dim - Plant', [SC .Net Amt Quota (Plant)] >0),",
+              "     FILTER('Dim - Plant',[. Net Amount] >0),",
+              "     FILTER('Dim - Plant', 'Dim - Plant'[Plant Type] = \"CH\")",
+              " )"
+            ]
+          },
+          {
+            "name": "SC #PO (GR)",
+            "expression": [
+              " CALCULATE([SC #PO], ",
+              " FILTER( 'Fact - Inventory Transaction',",
+              "   'Fact - Inventory Transaction'[VALUATION_TYPE_GROUP] = \"FG\" &&",
+              "    'Fact - Inventory Transaction'[TRANSACTION_TYPE] in {\"GR\", \"Goods Receipt\"}))"
+            ]
+          },
+          {
+            "name": "SC .Net Amt Mvmnt",
+            "expression": " SUM('Fact - Inventory Transaction'[NET_AMT])"
+          },
+          {
+            "name": "SC .Net Qty Mvmnt",
+            "expression": " SUM('Fact - Inventory Transaction'[NET_QTY])"
+          },
+          {
+            "name": "SC RCMD .Qty (%Missing)",
+            "expression": " 1-[SC RCMD .Qty (Missing)]/[SC RCMD .Qty (Min)]",
+            "formatString": "0.00%;-0.00%;0.00%"
+          },
+          {
+            "name": "SC RCMD .Qty (Missing)",
+            "expression": [
+              "",
+              "",
+              "VAR OnHands  = CALCULATE([. Inven Net Qty], ",
+              " TREATAS(VALUES( 'Fact - SC Recommend'[BASIC_MATERIAL]),  'Dim - Product'[RPT_BASIC_MATERIAL]  ))",
+              "",
+              "RETURN",
+              "",
+              "IF ([SC RCMD .Qty (Min)] > ",
+              " IF(ISBLANK(  OnHands  ),0,  OnHands ),",
+              "   [SC RCMD .Qty (Min)] -  OnHands ,0)",
+              " "
+            ]
+          },
+          {
+            "name": "SC .Net Amt Quota (Plant)",
+            "expression": [
+              " CALCULATE(",
+              " TOTALYTD(sum( 'Fact - Inventory Quota'[DINHMUC_TK_TB]), 'Dim - Time'[Date]),",
+              " 'Fact - Inventory Quota'[PLANT_TYPE] <> \"DC\")"
+            ]
+          },
+          {
+            "name": "SC .Unrestricted Qty",
+            "expression": [
+              " ",
+              " VAR _currdate = MAX('Dim - Time'[Date])",
+              " VAR CLOSING = CALCULATE(SUM('Fact - Inventory Transaction'[UNRESTRICTED_QTY]), FILTER(ALLSELECTED('Dim - Time'[Date]), ISONORAFTER('Dim - Time'[Date], _currdate, Desc)))",
+              "",
+              " VAR X = MIN('Dim - Time'[Date])",
+              " VAR OPENING = CALCULATE(SUM('Fact - Inventory Transaction'[UNRESTRICTED_QTY]), FILTER(ALL('Dim - Time'[Date]), 'Dim - Time'[Date] < X ))",
+              "",
+              " VAR _COUNT = IF( OPENING <> BLANK(),1,0) +  IF(CLOSING <> BLANK(),1,0)",
+              " RETURN (OPENING + CLOSING)/_COUNT"
+            ]
+          },
+          {
+            "name": "SC .Unrestricted Q10",
+            "expression": [
+              " ",
+              "var _currdate = max('Dim - Time'[Date])",
+              "RETURN",
+              " CALCULATE(SUM ( 'Fact - Inventory Transaction'[UNRESTRICTED_Q10] ),",
+              "  FILTER(ALLSELECTED('Dim - Time'[Date]), ISONORAFTER('Dim - Time'[Date], _currdate, Desc)))"
+            ]
+          },
+          {
+            "name": "SC .Unrestricted Net Amt",
+            "expression": [
+              " ",
+              "var _currdate = max('Dim - Time'[Date])",
+              "RETURN",
+              " CALCULATE(SUM ( 'Fact - Inventory Transaction'[UNRESTRICTED_AMT] ),",
+              "  FILTER(ALLSELECTED('Dim - Time'[Date]), ISONORAFTER('Dim - Time'[Date], _currdate, Desc)))"
+            ]
+          },
+          {
+            "name": "SC %RCMD (Total)",
+            "expression": [
+              " ",
+              "",
+              "VAR MaterialType = DISTINCT('Fact - SC Recommend'[MATERIAL TYPE])",
+              "",
+              "VAR OnHands = CALCULATE([. Inven Net Qty], ",
+              " FILTER('Dim - Product', 'Dim - Product'[Product Type Code] in  MaterialType ))",
+              "",
+              "RETURN",
+              " DIVIDE([. Inven Net Qty], [SC RCMD .Qty (Min)], 0)"
+            ],
+            "formatString": "0.00%;-0.00%;0.00%"
+          },
+          {
+            "name": "SC RCMD .Qty (Max)",
+            "expression": [
+              " ",
+              "VAR StartQuarter = FORMAT(STARTOFQUARTER('Dim - Time'[Date]),\"YYYYMMDD\")",
+              "VAR EndQuarter = FORMAT(ENDOFQUARTER('Dim - Time'[Date]),\"YYYYMMDD\")",
+              "",
+              "VAR SelectedDate = MAX( 'Dim - Time'[Date])",
+              "",
+              "",
+              "RETURN CALCULATE(",
+              " SUM('Fact - SC Recommend'[MAX]),",
+              "  FILTER( 'Fact - SC Recommend', 'Fact - SC Recommend'[EFFECTIVE_FROM] <=  SelectedDate &&",
+              "   'Fact - SC Recommend'[EFFECTIVE_TO] >= SelectedDate))"
+            ]
+          },
+          {
+            "name": "SC RCMD .Qty (Min)",
+            "expression": [
+              " ",
+              "VAR StartQuarter = FORMAT(STARTOFQUARTER('Dim - Time'[Date]),\"YYYYMMDD\")",
+              "VAR EndQuarter = FORMAT(ENDOFQUARTER('Dim - Time'[Date]),\"YYYYMMDD\")",
+              "",
+              "VAR SelectedDate = MAX( 'Dim - Time'[Date])",
+              "",
+              "",
+              "RETURN CALCULATE(",
+              " SUM( 'Fact - SC Recommend'[MIN]),",
+              "  FILTER( 'Fact - SC Recommend', 'Fact - SC Recommend'[EFFECTIVE_FROM] <=  SelectedDate &&",
+              "   'Fact - SC Recommend'[EFFECTIVE_TO] >= SelectedDate))"
+            ]
+          },
+          {
+            "name": "SC RCMD .Net Amt (Max)",
+            "expression": [
+              " ",
+              "VAR StartQuarter = FORMAT(STARTOFQUARTER('Dim - Time'[Date]),\"YYYYMMDD\")",
+              "VAR EndQuarter = FORMAT(ENDOFQUARTER( 'Dim - Time'[Date] ),\"YYYYMMDD\")",
+              "",
+              "VAR SelectedDate = MAX( 'Dim - Time'[Date])",
+              "",
+              "",
+              "",
+              "RETURN CALCULATE(",
+              " SUM('Fact - SC Recommend'[VON_TON_MAX]),",
+              "  FILTER( 'Fact - SC Recommend', 'Fact - SC Recommend'[EFFECTIVE_FROM] <=  SelectedDate &&",
+              "   'Fact - SC Recommend'[EFFECTIVE_TO] >= SelectedDate))",
+              "   "
+            ]
+          },
+          {
+            "name": "SC RCMD .Net Amt (Min)",
+            "expression": [
+              " ",
+              "VAR StartQuarter = FORMAT(STARTOFQUARTER('Dim - Time'[Date]),\"YYYYMMDD\")",
+              "VAR EndQuarter = FORMAT(ENDOFQUARTER('Dim - Time'[Date]),\"YYYYMMDD\")",
+              "",
+              "VAR SelectedDate =  MAX( 'Dim - Time'[Date])",
+              "",
+              "",
+              "RETURN CALCULATE(",
+              " SUM('Fact - SC Recommend'[VON_TON_MIN]),",
+              "  FILTER( 'Fact - SC Recommend', 'Fact - SC Recommend'[EFFECTIVE_FROM] <=  SelectedDate &&",
+              "   'Fact - SC Recommend'[EFFECTIVE_TO] >= SelectedDate))"
+            ]
+          },
+          {
+            "name": "SC .Net Qty_PO",
+            "expression": [
+              " CALCULATE(sum('Fact - Purchase Order Line'[Order Qty]),",
+              " USERELATIONSHIP('Fact - Purchase Order Line'[DELIVERY_DT], 'Dim - Time'[ROW_WID]))"
+            ]
+          },
+          {
+            "name": "SC .Net Amt_PO",
+            "expression": [
+              " CALCULATE(SUM('Fact - Purchase Order Line'[Net Amount]),",
+              " USERELATIONSHIP('Fact - Purchase Order Line'[DELIVERY_DT], 'Dim - Time'[ROW_WID]))"
+            ]
+          },
+          {
+            "name": "SC #PO",
+            "expression": [
+              "",
+              "CALCULATE(DISTINCTCOUNT('Fact - Purchase Order Line'[Order Number]),",
+              " USERELATIONSHIP('Fact - Purchase Order Line'[DELIVERY_DT], 'Dim - Time'[ROW_WID]))"
+            ]
+          },
+          {
+            "name": "SC .Net Amt Convert",
+            "expression": [
+              "",
+              " VAR Last_Date = CALCULATE(MAX('Dim - Time'[Date] ), FILTER('Fact - All Sales Invoice Line', 'Fact - All Sales Invoice Line'[. All Net Amt]>0))",
+              " VAR First_Date =  Date(Year(Last_Date),1,1)    //MIN(  'Dim - Time'[Date] )",
+              " VAR Running = CALCULATE(COUNTROWS(",
+              "     DATESBETWEEN('Dim - Time'[Date],First_Date, Last_Date)))",
+              " ",
+              " VAR Days = DATEDIFF(  Date(Year(Last_Date),1,1),  Last_Date,DAY)+1",
+              "",
+              " ",
+              "RETURN  days/([. Net Amt (YTD)]/[SC AVG .Net Amt])"
+            ]
+          },
+          {
+            "name": "SC #Q10 TurnOver",
+            "expression": " DIVIDE( [SD AVG #Q10], [SC AVG #Q10], 0)"
+          },
+          {
+            "name": "SC .Net Amt TurnOver",
+            "expression": " DIVIDE( [SD AVG .All Cost Amt], [SC AVG .Net Amt], 0)"
+          },
+          {
+            "name": "SC .Net Qty TurnOver",
+            "expression": "DIVIDE( [SD AVG .All Net Qty] , [SC AVG .Net Qty], 0)"
+          },
+          {
+            "name": "SC #Doc",
+            "expression": [
+              " ",
+              "CALCULATE(DISTINCTCOUNT('Fact - Inventory Transaction'[MATERIAL_DOC_NUM]))"
+            ]
+          },
+          {
+            "name": "SC AVG .Net Amt",
+            "expression": [
+              "",
+              "VAR _Year = MAX('Dim - Time'[Year])",
+              "RETURN CALCULATE(",
+              " AVERAGEX(",
+              " FILTER(",
+              "  ALLSELECTED( 'Dim - Time'[Month] ),",
+              "              'Dim - Time'[Month] <= MAX ('Dim - Time'[Month] )",
+              "  ),",
+              " [SC .Net Amt]),",
+              "FILTER('Dim - Time', 'Dim - Time'[Year] = _Year))"
+            ]
+          },
+          {
+            "name": "SC AVG #Q10",
+            "expression": [
+              "",
+              "VAR _YEAR = MAX('Dim - Time'[Year])",
+              "",
+              "RETURN CALCULATE(",
+              " AVERAGEX(",
+              "  FILTER(",
+              "   ALLSELECTED( 'Dim - Time'[Month] ),",
+              "               'Dim - Time'[Month] <= MAX ('Dim - Time'[Month] )",
+              "   ),",
+              "  [SC #Q10]),",
+              " FILTER('Dim - Time', 'Dim - Time'[Year] = _Year))"
+            ]
+          },
+          {
+            "name": "SC .Net Qty Open",
+            "expression": [
+              " ",
+              "",
+              "VAR X = MIN('Dim - Time'[Date])",
+              "return CALCULATE(sum('Fact - Inventory Transaction'[NET_QTY]), FILTER(All('Dim - Time'),'Dim - Time'[Date] < X))"
+            ]
+          },
+          {
+            "name": "SC .Net Qty Close",
+            "expression": [
+              "",
+              "var _currdate = max('Dim - Time'[Date])",
+              "Return",
+              "CALCULATE(SUM('Fact - Inventory Transaction'[net_qty]), FILTER(ALLSELECTED('Dim - Time'[Date]), ISONORAFTER('Dim - Time'[Date], _currdate, Desc)))"
+            ]
+          },
+          {
+            "name": "SC .Net Qty",
+            "expression": [
+              "",
+              "var x = MIN('Dim - Time'[Date])",
+              "VAR OPENING = CALCULATE(sum('Fact - Inventory Transaction'[NET_QTY]), FILTER(All('Dim - Time'),'Dim - Time'[Date] < X))",
+              "",
+              "VAR CLOSING =  [. Inven Net Qty]",
+              "",
+              "VAR _COUNT = IF( OPENING <> BLANK(),1,0) +  IF(CLOSING <> BLANK(),1,0)",
+              "RETURN (OPENING + CLOSING)/_COUNT"
+            ]
+          },
+          {
+            "name": "SC AVG .Net Qty",
+            "expression": [
+              "",
+              "VAR _Year = MAX('Dim - Time'[Year])",
+              "RETURN CALCULATE(",
+              " AVERAGEX(",
+              "  FILTER(",
+              "   ALLSELECTED( 'Dim - Time'[Month] ),",
+              "               'Dim - Time'[Month] <= MAX ('Dim - Time'[Month] )",
+              "   ),",
+              "  [SC .Net Qty]),",
+              " ",
+              " FILTER('Dim - Time', 'Dim - Time'[Year] = _Year))",
+              "  "
+            ]
+          },
+          {
+            "name": "SC #Q10",
+            "expression": [
+              "",
+              "",
+              " VAR _currdate = MAX('Dim - Time'[Date])",
+              " VAR CLOSING = CALCULATE(SUM('Fact - Inventory Transaction'[Q10]), FILTER(ALLSELECTED('Dim - Time'[Date]), ISONORAFTER('Dim - Time'[Date], _currdate, Desc)))",
+              "",
+              " VAR X = MIN('Dim - Time'[Date])",
+              " VAR OPENING = CALCULATE(SUM('Fact - Inventory Transaction'[Q10]), FILTER(ALL('Dim - Time'[Date]), 'Dim - Time'[Date] < X ))",
+              "",
+              " VAR _COUNT = IF( OPENING <> BLANK(),1,0) +  IF(CLOSING <> BLANK(),1,0)",
+              " RETURN (OPENING + CLOSING)/_COUNT"
+            ]
+          },
+          {
+            "name": "SC #Q10 Open (LY)",
+            "expression": [
+              " ",
+              " CALCULATE([SC #Q10 Open], DATEADD('Dim - Time'[Date],-1,YEAR))"
+            ]
+          },
+          {
+            "name": "SC .Net Amt (LY)",
+            "expression": [
+              " ",
+              " ",
+              " VAR CLOSING = CALCULATE( [SC .Net Amt Open (LY)], DATEADD('Dim - Time'[Date], -1, MONTH))",
+              " ",
+              " ",
+              " VAR _COUNT = IF( [SC .Net Amt Open (LY)] <> BLANK(),1,0) +  IF(CLOSING <> BLANK(),1,0)",
+              " RETURN ( [SC .Net Amt Open (LY)] + CLOSING)/_COUNT",
+              " "
+            ]
+          },
+          {
+            "name": "SC #Q10 Open",
+            "expression": [
+              "",
+              "",
+              " VAR X = MIN('Dim - Time'[Date])",
+              " RETURN CALCULATE(sum('Fact - Inventory Transaction'[Q10]), FILTER(All('Dim - Time'),'Dim - Time'[Date] < X))"
+            ]
+          },
+          {
+            "name": "SC #Q10 (LY)",
+            "expression": [
+              " ",
+              " VAR CLOSING = CALCULATE( [SC #Q10 Open (LY)] , DATEADD('Dim - Time'[Date], -1, MONTH))",
+              " ",
+              " VAR _COUNT = IF( CLOSING <> BLANK(),1,0) +  IF(  [SC #Q10 Open (LY)] <> BLANK(),1,0)",
+              " RETURN (CLOSING +  [SC #Q10 Open (LY)])/_COUNT"
+            ]
+          },
+          {
+            "name": "SC #Q10 Mvmnt",
+            "expression": " ABS(SUM('Fact - Inventory Transaction'[Q10]))"
+          },
+          {
+            "name": "SC .Net Amt Quota (YTD)",
+            "expression": [
+              " CALCULATE(",
+              " TOTALYTD(sum( 'Fact - Inventory Quota'[DINHMUC_TK_NAM]), 'Dim - Time'[Date]),",
+              " 'Fact - Inventory Quota'[PLANT_TYPE] = \"DC\")",
+              " "
+            ]
+          },
+          {
+            "name": "SC .Net Amt Quota (MTD)",
+            "expression": [
+              " CALCULATE(",
+              " TOTALYTD(sum( 'Fact - Inventory Quota'[DINHMUC_TK_TB]), 'Dim - Time'[Date]),",
+              " 'Fact - Inventory Quota'[PLANT_TYPE] = \"DC\")",
+              " "
+            ]
+          },
+          {
+            "name": "SC .Net Qty Open (LY)",
+            "expression": [
+              "",
+              " CALCULATE( [SC .Net Qty Open], DATEADD('Dim - Time'[Date], -1, YEAR))"
+            ]
+          },
+          {
+            "name": "SC .Net Qty (LY)",
+            "expression": [
+              "",
+              "VAR CLOSING = CALCULATE( [SC .Net Qty Open (LY)] , DATEADD('Dim - Time'[Date], -1, MONTH))",
+              "",
+              "VAR _COUNT = IF( CLOSING <> BLANK(),1,0) +  IF( [SC .Net Qty Open (LY)] <> BLANK(),1,0)",
+              "RETURN (CLOSING +[SC .Net Qty Open (LY)] ) /_COUNT"
+            ]
+          },
+          {
+            "name": "SC .Net Amt Open (LY)",
+            "expression": [
+              "",
+              " CALCULATE([SC .Net Amt Open], DATEADD('Dim - Time'[Date], -1, YEAR))"
+            ]
+          },
+          {
+            "name": "SC .Net Amt Open",
+            "expression": [
+              "",
+              " VAR X = MIN('Dim - Time'[Date])",
+              " return CALCULATE(sum('Fact - Inventory Transaction'[NET_AMT]), FILTER(All('Dim - Time'),'Dim - Time'[Date] < X))"
+            ]
+          }
         ]
       },
       {
@@ -8502,14 +9600,7 @@
           },
           {
             "name": "SD #Plant Curent",
-            "expression": [
-              " CALCULATE(DISTINCTCOUNT('Dim - Plant'[ROW_WID]),",
-              "ALLEXCEPT('Dim - Plant', 'Dim - Plant'[REGION], 'Dim - Plant'[Sales District Name], 'Dim - Plant'[Tier (desc)]),",
-              "FILTER(",
-              "'Dim - Plant', 'Dim - Plant'[Active Flag] IN { \"1\"})",
-              ")",
-              " "
-            ],
+            "expression": " CALCULATE(DISTINCTCOUNT('Dim - Plant'[Plant Code]), 'Dim - Plant'[Active Flag] = 1)",
             "formatString": "0"
           },
           {
