@@ -17,12 +17,11 @@
           "authentication": null,
           "query": null
         },
-        "options": {},
         "credential": {
           "AuthenticationKind": "UsernamePassword",
           "kind": "SQL",
           "path": "192.168.3.31;PNJ_ROLAP",
-          "Username": "Biread",
+          "Username": "biread",
           "EncryptConnection": false
         }
       },
@@ -43,7 +42,7 @@
           "AuthenticationKind": "UsernamePassword",
           "kind": "SQL",
           "path": "192.168.3.31;DW_RAW",
-          "Username": "Biread",
+          "Username": "biread",
           "EncryptConnection": false
         }
       }
@@ -154,7 +153,7 @@
             "name": "Number of month Not Buy",
             "dataType": "int64",
             "isDataTypeInferred": true,
-            "expression": " DATEDIFF('Dim - Customer'[Last Order DT], TODAY(),MONTH)"
+            "expression": " DATEDIFF('Dim - Customer'[LAST_ORDER_DATE], TODAY(),MONTH)"
           },
           {
             "type": "calculated",
@@ -198,6 +197,11 @@
             "name": "EMAIL_FLAG",
             "dataType": "string",
             "sourceColumn": "EMAIL_FLAG"
+          },
+          {
+            "name": "LAST_ORDER_DATE",
+            "dataType": "dateTime",
+            "sourceColumn": "LAST_ORDER_DATE"
           }
         ],
         "partitions": [
@@ -223,6 +227,7 @@
                 "      ,[PHONE_FLAG]",
                 "      ,[EMAIL_FLAG]",
                 "      ,CREATED_ON_DT",
+                "      ,LAST_ORDER_DATE",
                 "  FROM [PNJ_ROLAP].[dbo].[W_VW_CUSTOMER_D]\"),",
                 "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"CUST_CODE\", \"Customer Code\"}, {\"CUST_NAME\", \"Customer Name\"}, {\"PARENT_CODE\", \"Parent Code\"}, {\"BIRTHDAY\", \"Birthday\"}, {\"CUST_GRP\", \"Customer Group\"}, {\"CUST_CARD_DESC\", \"Customer Card\"}, {\"LAST_ORDER_DT\", \"Last Order DT\"}})",
                 "   in",
@@ -1679,6 +1684,22 @@
               ""
             ],
             "formatString": "#,0"
+          },
+          {
+            "name": ". Target MKT (All)",
+            "expression": [
+              " Calculate(SUM(  'Fact - Marketing Plan'[TARGET_AMT]),",
+              "\tFILTER(ALLEXCEPT('Fact - Marketing Plan', 'Dim - Plant'[REGION], 'Dim - Plant'[Sales District Name], 'Dim - Product'[Co-Operate Brand]),",
+              "     'Fact - Marketing Plan'[Program Category] = SELECTEDVALUE('Dim - Program'[PROGRAM_CATEGORY]) &&",
+              "\tVALUE('Fact - Marketing Plan'[MKT.Year]) = SELECTEDVALUE('Dim - Program'[MKT.Year])",
+              "\t))"
+            ],
+            "formatString": "#,0"
+          },
+          {
+            "name": "% Target MKT (All)",
+            "expression": "CALCULATE([. Net Amt]/[. Target MKT (All)])-1",
+            "formatString": "0.00%;-0.00%;0.00%"
           }
         ]
       },
@@ -1824,6 +1845,11 @@
             "name": "SLOC Code Name",
             "dataType": "string",
             "sourceColumn": "SLOC Code Name"
+          },
+          {
+            "name": "Plant Code Name",
+            "dataType": "string",
+            "sourceColumn": "Plant Code Name"
           }
         ],
         "partitions": [
@@ -1848,8 +1874,9 @@
                 "      ,[SUB_REGION_NAME]",
                 "      ,[SLOC_CODE_NAME]",
                 "      ,[Plant_Sloc]",
+                "      ,PLANT_CODE_NAME",
                 "  FROM [PNJ_ROLAP].[dbo].[W_VW_STORAGE_LOC_D]\"),",
-                "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"PLANT_CODE\", \"Plant Code\"}, {\"SLOC_CODE\", \"Sloc Code\"}, {\"SLOC_NAME\", \"Sloc Name\"}, {\"Plant_Sloc\", \"Plant Storage Loc.\"}, {\"SLOC_GROUP\", \"Sloc Group\"}, {\"Sloc_Full\", \"Sloc Decription\"}, {\"SUB_SLOC\", \"Sub Sloc\"}, {\"ORG_CODE\", \"Company Code\"}, {\"SC_REGION_DESC\", \"SC Region\"}, {\"ORG_SHORT_NAME\", \"Company Short Name\"}, {\"SUB_REGION_NAME\", \"Sub-region Name\"}, {\"SLOC_CODE_NAME\", \"SLOC Code Name\"}})",
+                "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"PLANT_CODE\", \"Plant Code\"}, {\"SLOC_CODE\", \"Sloc Code\"}, {\"SLOC_NAME\", \"Sloc Name\"}, {\"Plant_Sloc\", \"Plant Storage Loc.\"}, {\"SLOC_GROUP\", \"Sloc Group\"}, {\"Sloc_Full\", \"Sloc Decription\"}, {\"SUB_SLOC\", \"Sub Sloc\"}, {\"ORG_CODE\", \"Company Code\"}, {\"SC_REGION_DESC\", \"SC Region\"}, {\"ORG_SHORT_NAME\", \"Company Short Name\"}, {\"SUB_REGION_NAME\", \"Sub-region Name\"}, {\"SLOC_CODE_NAME\", \"SLOC Code Name\"}, {\"PLANT_CODE_NAME\", \"Plant Code Name\"}})",
                 "in",
                 "    #\"Renamed Columns\""
               ]
@@ -5310,9 +5337,16 @@
             "sourceColumn": "TRAFFIC"
           },
           {
-            "name": "LUNAR_DT",
+            "name": "Lunar Date",
             "dataType": "dateTime",
-            "sourceColumn": "LUNAR_DT"
+            "sourceColumn": "Lunar Date",
+            "formatString": "M/d/yyyy H:mm:ss",
+            "annotations": [
+              {
+                "name": "Format",
+                "value": "<Format Format=\"DateTimeCustom\"><DateTimes><DateTime LCID=\"1033\" Group=\"GeneralLongDateTime\" FormatString=\"M/d/yyyy H:mm:ss\" /></DateTimes></Format>"
+              }
+            ]
           }
         ],
         "partitions": [
@@ -5358,7 +5392,7 @@
                 "    #\"Renamed Columns3\" = Table.RenameColumns(#\"Renamed Columns1\",{ {\"Invoice Quantity\", \"Qty\"}}),",
                 "    #\"Replaced Value\" = Table.ReplaceValue(#\"Renamed Columns3\",null,\"#Not assign\",Replacer.ReplaceValue,{\"SALES_DEAL\"}),",
                 "    #\"Renamed Columns4\" = Table.RenameColumns(#\"Replaced Value\",{{\"PROGRAM_CATEGORY\", \"Program Category\"}, {\"PROGRAM_TYPE\", \"Program Type\"}, {\"MKT_YEAR\", \"MKT.Year\"}, {\"PROGRAM_NAME\", \"Program Name\"}}),",
-                "    #\"Renamed Columns5\" = Table.RenameColumns(#\"Renamed Columns4\",{{\"Group_age\", \"Group Age\"}})",
+                "    #\"Renamed Columns5\" = Table.RenameColumns(#\"Renamed Columns4\",{{\"Group_age\", \"Group Age\"}, {\"LUNAR_DT\", \"Lunar Date\"}})",
                 "in",
                 "    #\"Renamed Columns5\""
               ]
@@ -5416,21 +5450,22 @@
         "measures": [
           {
             "name": ". Net Amt",
-            "expression": " [. All Net Amt]",
+            "expression": " CALCULATE(SUM('Fact - Sales Invoice Line'[Net Amount]), FILTER('Fact - Sales Invoice Line', 'Fact - Sales Invoice Line'[Invoice Type] <> \"ZRE\" &&'Fact - Sales Invoice Line'[INVOICE Type] <> \"ZS2\" && 'Fact - Sales Invoice Line'[INVOICE TYPE]<> \"ZPI\"))",
             "formatString": "#,0"
           },
           {
             "name": ". Net Amt (LY)",
             "expression": [
-              " CALCULATE([. All Net Amt], DATEADD('Dim - Time'[Date], -1, YEAR) , ",
-              "ALLEXCEPT('Fact - All Sales Invoice Line', 'Dim - Plant'[REGION], 'Dim - Plant'[PLANT KIND],'Fact - All Sales Invoice Line'[Customer Type (Month)],'Fact - All Sales Invoice Line'[Customer Type (Year)],  'Dim - Product'[RPT_Product Group 4 Name], 'Dim - Product'[RPT_Product Group 2 Name], 'Dim - Product'[RPT - Product Group 7 Name], 'Dim - Product'[Co-Operate Brand], 'Dim - Customer'[Customer Card], 'Dim - Plant'[PLANT NAME],'Fact - All Sales Invoice Line'[Group Age], 'Dim - Plant'[Sales District Name], 'Dim - Customer'[Gender], 'Dim - Plant'[Tier], 'Fact - All Sales Invoice Line'[MKT_Customer]))"
+              " CALCULATE([. Net Amt], DATEADD('Dim - Time'[Date], -1, YEAR) , ",
+              "ALLEXCEPT('Fact - Sales Invoice Line', 'Dim - Plant'[REGION], 'Dim - Plant'[PLANT KIND],'Fact - Sales Invoice Line'[Customer Type (Month)],'Fact - Sales Invoice Line'[Customer Type (Year)],  'Dim - Product'[RPT_Product Group 4 Name], 'Dim - Product'[RPT_Product Group 2 Name], 'Dim - Product'[RPT - Product Group 7 Name], 'Dim - Product'[Co-Operate Brand], 'Dim - Customer'[Customer Card], 'Dim - Plant'[PLANT NAME],'Fact - Sales Invoice Line'[Group Age], 'Dim - Plant'[Sales District Name], 'Dim - Customer'[Gender], 'Dim - Plant'[Tier], 'Fact - Sales Invoice Line'[MKT_Customer],  'Dim - Plant'[Plant Name 1] ))",
+              ""
             ],
             "formatString": "#,0"
           },
           {
             "name": "# Customer",
             "expression": [
-              " CALCULATE(DISTINCTCOUNT('Dim - Customer'[Customer Code]), RELATEDTABLE('Fact - ALL Sales Invoice Line'), ALL('Dim - Time'),  FILTER('Fact - aLL Sales Invoice Line', 'Fact - aLL Sales Invoice Line'[Invoice Type] <> \"ZRE\" &&'Fact - ALL Sales Invoice Line'[INVOICE TYPE] <> \"ZS2\" && 'Fact - ALL Sales Invoice Line'[INVOICE TYPE]<> \"ZPI\" ),",
+              " CALCULATE(DISTINCTCOUNT('Dim - Customer'[Customer Code]), RELATEDTABLE('Fact - Sales Invoice Line'), ALL('Dim - Time'),  FILTER('Fact - Sales Invoice Line', 'Fact - Sales Invoice Line'[Invoice Type] <> \"ZRE\" &&'Fact - Sales Invoice Line'[INVOICE TYPE] <> \"ZS2\" && 'Fact - Sales Invoice Line'[INVOICE TYPE]<> \"ZPI\" ),",
               "FILTER('Dim - Customer', NOT 'Dim - Customer'[Customer Card] in {\"One-time\",\"Payer\"}))"
             ],
             "formatString": "#,0"
@@ -5439,17 +5474,17 @@
             "name": "# Customer (LY)",
             "expression": [
               " CALCULATE([# Customer], DATEADD('Dim - Time'[Date], -1, YEAR),",
-              "  ALLEXCEPT('Fact - aLL Sales Invoice Line', 'Dim - Plant'[REGION], 'Dim - Plant'[PLANT KIND],'Fact - aLL Sales Invoice Line'[Customer Type (Month)],'Fact - aLL Sales Invoice Line'[Customer Type (Year)],  'Dim - Product'[RPT_Product Group 4 Name], 'Dim - Product'[RPT_Product Group 2 Name], 'Dim - Product'[RPT - Product Group 7 Name], 'Dim - Product'[Co-Operate Brand], 'Dim - Customer'[Customer Card], 'Dim - Plant'[PLANT NAME],",
-              "'Fact - All Sales Invoice Line'[Group Age], 'Dim - Plant'[Sales District Name], 'Dim - Customer'[Gender],",
-              " 'Dim - Plant'[Tier], 'Fact - aLL Sales Invoice Line'[MKT_Customer], 'Fact - aLL Sales Invoice Line'[CUST_CARD_DESC]))"
+              "  ALLEXCEPT('Fact - Sales Invoice Line', 'Dim - Plant'[REGION], 'Dim - Plant'[PLANT KIND],'Fact - Sales Invoice Line'[Customer Type (Month)],'Fact - Sales Invoice Line'[Customer Type (Year)],  'Dim - Product'[RPT_Product Group 4 Name], 'Dim - Product'[RPT_Product Group 2 Name], 'Dim - Product'[RPT - Product Group 7 Name], 'Dim - Product'[Co-Operate Brand], 'Dim - Customer'[Customer Card], 'Dim - Plant'[PLANT NAME],",
+              "'Fact - Sales Invoice Line'[Group Age], 'Dim - Plant'[Sales District Name], 'Dim - Customer'[Gender],",
+              " 'Dim - Plant'[Tier], 'Fact - Sales Invoice Line'[MKT_Customer], 'Fact - Sales Invoice Line'[CUST_CARD_DESC]))"
             ],
             "formatString": "#,0"
           },
           {
             "name": "# Cust Transaction (PC)",
             "expression": [
-              " COUNTROWS(GROUPBY('Fact - All Sales Invoice Line',",
-              " 'Fact - All Sales Invoice Line'[PLANT_WID], 'Fact - All Sales Invoice Line'[Customer WID], 'Fact - All Sales Invoice Line'[INVOICED_ON_DT_WID]))"
+              " COUNTROWS(GROUPBY('Fact - Sales Invoice Line',",
+              " 'Fact - Sales Invoice Line'[PLANT_WID], 'Fact - Sales Invoice Line'[CUSTOMER_SOLD_TO_WID], 'Fact - Sales Invoice Line'[INVOICED_ON_DT_WID]))"
             ],
             "formatString": "#,0"
           },
@@ -5458,14 +5493,14 @@
             "expression": [
               " CALCULATE([# Cust Transaction (PC)], ",
               "DATEADD('Dim - Time'[Date], -1, YEAR),",
-              "  ALLEXCEPT('Fact - aLL Sales Invoice Line', 'Dim - Plant'[REGION], 'Dim - Plant'[PLANT KIND],'Fact - aLL Sales Invoice Line'[Customer Type (Month)],'Fact - aLL Sales Invoice Line'[Customer Type (Year)],  'Dim - Product'[RPT_Product Group 4 Name], 'Dim - Product'[RPT_Product Group 2 Name], 'Dim - Product'[RPT - Product Group 7 Name], 'Dim - Product'[Co-Operate Brand], 'Dim - Customer'[Customer Card], 'Dim - Plant'[PLANT NAME],'Fact - All Sales Invoice Line'[Group Age], 'Dim - Plant'[Sales District Name], 'Dim - Customer'[Gender], 'Dim - Plant'[Tier], 'Fact - aLL Sales Invoice Line'[MKT_Customer], 'Fact - aLL Sales Invoice Line'[CUST_CARD_DESC]))",
+              "  ALLEXCEPT('Fact - Sales Invoice Line', 'Dim - Plant'[REGION], 'Dim - Plant'[PLANT KIND],'Fact - Sales Invoice Line'[Customer Type (Month)],'Fact - Sales Invoice Line'[Customer Type (Year)],  'Dim - Product'[RPT_Product Group 4 Name], 'Dim - Product'[RPT_Product Group 2 Name], 'Dim - Product'[RPT - Product Group 7 Name], 'Dim - Product'[Co-Operate Brand], 'Dim - Customer'[Customer Card], 'Dim - Plant'[PLANT NAME],'Fact - Sales Invoice Line'[Group Age], 'Dim - Plant'[Sales District Name], 'Dim - Customer'[Gender], 'Dim - Plant'[Tier], 'Fact - Sales Invoice Line'[MKT_Customer], 'Fact - Sales Invoice Line'[CUST_CARD_DESC]))",
               ""
             ],
             "formatString": "#,0"
           },
           {
             "name": "# Active Plant",
-            "expression": " DISTINCTCOUNT('Fact - All Sales Invoice Line'[PLANT_WID])",
+            "expression": " DISTINCTCOUNT('Fact - Sales Invoice Line'[PLANT_WID])",
             "formatString": "#,0"
           },
           {
@@ -5473,8 +5508,10 @@
             "expression": [
               " CALCULATE([. Net Amt], ",
               "FILTER(",
-              "ALLEXCEPT('Fact - All Sales Invoice Line', 'Dim - Plant'[REGION], 'Dim - Plant'[PLANT KIND],'Fact - All Sales Invoice Line'[Customer Type (Month)],'Fact - All Sales Invoice Line'[Customer Type (Year)],  'Dim - Product'[RPT_Product Group 4 Name], 'Dim - Product'[RPT_Product Group 2 Name], 'Dim - Product'[RPT - Product Group 7 Name], 'Dim - Product'[Co-Operate Brand], 'Dim - Customer'[Customer Card], 'Dim - Plant'[PLANT NAME],'Fact - All Sales Invoice Line'[Group Age], 'Dim - Plant'[Sales District Name], 'Dim - Customer'[Gender], 'Dim - Plant'[Tier], 'Fact - All Sales Invoice Line'[MKT_Customer], 'Fact - All Sales Invoice Line'[CUST_CARD_DESC]), ",
-              "DATESBETWEEN('Fact - All Sales Invoice Line'[Invoice Date], [StartDT LY], [EndDT LY])))",
+              "ALLEXCEPT('Fact - Sales Invoice Line', 'Dim - Plant'[REGION], 'Dim - Plant'[PLANT KIND],'Fact - Sales Invoice Line'[Customer Type (Month)],'Fact - Sales Invoice Line'[Customer Type (Year)],  'Dim - Product'[RPT_Product Group 4 Name], 'Dim - Product'[RPT_Product Group 2 Name], 'Dim - Product'[RPT - Product Group 7 Name], 'Dim - Product'[Co-Operate Brand], 'Dim - Customer'[Customer Card], 'Dim - Plant'[PLANT NAME],'Fact - Sales Invoice Line'[Group Age], 'Dim - Plant'[Sales District Name], 'Dim - Customer'[Gender], 'Dim - Plant'[Tier], 'Fact - Sales Invoice Line'[MKT_Customer], 'Fact - Sales Invoice Line'[CUST_CARD_DESC],  'Dim - Plant'[Plant Name 1] ) ,",
+              " 'Fact - Sales Invoice Line'[Program Category] = SELECTEDVALUE( 'Dim - Program'[Program_Category] )  &&",
+              "VALUE('Fact - Sales Invoice Line'[MKT.YEAR]) = value(SELECTEDVALUE('Dim - Program'[MKT.Year])) - 1 &&",
+              " 'Fact - Sales Invoice Line'[Program Category] <> BLANK()))",
               "",
               ""
             ],
@@ -5579,8 +5616,11 @@
             "expression": [
               " CALCULATE([# All Qty],",
               "FILTER(",
-              "ALLEXCEPT('Fact - All Sales Invoice Line', 'Dim - Plant'[REGION], 'Dim - Plant'[PLANT KIND],'Fact - All Sales Invoice Line'[Customer Type (Month)],'Fact - All Sales Invoice Line'[Customer Type (Year)],  'Dim - Product'[RPT_Product Group 4 Name], 'Dim - Product'[RPT_Product Group 2 Name], 'Dim - Product'[RPT - Product Group 7 Name], 'Dim - Product'[Co-Operate Brand], 'Dim - Customer'[Customer Card], 'Dim - Plant'[PLANT NAME],'Fact - All Sales Invoice Line'[Group Age], 'Dim - Plant'[Sales District Name], 'Dim - Customer'[Gender], 'Dim - Plant'[Tier], 'Fact - All Sales Invoice Line'[MKT_Customer], 'Fact - All Sales Invoice Line'[CUST_CARD_DESC]), ",
-              "DATESBETWEEN('Fact - All Sales Invoice Line'[Invoice Date], [StartDT LY], [EndDT LY])))",
+              "ALLEXCEPT('Fact - Sales Invoice Line', 'Dim - Plant'[REGION], 'Dim - Plant'[TIER], 'Dim - Plant'[PLANT KIND], 'Fact - Sales Invoice Line'[Customer Type (Month)],'Fact - Sales Invoice Line'[Customer Type (Year)], 'Dim - Product'[RPT_Product Group 4 Name], 'Dim - Product'[RPT_Product Group 2 Name], 'Dim - Product'[RPT - Product Group 7 Name], 'Dim - Product'[Co-Operate Brand],'Dim - Customer'[Customer Card],'Dim - Plant'[Plant Code], 'Dim - Plant'[PLANT NAME], 'Dim - Plant'[Sales District Name], 'Fact - Sales Invoice Line'[Group Age], 'Dim - Customer'[GENDER], 'Fact - Sales Invoice Line'[CUST_CARD_DESC], 'Fact - Sales Invoice Line'[MKT_Customer],  'Dim - Plant'[Plant Name 1] ),",
+              " 'Fact - Sales Invoice Line'[Program Category] = SELECTEDVALUE('Fact - Sales Invoice Line'[PROGRAM CATEGORY]) &&",
+              "VALUE('Fact - Sales Invoice Line'[MKT.YEAR]) = value(SELECTEDVALUE('Dim - Program'[MKT.Year])) - 1 &&",
+              " 'Fact - Sales Invoice Line'[Program Category] <> BLANK())",
+              " )",
               ""
             ],
             "formatString": "#,0"
@@ -5590,8 +5630,11 @@
             "expression": [
               " CALCULATE([# Customer],",
               "FILTER(",
-              "ALLEXCEPT('Fact - All Sales Invoice Line', 'Dim - Plant'[REGION], 'Dim - Plant'[PLANT KIND],'Fact - All Sales Invoice Line'[Customer Type (Month)],'Fact - All Sales Invoice Line'[Customer Type (Year)],  'Dim - Product'[RPT_Product Group 4 Name], 'Dim - Product'[RPT_Product Group 2 Name], 'Dim - Product'[RPT - Product Group 7 Name], 'Dim - Product'[Co-Operate Brand], 'Dim - Customer'[Customer Card], 'Dim - Plant'[PLANT NAME],'Fact - All Sales Invoice Line'[Group Age], 'Dim - Plant'[Sales District Name], 'Dim - Customer'[Gender], 'Dim - Plant'[Tier], 'Fact - All Sales Invoice Line'[MKT_Customer], 'Fact - All Sales Invoice Line'[CUST_CARD_DESC]), ",
-              "DATESBETWEEN('Fact - All Sales Invoice Line'[Invoice Date], [StartDT LY], [EndDT LY])))",
+              "ALLEXCEPT('Fact - Sales Invoice Line', 'Dim - Plant'[REGION], 'Dim - Plant'[TIER], 'Dim - Plant'[PLANT KIND], 'Fact - Sales Invoice Line'[Customer Type (Month)],'Fact - Sales Invoice Line'[Customer Type (Year)], 'Dim - Product'[RPT_Product Group 4 Name], 'Dim - Product'[RPT_Product Group 2 Name], 'Dim - Product'[RPT - Product Group 7 Name], 'Dim - Product'[Co-Operate Brand],'Dim - Customer'[Customer Card],'Dim - Plant'[Plant Code], 'Dim - Plant'[PLANT NAME], 'Dim - Plant'[Sales District Name], 'Fact - Sales Invoice Line'[Group Age], 'Dim - Customer'[GENDER], 'Fact - Sales Invoice Line'[CUST_CARD_DESC], 'Fact - Sales Invoice Line'[MKT_Customer],  'Dim - Plant'[Plant Name 1] ),",
+              " 'Fact - Sales Invoice Line'[Program Category] = SELECTEDVALUE('Fact - Sales Invoice Line'[PROGRAM CATEGORY]) &&",
+              "VALUE('Fact - Sales Invoice Line'[MKT.YEAR]) = value(SELECTEDVALUE('Dim - Program'[MKT.Year])) - 1 &&",
+              " 'Fact - Sales Invoice Line'[Program Category] <> BLANK())",
+              " )",
               ""
             ],
             "formatString": "#,0"
@@ -5606,8 +5649,11 @@
             "expression": [
               " CALCULATE([# Cust Transaction (PC)],",
               "FILTER(",
-              "ALLEXCEPT('Fact - All Sales Invoice Line', 'Dim - Plant'[REGION], 'Dim - Plant'[PLANT KIND],'Fact - All Sales Invoice Line'[Customer Type (Month)],'Fact - All Sales Invoice Line'[Customer Type (Year)],  'Dim - Product'[RPT_Product Group 4 Name], 'Dim - Product'[RPT_Product Group 2 Name], 'Dim - Product'[RPT - Product Group 7 Name], 'Dim - Product'[Co-Operate Brand], 'Dim - Customer'[Customer Card], 'Dim - Plant'[PLANT NAME],'Fact - All Sales Invoice Line'[Group Age], 'Dim - Plant'[Sales District Name], 'Dim - Customer'[Gender], 'Dim - Plant'[Tier], 'Fact - All Sales Invoice Line'[MKT_Customer], 'Fact - All Sales Invoice Line'[CUST_CARD_DESC]), ",
-              "DATESBETWEEN('Fact - All Sales Invoice Line'[Invoice Date], [StartDT LY], [EndDT LY])))",
+              "ALLEXCEPT('Fact - Sales Invoice Line', 'Dim - Plant'[REGION], 'Dim - Plant'[TIER], 'Dim - Plant'[PLANT KIND], 'Fact - Sales Invoice Line'[Customer Type (Month)],'Fact - Sales Invoice Line'[Customer Type (Year)], 'Dim - Product'[RPT_Product Group 4 Name], 'Dim - Product'[RPT_Product Group 2 Name], 'Dim - Product'[RPT - Product Group 7 Name], 'Dim - Product'[Co-Operate Brand],'Dim - Customer'[Customer Card],'Dim - Plant'[Plant Code], 'Dim - Plant'[PLANT NAME], 'Dim - Plant'[Sales District Name], 'Fact - Sales Invoice Line'[Group Age], 'Dim - Customer'[GENDER], 'Fact - Sales Invoice Line'[CUST_CARD_DESC], 'Fact - Sales Invoice Line'[MKT_Customer],  'Dim - Plant'[Plant Name 1] ),",
+              " 'Fact - Sales Invoice Line'[Program Category] = SELECTEDVALUE('Fact - Sales Invoice Line'[PROGRAM CATEGORY]) &&",
+              "VALUE('Fact - Sales Invoice Line'[MKT.YEAR]) = value(SELECTEDVALUE('Dim - Program'[MKT.Year])) - 1 &&",
+              " 'Fact - Sales Invoice Line'[Program Category] <> BLANK())",
+              " )",
               ""
             ],
             "formatString": "#,0"
@@ -5651,8 +5697,11 @@
             "expression": [
               " CALCULATE([# Bill],",
               "FILTER(",
-              "ALLEXCEPT('Fact - All Sales Invoice Line', 'Dim - Plant'[REGION], 'Dim - Plant'[PLANT KIND],'Fact - All Sales Invoice Line'[Customer Type (Month)],'Fact - All Sales Invoice Line'[Customer Type (Year)],  'Dim - Product'[RPT_Product Group 4 Name], 'Dim - Product'[RPT_Product Group 2 Name], 'Dim - Product'[RPT - Product Group 7 Name], 'Dim - Product'[Co-Operate Brand], 'Dim - Customer'[Customer Card], 'Dim - Plant'[PLANT NAME],'Fact - All Sales Invoice Line'[Group Age], 'Dim - Plant'[Sales District Name], 'Dim - Customer'[Gender], 'Dim - Plant'[Tier], 'Fact - All Sales Invoice Line'[MKT_Customer], 'Fact - All Sales Invoice Line'[CUST_CARD_DESC]), ",
-              "DATESBETWEEN('Fact - All Sales Invoice Line'[Invoice Date], [StartDT LY], [EndDT LY])))",
+              "ALLEXCEPT('Fact - Sales Invoice Line', 'Dim - Plant'[REGION], 'Dim - Plant'[TIER], 'Dim - Plant'[PLANT KIND], 'Fact - Sales Invoice Line'[Customer Type (Month)],'Fact - Sales Invoice Line'[Customer Type (Year)], 'Dim - Product'[RPT_Product Group 4 Name], 'Dim - Product'[RPT_Product Group 2 Name], 'Dim - Product'[RPT - Product Group 7 Name], 'Dim - Product'[Co-Operate Brand],'Dim - Customer'[Customer Card],'Dim - Plant'[Plant Code], 'Dim - Plant'[PLANT NAME], 'Dim - Plant'[Sales District Name], 'Fact - Sales Invoice Line'[Group Age], 'Dim - Customer'[GENDER], 'Fact - Sales Invoice Line'[CUST_CARD_DESC], 'Fact - Sales Invoice Line'[MKT_Customer],  'Dim - Plant'[Plant Name 1] ),",
+              " 'Fact - Sales Invoice Line'[Program Category] = SELECTEDVALUE('Fact - Sales Invoice Line'[PROGRAM CATEGORY]) &&",
+              "VALUE('Fact - Sales Invoice Line'[MKT.YEAR]) = value(SELECTEDVALUE('Dim - Program'[MKT.Year])) - 1 &&",
+              " 'Fact - Sales Invoice Line'[Program Category] <> BLANK())",
+              " )",
               ""
             ],
             "formatString": "#,0"
@@ -5660,8 +5709,8 @@
           {
             "name": "# Bill",
             "expression": [
-              " CALCULATE(DISTINCTCOUNT('Fact - All Sales Invoice Line'[Invoice Number]),",
-              " FILTER('Fact - All Sales Invoice Line', 'Fact - All Sales Invoice Line'[Invoice Type] <> \"ZRE\" &&'Fact - All Sales Invoice Line'[INVOICE TYPE] <> \"ZS2\" && 'Fact - All Sales Invoice Line'[INVOICE TYPE]<> \"ZPI\"))"
+              " CALCULATE(DISTINCTCOUNT('Fact - Sales Invoice Line'[Invoice Number]),",
+              " FILTER('Fact - Sales Invoice Line', 'Fact - Sales Invoice Line'[Invoice Type] <> \"ZRE\" &&'Fact - Sales Invoice Line'[INVOICE TYPE] <> \"ZS2\" && 'Fact - Sales Invoice Line'[INVOICE TYPE]<> \"ZPI\"))"
             ],
             "formatString": "#,0"
           },
@@ -5688,21 +5737,26 @@
           {
             "name": "# Bill (LY)",
             "expression": [
-              "CALCULATE([# Bill], DATEADD('Dim - Time'[Date], -1, YEAR),  ALLEXCEPT('Fact - Sales Invoice Line', 'Dim - Plant'[REGION], 'Dim - Plant'[PLANT KIND],'Fact - Sales Invoice Line'[Customer Type (Month)],'Fact - Sales Invoice Line'[Customer Type (Year)],  'Dim - Product'[RPT_Product Group 4 Name], 'Dim - Product'[RPT_Product Group 2 Name], 'Dim - Product'[RPT - Product Group 7 Name], 'Dim - Product'[Co-Operate Brand], 'Dim - Customer'[Customer Card], 'Dim - Plant'[PLANT NAME],'Fact - Sales Invoice Line'[Group Age], 'Dim - Plant'[Sales District Name], 'Dim - Customer'[Gender], 'Dim - Plant'[Tier], 'Fact - Sales Invoice Line'[MKT_Customer], 'Fact - Sales Invoice Line'[CUST_CARD_DESC]))",
+              "CALCULATE([# Bill], DATEADD('Dim - Time'[Date], -1, YEAR),  ALLEXCEPT('Fact - Sales Invoice Line', 'Dim - Plant'[REGION], 'Dim - Plant'[TIER], 'Dim - Plant'[PLANT KIND], 'Fact - Sales Invoice Line'[Customer Type (Month)],'Fact - Sales Invoice Line'[Customer Type (Year)], 'Dim - Product'[RPT_Product Group 4 Name], 'Dim - Product'[RPT_Product Group 2 Name], 'Dim - Product'[RPT - Product Group 7 Name], 'Dim - Product'[Co-Operate Brand],'Dim - Customer'[Customer Card],'Dim - Plant'[Plant Code], 'Dim - Plant'[PLANT NAME], 'Dim - Plant'[Sales District Name], 'Fact - Sales Invoice Line'[Group Age], 'Dim - Customer'[GENDER], 'Fact - Sales Invoice Line'[CUST_CARD_DESC], 'Fact - Sales Invoice Line'[MKT_Customer],  'Dim - Plant'[Plant Name 1] ),",
+              " 'Fact - Sales Invoice Line'[Program Category] = SELECTEDVALUE('Fact - Sales Invoice Line'[PROGRAM CATEGORY]) &&",
+              "VALUE('Fact - Sales Invoice Line'[MKT.YEAR]) = value(SELECTEDVALUE('Dim - Program'[MKT.Year])) - 1 &&",
+              " 'Fact - Sales Invoice Line'[Program Category] <> BLANK())",
+              " ",
+              "",
               ""
             ],
             "formatString": "#,0"
           },
           {
             "name": ". Net Qty",
-            "expression": " [# All Qty]",
+            "expression": " CALCULATE(Sum('Fact - Sales Invoice Line'[Qty]))",
             "formatString": "#,0.00"
           },
           {
             "name": ". Net Qty (LY)",
             "expression": [
-              " CALCULATE([# All Qty], DATEADD('Dim - Time'[Date], -1, YEAR),  ",
-              "ALLEXCEPT('Fact - All Sales Invoice Line', 'Dim - Plant'[REGION], 'Dim - Plant'[PLANT KIND], 'Dim - Product'[RPT_Product Group 4 Name], 'Dim - Product'[RPT_Product Group 2 Name], 'Dim - Product'[RPT - Product Group 7 Name], 'Dim - Product'[Co-Operate Brand], 'Dim - Customer'[Customer Card], 'Dim - Plant'[PLANT NAME],'Fact - All Sales Invoice Line'[Group Age], 'Dim - Plant'[Sales District Name], 'Dim - Customer'[Gender], 'Dim - Plant'[Tier], 'Fact - All Sales Invoice Line'[MKT_Customer]))",
+              " CALCULATE([. Net Qty], DATEADD('Dim - Time'[Date], -1, YEAR),",
+              "ALLEXCEPT('Fact - Sales Invoice Line', 'Dim - Plant'[REGION], 'Dim - Plant'[PLANT KIND],'Fact - Sales Invoice Line'[Customer Type (Month)],'Fact - Sales Invoice Line'[Customer Type (Year)],  'Dim - Product'[RPT_Product Group 4 Name], 'Dim - Product'[RPT_Product Group 2 Name], 'Dim - Product'[RPT - Product Group 7 Name], 'Dim - Product'[Co-Operate Brand], 'Dim - Customer'[Customer Card], 'Dim - Plant'[PLANT NAME],'Fact - Sales Invoice Line'[Group Age], 'Dim - Plant'[Sales District Name], 'Dim - Customer'[Gender], 'Dim - Plant'[Tier], 'Fact - Sales Invoice Line'[MKT_Customer],  'Dim - Plant'[Plant Name 1] ))",
               ""
             ],
             "formatString": "#,0.00"
@@ -5749,9 +5803,11 @@
             "name": "# MKT Active Plant (LY)",
             "expression": [
               " CALCULATE([# Active Plant], FILTER(",
-              "ALLEXCEPT('Fact - Sales Invoice Line', 'Dim - Plant'[REGION], 'Dim - Plant'[PLANT KIND],'Fact - Sales Invoice Line'[Customer Type (Month)],'Fact - Sales Invoice Line'[Customer Type (Year)],  'Dim - Product'[RPT_Product Group 4 Name], 'Dim - Product'[RPT_Product Group 2 Name], 'Dim - Product'[RPT - Product Group 7 Name], 'Dim - Product'[Co-Operate Brand], 'Dim - Customer'[Customer Card], 'Dim - Plant'[PLANT NAME],'Fact - Sales Invoice Line'[Group Age], 'Dim - Plant'[Sales District Name], 'Dim - Customer'[Gender], 'Dim - Plant'[Tier], 'Fact - Sales Invoice Line'[MKT_Customer], 'Fact - Sales Invoice Line'[CUST_CARD_DESC]),",
-              "\t'Fact - Sales Invoice Line'[Program Category] = SELECTEDVALUE('Dim - Program'[Program_Category]) &&",
-              "\tVALUE('Fact - Sales Invoice Line'[MKT.Year]) = value(SELECTEDVALUE('Dim - Program'[MKT.Year])) - 1))",
+              "ALLEXCEPT('Fact - Sales Invoice Line', 'Dim - Plant'[REGION], 'Dim - Plant'[TIER], 'Dim - Plant'[PLANT KIND], 'Fact - Sales Invoice Line'[Customer Type (Month)],'Fact - Sales Invoice Line'[Customer Type (Year)], 'Dim - Product'[RPT_Product Group 4 Name], 'Dim - Product'[RPT_Product Group 2 Name], 'Dim - Product'[RPT - Product Group 7 Name], 'Dim - Product'[Co-Operate Brand],'Dim - Customer'[Customer Card],'Dim - Plant'[Plant Code], 'Dim - Plant'[PLANT NAME], 'Dim - Plant'[Sales District Name], 'Fact - Sales Invoice Line'[Group Age], 'Dim - Customer'[GENDER], 'Fact - Sales Invoice Line'[CUST_CARD_DESC], 'Fact - Sales Invoice Line'[MKT_Customer],  'Dim - Plant'[Plant Name 1] ),",
+              " 'Fact - Sales Invoice Line'[Program Category] = SELECTEDVALUE('Fact - Sales Invoice Line'[PROGRAM CATEGORY]) &&",
+              "VALUE('Fact - Sales Invoice Line'[MKT.YEAR]) = value(SELECTEDVALUE('Dim - Program'[MKT.Year])) - 1 &&",
+              " 'Fact - Sales Invoice Line'[Program Category] <> BLANK())",
+              " )",
               ""
             ],
             "formatString": "#,0"
@@ -5768,11 +5824,12 @@
           {
             "name": "AVG MKT Net Amt/Day (LY)",
             "expression": [
-              " CALCULATE([AVG Net Amt/Day],FILTER(ALLEXCEPT('Fact - Sales Invoice Line', 'Dim - Plant'[REGION], 'Dim - Plant'[TIER], 'Dim - Plant'[PLANT KIND],",
-              "\t 'Dim - Product'[RPT_Product Group 4 Name], 'Dim - Product'[RPT_Product Group 2 Name], 'Dim - Product'[RPT - Product Group 7 Name], 'Dim - Product'[Co-Operate Brand],",
-              "\t 'Dim - Plant'[Plant Code], 'Dim - Plant'[PLANT NAME], 'Dim - Plant'[Sales District Name]), ",
-              "\t'Fact - Sales Invoice Line'[Program Category] = SELECTEDVALUE( 'Dim - Program'[Program_Category]) &&",
-              "\tVALUE('Fact - Sales Invoice Line'[MKT.Year]) = value(SELECTEDVALUE('Dim - Program'[MKT.Year])) - 1))",
+              " CALCULATE([AVG Net Amt/Day],FILTER(",
+              "ALLEXCEPT('Fact - Sales Invoice Line', 'Dim - Plant'[REGION], 'Dim - Plant'[TIER], 'Dim - Plant'[PLANT KIND], 'Fact - Sales Invoice Line'[Customer Type (Month)],'Fact - Sales Invoice Line'[Customer Type (Year)], 'Dim - Product'[RPT_Product Group 4 Name], 'Dim - Product'[RPT_Product Group 2 Name], 'Dim - Product'[RPT - Product Group 7 Name], 'Dim - Product'[Co-Operate Brand],'Dim - Customer'[Customer Card],'Dim - Plant'[Plant Code], 'Dim - Plant'[PLANT NAME], 'Dim - Plant'[Sales District Name], 'Fact - Sales Invoice Line'[Group Age], 'Dim - Customer'[GENDER], 'Fact - Sales Invoice Line'[CUST_CARD_DESC], 'Fact - Sales Invoice Line'[MKT_Customer],  'Dim - Plant'[Plant Name 1] ),",
+              " 'Fact - Sales Invoice Line'[Program Category] = SELECTEDVALUE('Fact - Sales Invoice Line'[PROGRAM CATEGORY]) &&",
+              "VALUE('Fact - Sales Invoice Line'[MKT.YEAR]) = value(SELECTEDVALUE('Dim - Program'[MKT.Year])) - 1 &&",
+              " 'Fact - Sales Invoice Line'[Program Category] <> BLANK())",
+              " )",
               ""
             ],
             "formatString": "#,0"
@@ -5840,9 +5897,9 @@
           {
             "name": ". MKT Net Amt",
             "expression": [
-              "CALCULATE([. ALL Net Amt], FILTER(ALLEXCEPT('Fact - All Sales Invoice Line', 'Dim - Plant'[REGION], 'Dim - Plant'[TIER], 'Dim - Plant'[PLANT KIND],",
-              " 'Fact - All Sales Invoice Line'[Customer Type (Month)],'Fact - All Sales Invoice Line'[Customer Type (Year)],  'Dim - Product'[RPT_Product Group 4 Name], 'Dim - Product'[RPT_Product Group 2 Name], 'Dim - Product'[RPT - Product Group 7 Name], 'Dim - Product'[Co-Operate Brand],'Dim - Customer'[Customer Card], 'Dim - Plant'[PLANT NAME],'Fact - All Sales Invoice Line'[Group age], 'Dim - Plant'[Sales District Name], 'Fact - All Sales Invoice Line'[CUST_CARD_DESC], 'Dim - Customer'[GENDER]), 'Fact - All Sales Invoice Line'[INVOICED_ON_DT_WID] >= MIN('Dim - Program'[EFFECTIVE_FROM_DT] )  &&",
-              "'Fact - ALL Sales Invoice Line'[INVOICED_ON_DT_WID] <= MAX('Dim - Program'[EFFECTIVE_TO_DT]))",
+              "CALCULATE([. Net Amt], FILTER(ALLEXCEPT('Fact - Sales Invoice Line', 'Dim - Plant'[REGION], 'Dim - Plant'[TIER], 'Dim - Plant'[PLANT KIND],",
+              " 'Fact - Sales Invoice Line'[Customer Type (Month)],'Fact - Sales Invoice Line'[Customer Type (Year)],  'Dim - Product'[RPT_Product Group 4 Name], 'Dim - Product'[RPT_Product Group 2 Name], 'Dim - Product'[RPT - Product Group 7 Name], 'Dim - Product'[Co-Operate Brand],'Dim - Customer'[Customer Card], 'Dim - Plant'[PLANT NAME],'Fact - Sales Invoice Line'[Group age], 'Dim - Plant'[Sales District Name], 'Fact - Sales Invoice Line'[CUST_CARD_DESC], 'Dim - Customer'[GENDER]), 'Fact - Sales Invoice Line'[INVOICED_ON_DT_WID] >= MIN('Dim - Program'[EFFECTIVE_FROM_DT] )  &&",
+              "'Fact - Sales Invoice Line'[INVOICED_ON_DT_WID] <= MAX('Dim - Program'[EFFECTIVE_TO_DT]))",
               ")",
               ""
             ],
@@ -5851,10 +5908,10 @@
           {
             "name": "All Customer",
             "expression": [
-              " CALCULATE([# All Customer],",
+              " CALCULATE([# Customer],",
               "    ALL('Dim - Product'),",
               "    ALL('Dim - Plant'),",
-              "    ALL('Fact - All Sales Invoice Line'),",
+              "    ALL('Fact - Sales Invoice Line'),",
               "    FILTER('Dim - Program', VALUE('Dim - Program'[MKT.Year]) = VALUE(SELECTEDVALUE('Dim - Program'[MKT.Year])) &&",
               "    'Dim - Program'[PROGRAM_CATEGORY] = SELECTEDVALUE('Dim - Program'[PROGRAM_CATEGORY])",
               "),",
@@ -5886,7 +5943,7 @@
           },
           {
             "name": "% MKT Net Amt (CK)",
-            "expression": "\tDIVIDE([. All Net Amt], [. MKT Net Amt (CK)], 0) -1",
+            "expression": "\tDIVIDE([. Net Amt], [. MKT Net Amt (CK)], 0) -1",
             "formatString": "0.00%;-0.00%;0.00%"
           },
           {
@@ -6004,19 +6061,11 @@
           {
             "name": "# MKT Bill (CK)",
             "expression": [
-              "",
-              " /*",
-              "    VAR CK_SDate0 = CALCULATE(VALUES('Dim - Program'[CK_DL_Sdate]),",
-              "\t\tFilter('Dim - Program', 'Dim - Program'[PROGRAM_CATEGORY] = SELECTEDVALUE('Dim - Program'[PROGRAM_CATEGORY])",
-              "\t\t\t&& 'Dim - Program'[MKT.Year] = SELECTEDVALUE('Dim - Program'[MKT.Year])))",
-              "\t\t\t",
-              "\t--VAR CK_EDate = VALUE(FORMAT(DATEADD(LASTDATE('Fact - Sales Invoice Line'[Invoice Date]),-1, YEAR), \"yyyymmdd\"))",
-              "*/",
-              "    VAR CK_SDate = DATEADD(FIRSTDATE('Fact - aLL Sales Invoice Line'[Invoice Date]),-1,YEAR)",
-              "    VAR CK_EDate = DATEADD(LASTDATE('Fact - aLL Sales Invoice Line'[Invoice Date]),-1, YEAR)",
+              "    VAR CK_SDate = DATEADD(FIRSTDATE('Fact - Sales Invoice Line'[Invoice Date]),-1,YEAR)",
+              "    VAR CK_EDate = DATEADD(LASTDATE('Fact - Sales Invoice Line'[Invoice Date]),-1, YEAR)",
               "\t\t\t",
               "\tRETURN CALCULATE([# Bill], ",
-              "\t\tALLEXCEPT('Fact - aLL Sales Invoice Line', 'Dim - Plant'[REGION], 'Dim - Plant'[PLANT KIND],'Fact - aLL Sales Invoice Line'[Customer Type (Month)],'Fact - aLL Sales Invoice Line'[Customer Type (Year)],  'Dim - Product'[RPT_Product Group 4 Name], 'Dim - Product'[RPT_Product Group 2 Name], 'Dim - Product'[RPT - Product Group 7 Name], 'Dim - Product'[Co-Operate Brand], 'Dim - Customer'[Customer Card], 'Dim - Plant'[PLANT NAME],'Fact - aLL Sales Invoice Line'[Group Age], 'Dim - Plant'[Sales District Name], 'Dim - Customer'[Gender], 'Dim - Plant'[Tier], 'Fact - aLL Sales Invoice Line'[MKT_Customer], 'Fact - ALL Sales Invoice Line'[CUST_CARD_DESC]),",
+              "\t\tALLEXCEPT('Fact - Sales Invoice Line', 'Dim - Plant'[REGION], 'Dim - Plant'[PLANT KIND],'Fact - Sales Invoice Line'[Customer Type (Month)],'Fact - Sales Invoice Line'[Customer Type (Year)],  'Dim - Product'[RPT_Product Group 4 Name], 'Dim - Product'[RPT_Product Group 2 Name], 'Dim - Product'[RPT - Product Group 7 Name], 'Dim - Product'[Co-Operate Brand], 'Dim - Customer'[Customer Card], 'Dim - Plant'[PLANT NAME],'Fact - Sales Invoice Line'[Group Age], 'Dim - Plant'[Sales District Name], 'Dim - Customer'[Gender], 'Dim - Plant'[Tier], 'Fact - Sales Invoice Line'[MKT_Customer], 'Fact - Sales Invoice Line'[CUST_CARD_DESC]),",
               "\t\tFILTER('Dim - Time', 'Dim - Time'[Date] >= CK_SDate &&",
               "\t\t'Dim - Time'[Date]  <= CK_EDate))",
               ""
@@ -6042,18 +6091,11 @@
             "name": "# MKT Active Plant (CK)",
             "expression": [
               " ",
-              " /*",
-              "    VAR CK_SDate0 = CALCULATE(VALUES('Dim - Program'[CK_DL_Sdate]),",
-              "\t\tFilter('Dim - Program', 'Dim - Program'[PROGRAM_CATEGORY] = SELECTEDVALUE('Dim - Program'[PROGRAM_CATEGORY])",
-              "\t\t\t&& 'Dim - Program'[MKT.Year] = SELECTEDVALUE('Dim - Program'[MKT.Year])))",
-              "\t\t\t",
-              "\t--VAR CK_EDate = VALUE(FORMAT(DATEADD(LASTDATE('Fact - Sales Invoice Line'[Invoice Date]),-1, YEAR), \"yyyymmdd\"))",
-              "*/",
-              "    VAR CK_SDate = DATEADD(FIRSTDATE('Fact - ALL Sales Invoice Line'[Invoice Date]),-1,YEAR)",
-              "    VAR CK_EDate = DATEADD(LASTDATE('Fact - aLL Sales Invoice Line'[Invoice Date]),-1, YEAR)",
+              "    VAR CK_SDate = DATEADD(FIRSTDATE('Fact - Sales Invoice Line'[Invoice Date]),-1,YEAR)",
+              "    VAR CK_EDate = DATEADD(LASTDATE('Fact - Sales Invoice Line'[Invoice Date]),-1, YEAR)",
               "",
               "RETURN CALCULATE([# Active Plant], ",
-              "\tALLEXCEPT('Fact - aLL Sales Invoice Line', 'Dim - Plant'[REGION], 'Dim - Plant'[PLANT KIND],'Fact - aLL Sales Invoice Line'[Customer Type (Month)],'Fact - aLL Sales Invoice Line'[Customer Type (Year)],  'Dim - Product'[RPT_Product Group 4 Name], 'Dim - Product'[RPT_Product Group 2 Name], 'Dim - Product'[RPT - Product Group 7 Name], 'Dim - Product'[Co-Operate Brand], 'Dim - Customer'[Customer Card], 'Dim - Plant'[PLANT NAME],'Fact - aLL Sales Invoice Line'[Group Age], 'Dim - Plant'[Sales District Name], 'Dim - Customer'[Gender], 'Dim - Plant'[Tier], 'Fact - aLL Sales Invoice Line'[MKT_Customer], 'Fact - aLL Sales Invoice Line'[CUST_CARD_DESC]),",
+              "\tALLEXCEPT('Fact - Sales Invoice Line', 'Dim - Plant'[REGION], 'Dim - Plant'[PLANT KIND],'Fact - Sales Invoice Line'[Customer Type (Month)],'Fact - Sales Invoice Line'[Customer Type (Year)],  'Dim - Product'[RPT_Product Group 4 Name], 'Dim - Product'[RPT_Product Group 2 Name], 'Dim - Product'[RPT - Product Group 7 Name], 'Dim - Product'[Co-Operate Brand], 'Dim - Customer'[Customer Card], 'Dim - Plant'[PLANT NAME],'Fact - Sales Invoice Line'[Group Age], 'Dim - Plant'[Sales District Name], 'Dim - Customer'[Gender], 'Dim - Plant'[Tier], 'Fact - Sales Invoice Line'[MKT_Customer], 'Fact - Sales Invoice Line'[CUST_CARD_DESC]),",
               "\t\tFILTER('Dim - Time', 'Dim - Time'[Date] >= CK_SDate &&",
               "\t\t\t'Dim - Time'[Date]  <= CK_EDate))",
               "\t",
@@ -6642,6 +6684,7 @@
       },
       {
         "name": "Fact - All Sales Invoice Line",
+        "isHidden": true,
         "columns": [
           {
             "name": "INVOICED_ON_DT_WID",
@@ -6829,11 +6872,6 @@
             "sourceColumn": "SLOC_WID"
           },
           {
-            "name": "CUST_CARD_DESC",
-            "dataType": "string",
-            "sourceColumn": "CUST_CARD_DESC"
-          },
-          {
             "name": "MKT_CUSTOMER",
             "dataType": "string",
             "sourceColumn": "MKT_CUSTOMER"
@@ -6880,16 +6918,6 @@
             "sourceColumn": "KOL_AMT"
           },
           {
-            "name": "PROGRAM_NAME",
-            "dataType": "string",
-            "sourceColumn": "PROGRAM_NAME"
-          },
-          {
-            "name": "PROFIT_AMT",
-            "dataType": "double",
-            "sourceColumn": "PROFIT_AMT"
-          },
-          {
             "name": "Group Age",
             "dataType": "string",
             "sourceColumn": "Group Age"
@@ -6903,6 +6931,21 @@
             "name": "Program Code",
             "dataType": "string",
             "sourceColumn": "Program Code"
+          },
+          {
+            "name": "Program Name",
+            "dataType": "string",
+            "sourceColumn": "Program Name"
+          },
+          {
+            "name": "Profit Amount",
+            "dataType": "double",
+            "sourceColumn": "Profit Amount"
+          },
+          {
+            "name": "Customer Card",
+            "dataType": "string",
+            "sourceColumn": "Customer Card"
           }
         ],
         "partitions": [
@@ -6931,7 +6974,7 @@
                 "      ,[GOLD_AMT]",
                 "      ,[Invoice_Hour]",
                 "      ,[TYPE_PLANT]",
-                "      ,[CUST_TYPE_MONTH]",
+                "      ,[CUST_TYPE_MKT] CUST_TYPE_MONTH",
                 "      ,[CUST_TYPE_YEAR]",
                 "      ,[SALES_PERSON_WID]",
                 "      ,[DOC_CONDITION_NUM]",
@@ -6956,11 +6999,8 @@
                 "      ,GOTIT_WID",
                 "      ,INVOICE_ZTG_WID",
                 "  FROM [PNJ_ROLAP].[dbo].[W_VW_SALES_INVOICE_LINE_F] ",
-                "  WHERE [INVOICED_ON_DT_WID] >= CAST(Convert(CHAR(8),DATEADD(DAY,- 30,GETDATE()),112) as int)\") ,",
-                "    #\"Renamed Columns\" = Table.RenameColumns(#\"Source\",{{\"INVOICE_NUM\", \"Invoice Number\"}, {\"INVOICED_QTY\", \"Qty\"},{\"INVOICE_Q10_QTY\", \"Q10\"} ,",
-                " {\"NET_AMT\", \"Net Amount\"}, {\"COST_AMT\", \"Cost Amount\"},{\"DISCOUNT_AMT\", \"Discount Amount\"},  {\"GROSS_WEIGHT\", \"Gross Weight\"}, {\"NET_WEIGHT\", \"Net Weight\"}, ",
-                " {\"CHANNEL_CODE\", \"Channel Code\"},   {\"INVOICE_TYPE\", \"Invoice Type\"},   {\"LABOUR_COST\", \"Labour Cost\"},{\"TYPE_PLANT\", \"Type Plant\"}, {\"CUST_TYPE_MONTH\", \"Customer Type (Month)\"}, {\"CUST_TYPE_YEAR\", \"Customer Type (Year)\"},",
-                " {\"GOLD_AMT\", \"Gold Amount\"}, {\"CUSTOMER_SOLD_TO_WID\", \"Customer WID\"},{\"HAOLAI_AMT\", \"Hao Lai Amount\"}, {\"Group_age\", \"Group Age\"}, {\"PROGRAM_CODE\", \"Program Code\"}}),",
+                "  \"),",
+                "         #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"INVOICE_NUM\", \"Invoice Number\"}, {\"INVOICED_QTY\", \"Qty\"}, {\"INVOICE_Q10_QTY\", \"Q10\"}, {\"NET_AMT\", \"Net Amount\"}, {\"COST_AMT\", \"Cost Amount\"}, {\"DISCOUNT_AMT\", \"Discount Amount\"}, {\"GROSS_WEIGHT\", \"Gross Weight\"}, {\"NET_WEIGHT\", \"Net Weight\"}, {\"CHANNEL_CODE\", \"Channel Code\"}, {\"INVOICE_TYPE\", \"Invoice Type\"}, {\"LABOUR_COST\", \"Labour Cost\"}, {\"TYPE_PLANT\", \"Type Plant\"}, {\"CUST_TYPE_MONTH\", \"Customer Type (Month)\"}, {\"CUST_TYPE_YEAR\", \"Customer Type (Year)\"}, {\"GOLD_AMT\", \"Gold Amount\"}, {\"CUSTOMER_SOLD_TO_WID\", \"Customer WID\"}, {\"HAOLAI_AMT\", \"Hao Lai Amount\"}, {\"Group_age\", \"Group Age\"}, {\"PROGRAM_CODE\", \"Program Code\"}, {\"CUST_CARD_DESC\", \"Customer Card\"}, {\"PROFIT_AMT\", \"Profit Amount\"}, {\"PROGRAM_NAME\", \"Program Name\"}}),",
                 "    #\"Replaced Value\" = Table.ReplaceValue(#\"Renamed Columns\",null,\"#Not assign\",Replacer.ReplaceValue,{\"Program Code\"})",
                 "in",
                 " #\"Replaced Value\""
@@ -6988,8 +7028,6 @@
                   "      ,[INVOICE_Q10_QTY]",
                   "      ,[LABOUR_COST]",
                   "      ,[GOLD_AMT]",
-                  "      ,[ORTHER_AMT]",
-                  "      ,[PRICE_RANGE]",
                   "      ,[Invoice_Hour]",
                   "      ,[TYPE_PLANT]",
                   "      ,[CUST_TYPE_MONTH]",
@@ -7011,260 +7049,14 @@
                   "      ,ConditionID",
                   "      ,[SLOC_WID]",
                   "      ,[PROFIT_AMT]",
-                  ",CUST_CARD_DESC",
-                  ",MKT_CUSTOMER",
-                  ",LUNAR_DT",
+                  "      ,CUST_CARD_DESC",
+                  "      ,MKT_CUSTOMER",
+                  "      ,LUNAR_DT",
+                  "      ,GOTIT_WID",
+                  "      ,INVOICE_ZTG_WID",
                   "  FROM [PNJ_ROLAP].[dbo].[W_VW_SALES_INVOICE_LINE_F] ",
                   "  WHERE [INVOICED_ON_DT_WID] >= CAST(Convert(CHAR(8),DATEADD(DAY,- 30,GETDATE()),112) as int)\") ,",
-                  "    #\"Renamed Columns\" = Table.RenameColumns(#\"Source\",{{\"INVOICE_NUM\", \"Invoice Number\"}, {\"INVOICED_QTY\", \"Invoice Quantity\"}, {\"NET_AMT\", \"Net Amount\"}, {\"COST_AMT\", \"Cost Amount\"},{\"DISCOUNT_AMT\", \"Discount Amount\"},  {\"GROSS_WEIGHT\", \"Gross Weight\"}, {\"NET_WEIGHT\", \"Net Weight\"},   {\"CHANNEL_CODE\", \"Channel Code\"},   {\"INVOICE_TYPE\", \"Invoice Type\"},   {\"LABOUR_COST\", \"Labour Cost\"}, {\"ORTHER_AMT\", \"Other Amount\"}, {\"GOLD_AMT\", \"Gold Amount\"}}),",
-                  "    #\"Renamed Columns1\" = Table.RenameColumns(#\"Renamed Columns\",{{\"PRICE_RANGE\", \"Price Range\"}, {\"TYPE_PLANT\", \"Type Plant\"}, {\"CUST_TYPE_MONTH\", \"Customer Type (Month)\"}, {\"CUST_TYPE_YEAR\", \"Customer Type (Year)\"}}),",
-                  "    #\"Renamed Columns2\" = Table.RenameColumns(#\"Renamed Columns1\",{{\"CUSTOMER_SOLD_TO_WID\", \"Customer WID\"}}),",
-                  "    #\"Renamed Columns3\" = Table.RenameColumns(#\"Renamed Columns2\",{{\"INVOICE_Q10_QTY\", \"Q10\"}, {\"Invoice Quantity\", \"Qty\"}}),",
-                  "    #\"Replaced Value\" = Table.ReplaceValue(#\"Renamed Columns3\",null,\"#Not assign\",Replacer.ReplaceValue,{\"PROGRAM_CODE\"}),",
-                  "    #\"Renamed Columns4\" = Table.RenameColumns(#\"Replaced Value\",{{\"PROFIT_AMT\", \"Profit Amount\"},{\"DOC_CONDITION_NUM\", \"Condition Document Number\"}, {\"Group_age\", \"Group Age\"}, {\"HAOLAI_AMT\", \"Hao Lai Amount\"}, {\"DELIVERY_PRIORITY\", \"Delivery Priority\"}, {\"SHIPPING_CONDITION\", \"Shipping Condition\"}, {\"PROGRAM_CODE\", \"Program Code\"}, {\"KOL_AMT\", \"KOL Amount\"}, {\"PROGRAM_NAME\", \"Program Name\"}})",
-                  "in",
-                  "    #\"Renamed Columns4\"</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
-                ]
-              }
-            ]
-          },
-          {
-            "name": "Fact - All Sales Invoice Line 2022",
-            "mode": "import",
-            "source": {
-              "type": "m",
-              "expression": [
-                "let",
-                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"SELECT [INVOICED_ON_DT_WID]",
-                "      ,[INVOICE_NUM]",
-                "      ,[PRODUCT_WID]",
-                "      ,[INVOICED_QTY]",
-                "      ,[NET_AMT]",
-                "      ,[COST_AMT]",
-                "      ,[DISCOUNT_AMT]",
-                "      ,[GROSS_WEIGHT]",
-                "      ,[NET_WEIGHT]",
-                "      ,[CHANNEL_CODE]",
-                "      ,[INVOICE_TYPE]",
-                "      ,[CUSTOMER_SOLD_TO_WID]",
-                "      ,[COMPANY_WID]",
-                "      ,[PLANT_WID]",
-                "      ,[INVOICE_Q10_QTY]",
-                "      ,[LABOUR_COST]",
-                "      ,[GOLD_AMT]",
-                "      ,[Invoice_Hour]",
-                "      ,[TYPE_PLANT]",
-                "      ,[CUST_TYPE_MONTH]",
-                "      ,[CUST_TYPE_YEAR]",
-                "      ,[SALES_PERSON_WID]",
-                "      ,[DOC_CONDITION_NUM]",
-                "      ,[PAYMENT_TERM_WID]",
-                "      ,[Group_age]",
-                "      ,[PRODUCT_INVENTORY_WID]",
-                "      ,[HAOLAI_AMT]",
-                "      ,[DELIVERY_PRIORITY]",
-                "      ,[SHIPPING_CONDITION]",
-                "      ,[PROGRAM_CODE]",
-                "      ,[KOL_AMT]",
-                "      ,[PROGRAM_NAME]",
-                "      ,CUSTOMER_PAYER_WID",
-                "      ,TRAFFIC",
-                "      ,Palexy_AGEID",
-                "      ,ConditionID",
-                "      ,[SLOC_WID]",
-                "      ,[PROFIT_AMT]",
-                "      ,CUST_CARD_DESC",
-                "      ,MKT_CUSTOMER",
-                "      ,LUNAR_DT",
-                "      ,GOTIT_WID",
-                "      ,INVOICE_ZTG_WID",
-                "  FROM [PNJ_ROLAP].[dbo].[W_VW_SALES_INVOICE_LINE_F] ",
-                "  WHERE [INVOICED_ON_DT_WID] < CAST(Convert(CHAR(8),DATEADD(DAY,- 30,GETDATE()),112) as int) and [INVOICED_ON_DT_WID] >= 20220101\") ,",
-                "    #\"Renamed Columns\" = Table.RenameColumns(#\"Source\",{{\"INVOICE_NUM\", \"Invoice Number\"}, {\"INVOICED_QTY\", \"Qty\"},{\"INVOICE_Q10_QTY\", \"Q10\"} ,",
-                " {\"NET_AMT\", \"Net Amount\"}, {\"COST_AMT\", \"Cost Amount\"},{\"DISCOUNT_AMT\", \"Discount Amount\"},  {\"GROSS_WEIGHT\", \"Gross Weight\"}, {\"NET_WEIGHT\", \"Net Weight\"}, ",
-                " {\"CHANNEL_CODE\", \"Channel Code\"},   {\"INVOICE_TYPE\", \"Invoice Type\"},   {\"LABOUR_COST\", \"Labour Cost\"},{\"TYPE_PLANT\", \"Type Plant\"}, {\"CUST_TYPE_MONTH\", \"Customer Type (Month)\"}, {\"CUST_TYPE_YEAR\", \"Customer Type (Year)\"},",
-                " {\"GOLD_AMT\", \"Gold Amount\"}, {\"CUSTOMER_SOLD_TO_WID\", \"Customer WID\"},{\"HAOLAI_AMT\", \"Hao Lai Amount\"}, {\"Group_age\", \"Group Age\"}, {\"PROGRAM_CODE\", \"Program Code\"}}),",
-                "    #\"Replaced Value\" = Table.ReplaceValue(#\"Renamed Columns\",null,\"#Not assign\",Replacer.ReplaceValue,{\"Program Code\"})",
-                "in",
-                " #\"Replaced Value\""
-              ]
-            },
-            "annotations": [
-              {
-                "name": "QueryEditorSerialization",
-                "value": [
-                  "<?xml version=\"1.0\" encoding=\"UTF-16\"?><Gemini xmlns=\"QueryEditorSerialization\"><AnnotationContent><![CDATA[<RSQueryCommandText>let",
-                  "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"SELECT [INVOICED_ON_DT_WID]",
-                  "      ,[INVOICE_NUM]",
-                  "      ,[PRODUCT_WID]",
-                  "      ,[INVOICED_QTY]",
-                  "      ,[NET_AMT]",
-                  "      ,[COST_AMT]",
-                  "      ,[DISCOUNT_AMT]",
-                  "      ,[GROSS_WEIGHT]",
-                  "      ,[NET_WEIGHT]",
-                  "      ,[CHANNEL_CODE]",
-                  "      ,[INVOICE_TYPE]",
-                  "      ,[CUSTOMER_SOLD_TO_WID]",
-                  "      ,[COMPANY_WID]",
-                  "      ,[PLANT_WID]",
-                  "      ,[INVOICE_Q10_QTY]",
-                  "      ,[LABOUR_COST]",
-                  "      ,[GOLD_AMT]",
-                  "      ,[Invoice_Hour]",
-                  "      ,[TYPE_PLANT]",
-                  "      ,[CUST_TYPE_MONTH]",
-                  "      ,[CUST_TYPE_YEAR]",
-                  "      ,[SALES_PERSON_WID]",
-                  "      ,[DOC_CONDITION_NUM]",
-                  "      ,[PAYMENT_TERM_WID]",
-                  "      ,[Group_age]",
-                  "      ,[PRODUCT_INVENTORY_WID]",
-                  "      ,[HAOLAI_AMT]",
-                  "      ,[DELIVERY_PRIORITY]",
-                  "      ,[SHIPPING_CONDITION]",
-                  "      ,[PROGRAM_CODE]",
-                  "      ,[KOL_AMT]",
-                  "      ,[PROGRAM_NAME]",
-                  "      ,CUSTOMER_PAYER_WID",
-                  "      ,TRAFFIC",
-                  "      ,Palexy_AGEID",
-                  "      ,ConditionID",
-                  "      ,[SLOC_WID]",
-                  "      ,[PROFIT_AMT]",
-                  "      ,CUST_CARD_DESC",
-                  "      ,MKT_CUSTOMER",
-                  "      ,LUNAR_DT",
-                  "      ,GOTIT_WID",
-                  "      ,INVOICE_ZTG_WID",
-                  "  FROM [PNJ_ROLAP].[dbo].[W_VW_SALES_INVOICE_LINE_F] ",
-                  "  WHERE [INVOICED_ON_DT_WID] < CAST(Convert(CHAR(8),DATEADD(DAY,- 30,GETDATE()),112) as int) and [INVOICED_ON_DT_WID] >= 20220101\") ,",
-                  "    #\"Renamed Columns\" = Table.RenameColumns(#\"Source\",{{\"INVOICE_NUM\", \"Invoice Number\"}, {\"INVOICED_QTY\", \"Qty\"},{\"INVOICE_Q10_QTY\", \"Q10\"} ,",
-                  " {\"NET_AMT\", \"Net Amount\"}, {\"COST_AMT\", \"Cost Amount\"},{\"DISCOUNT_AMT\", \"Discount Amount\"},  {\"GROSS_WEIGHT\", \"Gross Weight\"}, {\"NET_WEIGHT\", \"Net Weight\"}, ",
-                  " {\"CHANNEL_CODE\", \"Channel Code\"},   {\"INVOICE_TYPE\", \"Invoice Type\"},   {\"LABOUR_COST\", \"Labour Cost\"},{\"TYPE_PLANT\", \"Type Plant\"}, {\"CUST_TYPE_MONTH\", \"Customer Type (Month)\"}, {\"CUST_TYPE_YEAR\", \"Customer Type (Year)\"},",
-                  " {\"GOLD_AMT\", \"Gold Amount\"}, {\"CUSTOMER_SOLD_TO_WID\", \"Customer WID\"},{\"HAOLAI_AMT\", \"Hao Lai Amount\"}, {\"Group_age\", \"Group Age\"}, {\"PROGRAM_CODE\", \"Program Code\"}}),",
-                  "    #\"Replaced Value\" = Table.ReplaceValue(#\"Renamed Columns\",null,\"#Not assign\",Replacer.ReplaceValue,{\"Program Code\"})",
-                  "in",
-                  " #\"Replaced Value\"</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
-                ]
-              }
-            ]
-          },
-          {
-            "name": "Fact - All Sales Invoice Line bf 2022",
-            "mode": "import",
-            "source": {
-              "type": "m",
-              "expression": [
-                "let",
-                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"SELECT [INVOICED_ON_DT_WID]",
-                "      ,[INVOICE_NUM]",
-                "      ,[PRODUCT_WID]",
-                "      ,[INVOICED_QTY]",
-                "      ,[NET_AMT]",
-                "      ,[COST_AMT]",
-                "      ,[DISCOUNT_AMT]",
-                "      ,[GROSS_WEIGHT]",
-                "      ,[NET_WEIGHT]",
-                "      ,[CHANNEL_CODE]",
-                "      ,[INVOICE_TYPE]",
-                "      ,[CUSTOMER_SOLD_TO_WID]",
-                "      ,[COMPANY_WID]",
-                "      ,[PLANT_WID]",
-                "      ,[INVOICE_Q10_QTY]",
-                "      ,[LABOUR_COST]",
-                "      ,[GOLD_AMT]",
-                "      ,[Invoice_Hour]",
-                "      ,[TYPE_PLANT]",
-                "      ,[CUST_TYPE_MONTH]",
-                "      ,[CUST_TYPE_YEAR]",
-                "      ,[SALES_PERSON_WID]",
-                "      ,[DOC_CONDITION_NUM]",
-                "      ,[PAYMENT_TERM_WID]",
-                "      ,[Group_age]",
-                "      ,[PRODUCT_INVENTORY_WID]",
-                "      ,[HAOLAI_AMT]",
-                "      ,[DELIVERY_PRIORITY]",
-                "      ,[SHIPPING_CONDITION]",
-                "      ,[PROGRAM_CODE]",
-                "      ,[KOL_AMT]",
-                "      ,[PROGRAM_NAME]",
-                "      ,CUSTOMER_PAYER_WID",
-                "      ,TRAFFIC",
-                "      ,Palexy_AGEID",
-                "      ,ConditionID",
-                "      ,[SLOC_WID]",
-                "      ,[PROFIT_AMT]",
-                "      ,CUST_CARD_DESC",
-                "      ,MKT_CUSTOMER",
-                "      ,LUNAR_DT",
-                "      ,GOTIT_WID",
-                "      ,INVOICE_ZTG_WID",
-                "  FROM [PNJ_ROLAP].[dbo].[W_VW_SALES_INVOICE_LINE_F] ",
-                "  WHERE [INVOICED_ON_DT_WID] <20220101\") ,",
-                "    #\"Renamed Columns\" = Table.RenameColumns(#\"Source\",{{\"INVOICE_NUM\", \"Invoice Number\"}, {\"INVOICED_QTY\", \"Qty\"},{\"INVOICE_Q10_QTY\", \"Q10\"} ,",
-                " {\"NET_AMT\", \"Net Amount\"}, {\"COST_AMT\", \"Cost Amount\"},{\"DISCOUNT_AMT\", \"Discount Amount\"},  {\"GROSS_WEIGHT\", \"Gross Weight\"}, {\"NET_WEIGHT\", \"Net Weight\"}, ",
-                " {\"CHANNEL_CODE\", \"Channel Code\"},   {\"INVOICE_TYPE\", \"Invoice Type\"},   {\"LABOUR_COST\", \"Labour Cost\"},{\"TYPE_PLANT\", \"Type Plant\"}, {\"CUST_TYPE_MONTH\", \"Customer Type (Month)\"}, {\"CUST_TYPE_YEAR\", \"Customer Type (Year)\"},",
-                " {\"GOLD_AMT\", \"Gold Amount\"}, {\"CUSTOMER_SOLD_TO_WID\", \"Customer WID\"},{\"HAOLAI_AMT\", \"Hao Lai Amount\"}, {\"Group_age\", \"Group Age\"}, {\"PROGRAM_CODE\", \"Program Code\"}}),",
-                "    #\"Replaced Value\" = Table.ReplaceValue(#\"Renamed Columns\",null,\"#Not assign\",Replacer.ReplaceValue,{\"Program Code\"})",
-                "in",
-                " #\"Replaced Value\""
-              ]
-            },
-            "annotations": [
-              {
-                "name": "QueryEditorSerialization",
-                "value": [
-                  "<?xml version=\"1.0\" encoding=\"UTF-16\"?><Gemini xmlns=\"QueryEditorSerialization\"><AnnotationContent><![CDATA[<RSQueryCommandText>let",
-                  "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"SELECT [INVOICED_ON_DT_WID]",
-                  "      ,[INVOICE_NUM]",
-                  "      ,[PRODUCT_WID]",
-                  "      ,[INVOICED_QTY]",
-                  "      ,[NET_AMT]",
-                  "      ,[COST_AMT]",
-                  "      ,[DISCOUNT_AMT]",
-                  "      ,[GROSS_WEIGHT]",
-                  "      ,[NET_WEIGHT]",
-                  "      ,[CHANNEL_CODE]",
-                  "      ,[INVOICE_TYPE]",
-                  "      ,[CUSTOMER_SOLD_TO_WID]",
-                  "      ,[COMPANY_WID]",
-                  "      ,[PLANT_WID]",
-                  "      ,[INVOICE_Q10_QTY]",
-                  "      ,[LABOUR_COST]",
-                  "      ,[GOLD_AMT]",
-                  "      ,[Invoice_Hour]",
-                  "      ,[TYPE_PLANT]",
-                  "      ,[CUST_TYPE_MONTH]",
-                  "      ,[CUST_TYPE_YEAR]",
-                  "      ,[SALES_PERSON_WID]",
-                  "      ,[DOC_CONDITION_NUM]",
-                  "      ,[PAYMENT_TERM_WID]",
-                  "      ,[Group_age]",
-                  "      ,[PRODUCT_INVENTORY_WID]",
-                  "      ,[HAOLAI_AMT]",
-                  "      ,[DELIVERY_PRIORITY]",
-                  "      ,[SHIPPING_CONDITION]",
-                  "      ,[PROGRAM_CODE]",
-                  "      ,[KOL_AMT]",
-                  "      ,[PROGRAM_NAME]",
-                  "      ,CUSTOMER_PAYER_WID",
-                  "      ,TRAFFIC",
-                  "      ,Palexy_AGEID",
-                  "      ,ConditionID",
-                  "      ,[SLOC_WID]",
-                  "      ,[PROFIT_AMT]",
-                  "      ,CUST_CARD_DESC",
-                  "      ,MKT_CUSTOMER",
-                  "      ,LUNAR_DT",
-                  "      ,GOTIT_WID",
-                  "      ,INVOICE_ZTG_WID",
-                  "  FROM [PNJ_ROLAP].[dbo].[W_VW_SALES_INVOICE_LINE_F] ",
-                  "  WHERE [INVOICED_ON_DT_WID] <20220101\") ,",
-                  "    #\"Renamed Columns\" = Table.RenameColumns(#\"Source\",{{\"INVOICE_NUM\", \"Invoice Number\"}, {\"INVOICED_QTY\", \"Qty\"},{\"INVOICE_Q10_QTY\", \"Q10\"} ,",
-                  " {\"NET_AMT\", \"Net Amount\"}, {\"COST_AMT\", \"Cost Amount\"},{\"DISCOUNT_AMT\", \"Discount Amount\"},  {\"GROSS_WEIGHT\", \"Gross Weight\"}, {\"NET_WEIGHT\", \"Net Weight\"}, ",
-                  " {\"CHANNEL_CODE\", \"Channel Code\"},   {\"INVOICE_TYPE\", \"Invoice Type\"},   {\"LABOUR_COST\", \"Labour Cost\"},{\"TYPE_PLANT\", \"Type Plant\"}, {\"CUST_TYPE_MONTH\", \"Customer Type (Month)\"}, {\"CUST_TYPE_YEAR\", \"Customer Type (Year)\"},",
-                  " {\"GOLD_AMT\", \"Gold Amount\"}, {\"CUSTOMER_SOLD_TO_WID\", \"Customer WID\"},{\"HAOLAI_AMT\", \"Hao Lai Amount\"}, {\"Group_age\", \"Group Age\"}, {\"PROGRAM_CODE\", \"Program Code\"}}),",
+                  "         #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"INVOICE_NUM\", \"Invoice Number\"}, {\"INVOICED_QTY\", \"Qty\"}, {\"INVOICE_Q10_QTY\", \"Q10\"}, {\"NET_AMT\", \"Net Amount\"}, {\"COST_AMT\", \"Cost Amount\"}, {\"DISCOUNT_AMT\", \"Discount Amount\"}, {\"GROSS_WEIGHT\", \"Gross Weight\"}, {\"NET_WEIGHT\", \"Net Weight\"}, {\"CHANNEL_CODE\", \"Channel Code\"}, {\"INVOICE_TYPE\", \"Invoice Type\"}, {\"LABOUR_COST\", \"Labour Cost\"}, {\"TYPE_PLANT\", \"Type Plant\"}, {\"CUST_TYPE_MONTH\", \"Customer Type (Month)\"}, {\"CUST_TYPE_YEAR\", \"Customer Type (Year)\"}, {\"GOLD_AMT\", \"Gold Amount\"}, {\"CUSTOMER_SOLD_TO_WID\", \"Customer WID\"}, {\"HAOLAI_AMT\", \"Hao Lai Amount\"}, {\"Group_age\", \"Group Age\"}, {\"PROGRAM_CODE\", \"Program Code\"}, {\"CUST_CARD_DESC\", \"Customer Card\"}, {\"PROFIT_AMT\", \"Profit Amount\"}, {\"PROGRAM_NAME\", \"Program Name\"}}),",
                   "    #\"Replaced Value\" = Table.ReplaceValue(#\"Renamed Columns\",null,\"#Not assign\",Replacer.ReplaceValue,{\"Program Code\"})",
                   "in",
                   " #\"Replaced Value\"</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
@@ -7479,7 +7271,7 @@
           },
           {
             "name": "% Net Amt FC (YTD)",
-            "expression": " CALCULATE(([. Net Amt (YTD)] / [. Net Amt FC (YTD)])-1)",
+            "expression": " CALCULATE(([. All Net Amt (YTD)] / [. Net Amt FC (YTD)])-1)",
             "formatString": "0.00%;-0.00%;0.00%"
           },
           {
@@ -7487,21 +7279,22 @@
             "expression": [
               " ",
               "DIVIDE (",
-              "[. Net Amt (YTD)], if(ISBLANK([. Net Amt (FC) (Full Year)] ) = TRUE, 0, [. Net Amt (FC) (Full Year)]), 0)-1"
+              "[. All Net Amt (YTD)], if(ISBLANK([. Net Amt (FC) (Full Year)] ) = TRUE, 0, [. Net Amt (FC) (Full Year)]), 0)-1"
             ],
             "formatString": "0.00%;-0.00%;0.00%"
           },
           {
-            "name": ". Net Amt LY (YTD)",
+            "name": ". All Net Amt LY (YTD)",
             "expression": " CALCULATE([. All Net Amt (LY)], DATESYTD('Dim - Time'[Date]))",
             "formatString": "#,0.00"
           },
           {
             "name": "% Net_Amt_LY",
-            "expression": "if(ISBLANK([. All Net Amt (LY)]), 1, ([. All Net Amt]/[. All Net Amt (LY)]-1 ))"
+            "expression": "if(ISBLANK([. All Net Amt (LY)]), 1, ([. All Net Amt]/[. All Net Amt (LY)]-1 ))",
+            "formatString": "0.00%;-0.00%;0.00%"
           },
           {
-            "name": ". Net Amt (YTD)",
+            "name": ". All Net Amt (YTD)",
             "expression": " CALCULATE([. All Net Amt],DATESYTD('Dim - Time'[Date]))",
             "formatString": "#,0.00"
           },
@@ -7543,15 +7336,18 @@
           },
           {
             "name": "% All Qty (LY)",
-            "expression": " CALCULATE([# All Qty]/[# All Qty (LY)] -1)"
+            "expression": " CALCULATE([# All Qty]/[# All Qty (LY)] -1)",
+            "formatString": "0.00%;-0.00%;0.00%"
           },
           {
             "name": "% All Qty (YTD) (LY)",
-            "expression": " CALCULATE(([# All Qty (YTD)]/ [. All Qty (YTD) (LY)])-1)"
+            "expression": " CALCULATE(([# All Qty (YTD)]/ [. All Qty (YTD) (LY)])-1)",
+            "formatString": "0.00%;-0.00%;0.00%"
           },
           {
             "name": "% All Net Amt (YTD)",
-            "expression": " CALCULATE('Fact - All Sales Invoice Line'[. Net Amt (YTD)]/'Fact - All Sales Invoice Line'[. Net Amt LY (YTD)] -1)"
+            "expression": " CALCULATE('Fact - All Sales Invoice Line'[. All Net Amt (YTD)]/'Fact - All Sales Invoice Line'[. All Net Amt LY (YTD)] -1)",
+            "formatString": "0.00%;-0.00%;0.00%"
           },
           {
             "name": ". All Qty (YTD) (LY)",
@@ -7617,6 +7413,29 @@
           {
             "name": "AVG All Net Amt/Sales Person (LY)",
             "expression": " CALCULATE([. All Net Amt (LY)]/[# Sales person (LY)])"
+          },
+          {
+            "name": "% All Net_Amt (LM)",
+            "expression": " CALCULATE(IF([. All Net Amt]/[. All Net Amt (LM)] = 0, BLANK(),[. All Net Amt]/[. All Net Amt (LM)] -1))",
+            "formatString": "0.00%;-0.00%;0.00%"
+          },
+          {
+            "name": "% All Net Amt",
+            "expression": " [. All Net Amt]/CALCULATE([. All Net Amt], ALLSELECTED('Dim - Plant'), ALLSELECTED('Dim - Product'[RPT_Product Group 4 Name]))",
+            "formatString": "0.00%;-0.00%;0.00%"
+          },
+          {
+            "name": "% All Net Amt LY (YTD)",
+            "expression": " CALCULATE(([. All Net Amt (YTD)] / [. All Net Amt LY (YTD)])-1)",
+            "formatString": "0.00%;-0.00%;0.00%"
+          },
+          {
+            "name": "AVG All Qty/Cust",
+            "expression": " CALCULATE([# All Qty] /[# All Customer])"
+          },
+          {
+            "name": "AVG All Qty/Cust (LY)",
+            "expression": " CALCULATE([# All Qty (LY)]/[# All Customer (LY)])"
           }
         ]
       },
@@ -8560,6 +8379,16 @@
               "",
               "))"
             ]
+          },
+          {
+            "name": "# Days Ads.",
+            "expression": [
+              "CALCULATE(DISTINCTCOUNT([Date_key]),",
+              " FILTER('Fact - ATL', 'Fact - ATL'[Layer] = \"Date\" &&",
+              "  'Fact - ATL'[Program Category] = SELECTEDVALUE('Dim - Program'[Program_Category]) &&",
+              "  VALUE('Fact - ATL'[MKT.Year]) = VALUE(SELECTEDVALUE('Dim - Program'[MKT.Year]))",
+              "))"
+            ]
           }
         ]
       },
@@ -8995,7 +8824,8 @@
               "            ),",
               "        [PNJP .Net Amt (Daily)])",
               " )"
-            ]
+            ],
+            "formatString": "#,0.00"
           },
           {
             "name": "SC %AVG .Net Qty (Monthly) KT",
@@ -9060,7 +8890,8 @@
               "            ),",
               "        [PNJP .Net Qty (Daily)])",
               " )"
-            ]
+            ],
+            "formatString": "#,0.00"
           },
           {
             "name": "SC %Plant Over Quota",
@@ -9079,7 +8910,8 @@
               "     FILTER('Dim - Plant',[. Net Amount] >0),",
               "     FILTER('Dim - Plant', 'Dim - Plant'[Plant Type] = \"CH\")",
               " )"
-            ]
+            ],
+            "formatString": "#,0.00"
           },
           {
             "name": "SC #PO (GR)",
@@ -9276,7 +9108,7 @@
               " VAR Days = DATEDIFF(  Date(Year(Last_Date),1,1),  Last_Date,DAY)+1",
               "",
               " ",
-              "RETURN  days/([. Net Amt (YTD)]/[SC AVG .Net Amt])"
+              "RETURN  days/([. All Net Amt (YTD)]/[SC AVG .Net Amt])"
             ]
           },
           {
@@ -9627,7 +9459,7 @@
               " \t FILTER('Fact - All Sales Invoice Line', 'Fact - All Sales Invoice Line'[Invoice Type] <> \"ZRE\" &&",
               " \t \t 'Fact - All Sales Invoice Line'[INVOICE TYPE] <> \"ZS2\" &&",
               " \t \t  'Fact - All Sales Invoice Line'[INVOICE TYPE]<> \"ZPI\" && ",
-              " \t \t  'Fact - All Sales Invoice Line'[Channel Code] in {\"10\", \"20\"}),",
+              " \t \t  'Fact - All Sales Invoice Line'[Channel Code] in {10, 20}),",
               "\tFILTER('Dim - Customer', NOT 'Dim - Customer'[Parent Code] in {\"One-time\"}))\t",
               "\t",
               "VAR PriorCustomer = CALCULATETABLE(VALUES ('Dim - Customer'[Parent Code] ),",
@@ -10406,8 +10238,19 @@
               "type": "m",
               "expression": [
                 "let",
-                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;DW_RAW\",",
-                "\t\" SELECT * FROM W_VW_ICA_CVR_F;  \"),",
+                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;DW_RAW\",\"",
+                "       SELECT [Store_date]",
+                "      ,[Layer]",
+                "      ,[DATE_WID]",
+                "      ,[PLANT_WID]",
+                "      ,[VISIT]",
+                "      ,[INTERACTION]",
+                "      ,[Interact_time]",
+                "      ,[AMT]",
+                "      ,[CUSTOMERS]",
+                "      ,[QTY]",
+                "      ,[Dwell_Time]",
+                "  FROM [DW_RAW].[dbo].[W_VW_ICA_CVR_F]\"),",
                 "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"Interact_time\", \"Interaction Time\"}, {\"Dwell_Time\", \"Dwell Time\"}}) ",
                 "",
                 "in",
@@ -13520,6 +13363,139 @@
               "\tUSERELATIONSHIP('Dim - Time (Lunar)'[Lunar Date], 'Fact - All Sales Invoice Line'[Lunar Date]))",
               ""
             ]
+          },
+          {
+            "name": "LN .Net Qty",
+            "expression": [
+              "CALCULATE([. Net Qty], ",
+              "\tUSERELATIONSHIP('Dim - Time (Lunar)'[Lunar Date], 'Fact - Sales Invoice Line'[Lunar Date]))",
+              ""
+            ]
+          },
+          {
+            "name": "LN .Target Amt",
+            "expression": [
+              " CALCULATE(sum( 'Fact - Marketing Plan'[TARGET_AMT] ),",
+              "\tUSERELATIONSHIP('Dim - Time (Lunar)'[Lunar Date], 'Fact - Marketing Plan'[Lunar Date])",
+              ")"
+            ]
+          },
+          {
+            "name": "LN .Net Qty (LY)",
+            "expression": [
+              " CALCULATE([LN .Net Qty], DATEADD('Dim - Time (Lunar)'[Lunar Date], -1, YEAR),  ",
+              "ALLEXCEPT('Fact - Sales Invoice Line', 'Dim - Plant'[REGION], 'Dim - Plant'[PLANT KIND],  'Dim - Product'[RPT_Product Group 4 Name], 'Dim - Product'[RPT_Product Group 2 Name], 'Dim - Product'[RPT - Product Group 7 Name], 'Dim - Product'[Co-Operate Brand], 'Dim - Customer'[Customer Card], 'Dim - Plant'[PLANT NAME],'Fact - Sales Invoice Line'[Group Age], 'Dim - Plant'[Sales District Name], 'Dim - Customer'[Gender], 'Dim - Plant'[Tier], 'Fact - Sales Invoice Line'[MKT_Customer],  'Dim - Plant'[Plant Name 1] ))",
+              ""
+            ]
+          },
+          {
+            "name": "LN .Net Amt (LY)",
+            "expression": [
+              " CALCULATE([LN .Net Amt], DATEADD('Dim - Time (Lunar)'[Lunar Date], -1, YEAR) , ",
+              "ALLEXCEPT('Fact - Sales Invoice Line', 'Dim - Plant'[REGION], 'Dim - Plant'[PLANT KIND], 'Dim - Product'[RPT_Product Group 4 Name], 'Dim - Product'[RPT_Product Group 2 Name], 'Dim - Product'[RPT - Product Group 7 Name], 'Dim - Product'[Co-Operate Brand], 'Dim - Customer'[Customer Card], 'Dim - Plant'[PLANT NAME],'Fact - Sales Invoice Line'[Group Age], 'Dim - Plant'[Sales District Name], 'Dim - Customer'[Gender], 'Dim - Plant'[Tier], 'Fact - Sales Invoice Line'[MKT_Customer],  'Dim - Plant'[Plant Name 1] ))",
+              ""
+            ]
+          },
+          {
+            "name": "LN .Net Amt (CK)",
+            "expression": [
+              "\t\t",
+              "CALCULATE([LN .Net Amt],",
+              "\tALLEXCEPT('Fact - Sales Invoice Line', 'Dim - Plant'[REGION], 'Dim - Plant'[PLANT KIND],'Fact - Sales Invoice Line'[Customer Type (Month)],'Fact - Sales Invoice Line'[Customer Type (Year)],  'Dim - Product'[RPT_Product Group 4 Name], 'Dim - Product'[RPT_Product Group 2 Name], 'Dim - Product'[RPT - Product Group 7 Name], 'Dim - Product'[Co-Operate Brand], 'Dim - Customer'[Customer Card], 'Dim - Plant'[PLANT NAME],'Fact - Sales Invoice Line'[Group Age], 'Dim - Plant'[Sales District Name], 'Dim - Customer'[Gender], 'Dim - Plant'[Tier], 'Fact - Sales Invoice Line'[MKT_Customer], 'Fact - Sales Invoice Line'[CUST_CARD_DESC],  'Dim - Plant'[Plant Name 1]),",
+              "DATESBETWEEN('Fact - Sales Invoice Line'[Lunar Date],[LN StartDT CK], [LN EndDT CK]))"
+            ]
+          },
+          {
+            "name": "LN %Net Qty (LY)",
+            "expression": " CALCULATE([LN .Net Qty]/[LN .Net Qty (LY)])-1",
+            "formatString": "0.00%;-0.00%;0.00%"
+          },
+          {
+            "name": "LN %Net Amt (Target)",
+            "expression": "  CALCULATE([LN .Net Amt]/[LN .Target Amt])-1",
+            "formatString": "0.00%;-0.00%;0.00%"
+          },
+          {
+            "name": "LN %Net Amt (LY)",
+            "expression": " CALCULATE([LN .Net Amt]/[LN .Net Amt (LY)])-1",
+            "formatString": "0.00%;-0.00%;0.00%"
+          },
+          {
+            "name": "LN %Net Amt (CK)",
+            "expression": " CALCULATE([LN .Net Amt]/[LN .Net Amt (CK)])-1",
+            "formatString": "0.00%;-0.00%;0.00%"
+          },
+          {
+            "name": "LN MKT .Net Amt (LY)",
+            "expression": [
+              "\t\t",
+              "CALCULATE([LN .Net Amt],",
+              "\tALLEXCEPT('Fact - Sales Invoice Line', 'Dim - Plant'[REGION], 'Dim - Plant'[PLANT KIND],'Fact - Sales Invoice Line'[Customer Type (Month)],'Fact - Sales Invoice Line'[Customer Type (Year)],  'Dim - Product'[RPT_Product Group 4 Name], 'Dim - Product'[RPT_Product Group 2 Name], 'Dim - Product'[RPT - Product Group 7 Name], 'Dim - Product'[Co-Operate Brand], 'Dim - Customer'[Customer Card], 'Dim - Plant'[PLANT NAME],'Fact - Sales Invoice Line'[Group Age], 'Dim - Plant'[Sales District Name], 'Dim - Customer'[Gender], 'Dim - Plant'[Tier], 'Fact - Sales Invoice Line'[MKT_Customer], 'Fact - Sales Invoice Line'[CUST_CARD_DESC],  'Dim - Plant'[Plant Name 1]),",
+              "DATESBETWEEN('Fact - Sales Invoice Line'[Lunar Date],[LN StartDT LY], [LN EndDT LY]))"
+            ],
+            "formatString": "#,0"
+          },
+          {
+            "name": "LN MKT .Net Qty (LY)",
+            "expression": [
+              "\t\t",
+              "CALCULATE([LN .Net Qty],",
+              "\tALLEXCEPT('Fact - Sales Invoice Line', 'Dim - Plant'[REGION], 'Dim - Plant'[PLANT KIND],'Fact - Sales Invoice Line'[Customer Type (Month)],'Fact - Sales Invoice Line'[Customer Type (Year)],  'Dim - Product'[RPT_Product Group 4 Name], 'Dim - Product'[RPT_Product Group 2 Name], 'Dim - Product'[RPT - Product Group 7 Name], 'Dim - Product'[Co-Operate Brand], 'Dim - Customer'[Customer Card], 'Dim - Plant'[PLANT NAME],'Fact - Sales Invoice Line'[Group Age], 'Dim - Plant'[Sales District Name], 'Dim - Customer'[Gender], 'Dim - Plant'[Tier], 'Fact - Sales Invoice Line'[MKT_Customer], 'Fact - Sales Invoice Line'[CUST_CARD_DESC],  'Dim - Plant'[Plant Name 1]),",
+              "DATESBETWEEN('Fact - Sales Invoice Line'[Lunar Date],[LN StartDT LY], [LN EndDT LY]))"
+            ]
+          },
+          {
+            "name": "LN MKT %Net Amt (CK)",
+            "expression": " CALCULATE([LN .Net Amt]/[LN MKT .Net Amt (LY)])-1",
+            "formatString": "0.00%;-0.00%;0.00%"
+          },
+          {
+            "name": "LN MKT %Net Qty (LY)",
+            "expression": " CALCULATE([LN .Net Qty]/[LN MKT .Net Qty (LY)])-1",
+            "formatString": "0.00%;-0.00%;0.00%"
+          },
+          {
+            "name": "LN #Customer",
+            "expression": [
+              "CALCULATE([# Customer], ",
+              "\tUSERELATIONSHIP('Dim - Time (Lunar)'[Lunar Date], 'Fact - Sales Invoice Line'[Lunar Date]))",
+              ""
+            ]
+          },
+          {
+            "name": "LN #Customer (CK)",
+            "expression": [
+              "\t\t",
+              "CALCULATE([LN #Customer],",
+              "\tALLEXCEPT('Fact - Sales Invoice Line', 'Dim - Plant'[REGION], 'Dim - Plant'[PLANT KIND],'Fact - Sales Invoice Line'[Customer Type (Month)],'Fact - Sales Invoice Line'[Customer Type (Year)],  'Dim - Product'[RPT_Product Group 4 Name], 'Dim - Product'[RPT_Product Group 2 Name], 'Dim - Product'[RPT - Product Group 7 Name], 'Dim - Product'[Co-Operate Brand], 'Dim - Customer'[Customer Card], 'Dim - Plant'[PLANT NAME],'Fact - Sales Invoice Line'[Group Age], 'Dim - Plant'[Sales District Name], 'Dim - Customer'[Gender], 'Dim - Plant'[Tier], 'Fact - Sales Invoice Line'[MKT_Customer], 'Fact - Sales Invoice Line'[CUST_CARD_DESC],  'Dim - Plant'[Plant Name 1]),",
+              "DATESBETWEEN('Fact - Sales Invoice Line'[Lunar Date],[LN StartDT CK], [LN EndDT CK]))"
+            ]
+          },
+          {
+            "name": "LN %Customer (CK)",
+            "expression": " [LN #Customer]/[LN #Customer (CK)]-1",
+            "formatString": "0.00%;-0.00%;0.00%"
+          },
+          {
+            "name": "LN .Ticket Size",
+            "expression": [
+              " CALCULATE([AVG Ticket Size],",
+              "\tUSERELATIONSHIP('Dim - Time (Lunar)'[Lunar Date], 'Fact - Sales Invoice Line'[Lunar Date]))"
+            ]
+          },
+          {
+            "name": "LN .Ticket Size (CK)",
+            "expression": [
+              "\t\t",
+              "CALCULATE([LN .Ticket Size],",
+              "\tALLEXCEPT('Fact - Sales Invoice Line', 'Dim - Plant'[REGION], 'Dim - Plant'[PLANT KIND],'Fact - Sales Invoice Line'[Customer Type (Month)],'Fact - Sales Invoice Line'[Customer Type (Year)],  'Dim - Product'[RPT_Product Group 4 Name], 'Dim - Product'[RPT_Product Group 2 Name], 'Dim - Product'[RPT - Product Group 7 Name], 'Dim - Product'[Co-Operate Brand], 'Dim - Customer'[Customer Card], 'Dim - Plant'[PLANT NAME],'Fact - Sales Invoice Line'[Group Age], 'Dim - Plant'[Sales District Name], 'Dim - Customer'[Gender], 'Dim - Plant'[Tier], 'Fact - Sales Invoice Line'[MKT_Customer], 'Fact - Sales Invoice Line'[CUST_CARD_DESC],  'Dim - Plant'[Plant Name 1]),",
+              "DATESBETWEEN('Fact - Sales Invoice Line'[Lunar Date],[LN StartDT CK], [LN EndDT CK]))"
+            ]
+          },
+          {
+            "name": "LN %Ticket Size (CK)",
+            "expression": " [LN .Ticket Size]/[LN .Ticket Size (CK)] -1",
+            "formatString": "0.00%;-0.00%;0.00%"
           }
         ]
       },
@@ -15027,6 +15003,53 @@
             }
           }
         ]
+      },
+      {
+        "name": "Fact - GotIt GiftPop",
+        "columns": [
+          {
+            "name": "ROW_WID",
+            "dataType": "int64",
+            "sourceColumn": "ROW_WID"
+          },
+          {
+            "name": "Document Number",
+            "dataType": "string",
+            "sourceColumn": "Document Number"
+          },
+          {
+            "name": "Date Key",
+            "dataType": "string",
+            "sourceColumn": "Date Key"
+          },
+          {
+            "name": "Invoice Number",
+            "dataType": "string",
+            "sourceColumn": "Invoice Number"
+          },
+          {
+            "name": "Type",
+            "dataType": "string",
+            "sourceColumn": "Type"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "dataView": "full",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = #\"SQL/192 168 3 31;PNJ_ROLAP\",",
+                "    dbo_Z_GOT_IT = Source{[Schema=\"dbo\",Item=\"Z_GOT_IT\"]}[Data],",
+                "    #\"Renamed Columns\" = Table.RenameColumns(dbo_Z_GOT_IT,{{\"BELNR\", \"Document Number\"}, {\"H_BUDAT\", \"Date Key\"}, {\"ZUONR\", \"Invoice Number\"}, {\"TYPE\", \"Type\"}})",
+                "in",
+                "    #\"Renamed Columns\""
+              ]
+            }
+          }
+        ]
       }
     ],
     "relationships": [
@@ -16084,6 +16107,27 @@
         "fromTable": "Fact - Inventory Quota",
         "fromColumn": "Sloc WID",
         "toTable": "Dim - Storage Location",
+        "toColumn": "ROW_WID"
+      },
+      {
+        "name": "a7e47261-f043-40df-9f8a-7fca0d2e7785",
+        "fromTable": "Fact - Marketing Plan",
+        "fromColumn": "Lunar Date",
+        "toTable": "Dim - Time (Lunar)",
+        "toColumn": "Lunar Date"
+      },
+      {
+        "name": "2f90cb9d-69aa-48e5-aa2d-1f708a875d4a",
+        "fromTable": "Fact - Sales Invoice Line",
+        "fromColumn": "Lunar Date",
+        "toTable": "Dim - Time (Lunar)",
+        "toColumn": "Lunar Date"
+      },
+      {
+        "name": "539cd530-8c05-4e79-a229-17f29e795110",
+        "fromTable": "Fact - All Sales Invoice Line",
+        "fromColumn": "GOTIT_WID",
+        "toTable": "Fact - GotIt GiftPop",
         "toColumn": "ROW_WID"
       }
     ],
@@ -18487,7 +18531,7 @@
                 "name": "TRAFFIC"
               },
               {
-                "name": "LUNAR_DT"
+                "name": "Lunar Date"
               }
             ],
             "measures": [
