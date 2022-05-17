@@ -4482,23 +4482,6 @@
             "sourceColumn": "STK Keeper Transfer Code"
           },
           {
-            "name": "Date Time",
-            "dataType": "dateTime",
-            "sourceColumn": "Date Time",
-            "formatString": "HH:mm",
-            "annotations": [
-              {
-                "name": "Format",
-                "value": "<Format Format=\"DateTimeCustom\"><DateTimes><DateTime LCID=\"1066\" Group=\"ShortTime\" FormatString=\"HH:mm\" /></DateTimes></Format>"
-              }
-            ]
-          },
-          {
-            "name": "Team Code",
-            "dataType": "string",
-            "sourceColumn": "Team Code"
-          },
-          {
             "name": "Cooling Score",
             "dataType": "double",
             "sourceColumn": "Cooling Score"
@@ -4507,6 +4490,24 @@
             "name": "Prong Score",
             "dataType": "double",
             "sourceColumn": "Prong Score"
+          },
+          {
+            "name": "STOCK_KEEPER_WID",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "STOCK_KEEPER_WID"
+          },
+          {
+            "name": "Time",
+            "dataType": "dateTime",
+            "sourceColumn": "Time",
+            "formatString": "HH:mm",
+            "annotations": [
+              {
+                "name": "Format",
+                "value": "<Format Format=\"DateTimeCustom\"><DateTimes><DateTime LCID=\"1066\" Group=\"ShortTime\" FormatString=\"HH:mm\" /></DateTimes></Format>"
+              }
+            ]
           }
         ],
         "partitions": [
@@ -4540,11 +4541,11 @@
                 "      ,[TOTAL_WEIGHT]",
                 "      ,[STK_KEEPING_GROUP]",
                 "      ,[TIME]",
-                "      ,[TEAM_CODE]",
+                "      ,[STOCK_KEEPER_WID]",
                 "      ,[COOLING_SCORE]",
                 "      ,[PRONG_SCORE]",
                 "  FROM [PNJ_ROLAP].[dbo].[W_VW_ACTUAL_PRODUCTION_F]\"),",
-                "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"STOCK_KEEPER_CODE\", \"STK Keeper Code\"},{\"ORDER_NUMBER\", \"Order Number\"}, {\"BASE_UOM_CODE\", \"UOM\"}, {\"ACTUAL_QTY\", \"Actual QTY\"}, {\"LOCATION_CODE\", \"Location Wid\"}, {\"DOCUMENT_NUMBER\", \"Document Number\"}, {\"STANDARD_WEIGHT_FLAG\", \"STD Weight Flag\"}, {\"STANDARD_TEXT_KEY\", \"STD Text Key\"}, {\"LOCATION_TRANSFER_CODE\", \"Output sloc\"}, {\"STOCK_KEEPER_TRANSFER_CODE\", \"STK Keeper Transfer Code\"}, {\"BATCH\", \"Batch\"}, {\"STK_KEEPER_WID\", \"Booklet_ID\"}, {\"TOTAL_WEIGHT\", \"Total Weight\"}, {\"STANDARD_WEIGHT\", \"Standard Weight\"}, {\"TIME\", \"Date Time\"}, {\"TEAM_CODE\", \"Team Code\"}, {\"COOLING_SCORE\", \"Cooling Score\"}, {\"PRONG_SCORE\", \"Prong Score\"}})",
+                "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"STOCK_KEEPER_CODE\", \"STK Keeper Code\"},{\"ORDER_NUMBER\", \"Order Number\"}, {\"BASE_UOM_CODE\", \"UOM\"}, {\"ACTUAL_QTY\", \"Actual QTY\"}, {\"LOCATION_CODE\", \"Location Wid\"}, {\"DOCUMENT_NUMBER\", \"Document Number\"}, {\"STANDARD_WEIGHT_FLAG\", \"STD Weight Flag\"}, {\"STANDARD_TEXT_KEY\", \"STD Text Key\"}, {\"LOCATION_TRANSFER_CODE\", \"Output sloc\"}, {\"STOCK_KEEPER_TRANSFER_CODE\", \"STK Keeper Transfer Code\"}, {\"BATCH\", \"Batch\"}, {\"STK_KEEPER_WID\", \"Booklet_ID\"}, {\"TOTAL_WEIGHT\", \"Total Weight\"}, {\"STANDARD_WEIGHT\", \"Standard Weight\"}, {\"TIME\", \"Time\"}, {\"COOLING_SCORE\", \"Cooling Score\"}, {\"PRONG_SCORE\", \"Prong Score\"}})",
                 "in",
                 "    #\"Renamed Columns\""
               ]
@@ -4563,7 +4564,7 @@
             ]
           },
           {
-            "name": ".Q10",
+            "name": ".Inventory Q10",
             "description": "Ton kho Q10 thoi diem theo cong doan",
             "expression": [
               "",
@@ -4597,9 +4598,9 @@
             "expression": [
               "",
               "",
-              "VAR OPENING = CALCULATE( [.Q10], DATEADD('Dim - Time'[Date], -1, DAY))",
+              "VAR OPENING = CALCULATE( [.Inventory Q10], DATEADD('Dim - Time'[Date], -1, DAY))",
               "",
-              "VAR CLOSING =  [.Q10]",
+              "VAR CLOSING =  [.Inventory Q10]",
               "",
               "VAR _COUNT = IF( OPENING <> BLANK(),1,0) +  IF(CLOSING <> BLANK(),1,0)",
               "RETURN (OPENING + CLOSING)/_COUNT"
@@ -5015,10 +5016,11 @@
               "    filter ('Dim - Production Labor', [Productivity Type] = \"DIEM\")",
               "    )",
               "+ Calculate(",
-              "    IFERROR('Fact - Actual Production'[.Qty Output - Finished]/sum('Fact - Production Employee Plan'[Acutual Resource]), BLANK()),",
+              "    IFERROR('Fact - Actual Production'[.Qty Output - Finished]/sum('Dim - Production Labor Planned'[Actual Resource]), BLANK()),",
               "    filter ('Dim - Production Labor', [Productivity Type] = \"SL\")",
               "    )"
-            ]
+            ],
+            "formatString": "#,0.00"
           },
           {
             "name": ".Qty Output - Finished",
@@ -5047,28 +5049,30 @@
               "    FILTER('Dim - Production Labor', 'Dim - Production Labor'[Productivity Type] = \"SL\")) ",
               "+ CALCULATE('Fact - Actual Production'[.Qty Output - Semi],",
               "    FILTER('Dim - Production Labor', 'Dim - Production Labor'[Productivity Type] = \"DIEM\"))"
-            ]
+            ],
+            "formatString": "#,0.00"
           },
           {
-            "name": ".Actual Qty Out (LK)",
+            "name": ".Actual Qty Out (TTD)",
             "expression": [
               " ",
-              "var LastTime = max('Fact - Actual Production'[Date Time])",
+              "var LastTime = max('Fact - Actual Production'[Time])",
               "return ",
               "    CALCULATE(",
               "        'Fact - Actual Production'[.Actual QTY Out], ",
-              "        'Fact - Actual Production'[Date Time] <= LastTime, ",
+              "        'Fact - Actual Production'[Time] <= LastTime, ",
               "        'Fact - Actual Production'[TYPES] = \"OUT\")"
-            ]
+            ],
+            "formatString": "#,0.00"
           },
           {
             "name": "%Completed Productivity",
-            "expression": " IFERROR('Fact - Actual Production'[.Actual Productivity]/'Fact - Production Employee Plan'[.Planned Productivity],\"\")",
+            "expression": " IFERROR('Fact - Actual Production'[.Actual Productivity]/'Dim - Production Labor Planned'[.Planned Productivity],\"\")",
             "formatString": "0.00%;-0.00%;0.00%"
           },
           {
             "name": "%Completed Qty",
-            "expression": " 'Fact - Actual Production'[.Actual Qty Out (LK)]/sum('Fact - Production Employee Plan'[Plan Qty])",
+            "expression": " 'Fact - Actual Production'[.Actual Qty Out (TTD)]/sum('Dim - Production Labor Planned'[Planned Qty])",
             "formatString": "0.00%;-0.00%;0.00%"
           },
           {
@@ -5082,11 +5086,11 @@
               "        LEFT('Dim - Product'[Product Code],2) in {\"DY\",\"DW\"} ),",
               "    Filter('Fact - Actual Production','Fact - Actual Production'[TYPES] = \"Out\"))",
               "",
-              "RETURN DIVIDE(GI, [.Q10])"
+              "RETURN DIVIDE(GI, [.Inventory Q10])"
             ]
           },
           {
-            "name": "TurnOver .Q10 (BQ)",
+            "name": "AVG TurnOver .Q10",
             "expression": [
               " ",
               "VAR _Min = MIN('Dim - Time'[Date])",
@@ -5100,6 +5104,49 @@
               "            ),",
               "        [TurnOver .Q10]",
               " ))"
+            ]
+          },
+          {
+            "name": ".Receipt Q10",
+            "expression": [
+              " ",
+              "var _currdate = max('Dim - Time'[Date])",
+              "Return",
+              "CALCULATE(SUM('Fact - Actual Production'[Q10]),",
+              "\tFILTER(aLL('Dim - Time'[Date]), 'Dim - Time'[Date] <= _currdate),",
+              "\tFiLTER('Dim - Product', ",
+              "\t\tLEFT('Dim - Product'[Product Code],1) in {\"G\",\"P\"} || ",
+              "\t\tLEFT('Dim - Product'[Product Code],12) in {\"000000000031\",\"000000000030\",\"000000000033\"} ||",
+              "\t\tLEFT('Dim - Product'[Product Code],2) in {\"DY\",\"DW\"} ),",
+              "\tFiLTER('Fact - Actual Production','Fact - Actual Production'[TYPES]=\"IN\")",
+              ")"
+            ]
+          },
+          {
+            "name": ".Issue Q10",
+            "expression": [
+              "",
+              "var _currdate = max('Dim - Time'[Date])",
+              "Return",
+              "abs(CALCULATE(SUM('Fact - Actual Production'[Q10]),",
+              "\tFILTER(aLL('Dim - Time'[Date]), 'Dim - Time'[Date] <= _currdate),",
+              "\tFiLTER('Dim - Product', ",
+              "\t\tLEFT('Dim - Product'[Product Code],1) in {\"G\",\"P\"} || ",
+              "\t\tLEFT('Dim - Product'[Product Code],12) in {\"000000000031\",\"000000000030\",\"000000000033\"} ||\t",
+              "\t\tLEFT('Dim - Product'[Product Code],2) in {\"DY\",\"DW\"} ),",
+              "\tFiLTER('Fact - Actual Production','Fact - Actual Production'[TYPES]=\"OUT\"))",
+              ")"
+            ]
+          },
+          {
+            "name": "%TurnOver .Q10",
+            "expression": " 'Fact - Actual Production'[TurnOver .Q10]/sum('Dim - Production Labor Planned'[Planned TurnOver Q10])"
+          },
+          {
+            "name": "%AVG TurnOver Q10",
+            "expression": [
+              "",
+              "'Fact - Actual Production'[AVG TurnOver .Q10]/sum('Dim - Production Labor Planned'[Planned TurnOver Q10])"
             ]
           }
         ]
@@ -15100,65 +15147,6 @@
         ]
       },
       {
-        "name": "Dim - Production Labor",
-        "columns": [
-          {
-            "name": "Area Code",
-            "dataType": "string",
-            "sourceColumn": "Area Code"
-          },
-          {
-            "name": "Team Code",
-            "dataType": "string",
-            "sourceColumn": "Team Code"
-          },
-          {
-            "name": "Team Name",
-            "dataType": "string",
-            "sourceColumn": "Team Name"
-          },
-          {
-            "name": "STK Keeper Code",
-            "dataType": "string",
-            "sourceColumn": "STK Keeper Code"
-          },
-          {
-            "name": "Productivity Type",
-            "dataType": "string",
-            "sourceColumn": "Productivity Type"
-          },
-          {
-            "name": "Score Type",
-            "dataType": "string",
-            "sourceColumn": "Score Type"
-          }
-        ],
-        "partitions": [
-          {
-            "name": "Partition",
-            "dataView": "full",
-            "source": {
-              "type": "m",
-              "expression": [
-                "let",
-                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
-                "    SELECT [AREA_CODE]",
-                "      ,[TEAM_CODE]",
-                "      ,[TEAM_NAME]",
-                "      ,[STOCK_KEEPER_CODE]",
-                "      ,[PRODUCTIVITY_TYPE]",
-                "      ,[SCORE_TYPE]",
-                "    FROM [PNJ_ROLAP].[dbo].[W_VW_PRODUCTION_LABOR_D]",
-                "    WHERE [FINAL_STAGE] IS NULL \"),",
-                "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"AREA_CODE\", \"Area Code\"}, {\"TEAM_CODE\", \"Team Code\"}, {\"TEAM_NAME\", \"Team Name\"}, {\"STOCK_KEEPER_CODE\", \"STK Keeper Code\"}, {\"PRODUCTIVITY_TYPE\", \"Productivity Type\"}, {\"SCORE_TYPE\", \"Score Type\"}})",
-                "in",
-                "    #\"Renamed Columns\""
-              ]
-            }
-          }
-        ]
-      },
-      {
         "name": "Dim - STK Keeper Finished Goods",
         "columns": [
           {
@@ -15191,86 +15179,6 @@
                 "    #\"Renamed Columns\""
               ]
             }
-          }
-        ]
-      },
-      {
-        "name": "Fact - Production Employee Plan",
-        "columns": [
-          {
-            "name": "Date Key",
-            "dataType": "int64",
-            "sourceColumn": "Date Key"
-          },
-          {
-            "name": "Team Code",
-            "dataType": "string",
-            "sourceColumn": "Team Code"
-          },
-          {
-            "name": "Stock Keeper",
-            "dataType": "string",
-            "sourceColumn": "Stock Keeper"
-          },
-          {
-            "name": "Demarcation HR",
-            "dataType": "double",
-            "sourceColumn": "Demarcation HR"
-          },
-          {
-            "name": "VQ Q10",
-            "dataType": "double",
-            "sourceColumn": "VQ Q10"
-          },
-          {
-            "name": "Plan Qty",
-            "dataType": "double",
-            "sourceColumn": "Plan Qty"
-          },
-          {
-            "name": "Plan Productivity",
-            "dataType": "double",
-            "sourceColumn": "Plan Productivity"
-          },
-          {
-            "name": "Acutual Resource",
-            "dataType": "double",
-            "sourceColumn": "Acutual Resource"
-          }
-        ],
-        "partitions": [
-          {
-            "name": "Partition",
-            "dataView": "full",
-            "source": {
-              "type": "m",
-              "expression": [
-                "let",
-                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
-                "    SELECT [DATE_KEY]",
-                "      ,[TEAM_CODE]",
-                "      ,[STOCK_KEEPER]",
-                "      ,[ACTUAL_RESOURCE]",
-                "      ,[DEMARCATION_HR]",
-                "      ,[VQ_Q10]",
-                "      ,[PLAN_QTY]",
-                "      ,[PLAN_PRODUCTIVITY]",
-                "  FROM [PNJ_ROLAP].[dbo].[W_VW_PRODUCTION_EMPLOYEE_PLAN_F]\"),",
-                "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"DATE_KEY\", \"Date Key\"}, {\"TEAM_CODE\", \"Team Code\"}, {\"STOCK_KEEPER\", \"Stock Keeper\"}, {\"ACTUAL_RESOURCE\", \"Acutual Resource\"}, {\"DEMARCATION_HR\", \"Demarcation HR\"}, {\"VQ_Q10\", \"VQ Q10\"}, {\"PLAN_QTY\", \"Plan Qty\"}, {\"PLAN_PRODUCTIVITY\", \"Plan Productivity\"}})",
-                "in",
-                "    #\"Renamed Columns\""
-              ]
-            }
-          }
-        ],
-        "measures": [
-          {
-            "name": ".Planned Productivity",
-            "expression": [
-              " ",
-              "Calculate(sum('Fact - Production Employee Plan'[Demarcation HR])*555, Filter ('Dim - Production Labor', [Productivity Type] = \"DIEM\"))",
-              "+ Calculate(sum('Fact - Production Employee Plan'[Plan Productivity]), Filter ('Dim - Production Labor', [Productivity Type] = \"SL\"))"
-            ]
           }
         ]
       },
@@ -15671,6 +15579,169 @@
                 "  FROM [PNJ_ROLAP].[dbo].[W_VW_PO_SCHEDULE_LINE_Z06_F]\")",
                 "in",
                 "    Source"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "Dim - Production Labor Planned",
+        "columns": [
+          {
+            "name": "Date Key",
+            "dataType": "int64",
+            "sourceColumn": "Date Key"
+          },
+          {
+            "name": "Team Code",
+            "dataType": "string",
+            "sourceColumn": "Team Code"
+          },
+          {
+            "name": "Actual Resource",
+            "dataType": "double",
+            "sourceColumn": "Actual Resource",
+            "formatString": "#,0.00"
+          },
+          {
+            "name": "Planned Resource",
+            "dataType": "double",
+            "sourceColumn": "Planned Resource",
+            "formatString": "#,0.00"
+          },
+          {
+            "name": "Planned Qty",
+            "dataType": "double",
+            "sourceColumn": "Planned Qty",
+            "formatString": "#,0.00"
+          },
+          {
+            "name": "Planned TurnOver Q10",
+            "dataType": "double",
+            "sourceColumn": "Planned TurnOver Q10"
+          },
+          {
+            "name": "Planned Productivity",
+            "dataType": "double",
+            "sourceColumn": "Planned Productivity",
+            "formatString": "#,0.00"
+          },
+          {
+            "name": "Working Day Standard",
+            "dataType": "double",
+            "sourceColumn": "Working Day Standard"
+          },
+          {
+            "name": "STOCK_KEEPER_WID",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "STOCK_KEEPER_WID"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "dataView": "full",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
+                "    SELECT [DATE_KEY]",
+                "      ,[TEAM_CODE]",
+                "      ,[STOCK_KEEPER_WID]",
+                "      ,[ACTUAL_RESOURCE]",
+                "      ,[PLANNED_RESOURCE]",
+                "      ,[PLANNED_QTY]",
+                "      ,[PLANNED_TURNOVER_Q10]",
+                "      ,[PLANNED_PRODUCTIVITY]",
+                "      ,[WORKING_DAY_STANDARD]",
+                "  FROM [PNJ_ROLAP].[dbo].[W_VW_PRODUCTION_LABOR_PLANNED_D]\"),",
+                "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"DATE_KEY\", \"Date Key\"}, {\"TEAM_CODE\", \"Team Code\"}, {\"ACTUAL_RESOURCE\", \"Actual Resource\"}, {\"PLANNED_RESOURCE\", \"Planned Resource\"}, {\"PLANNED_QTY\", \"Planned Qty\"}, {\"PLANNED_TURNOVER_Q10\", \"Planned TurnOver Q10\"}, {\"PLANNED_PRODUCTIVITY\", \"Planned Productivity\"}, {\"WORKING_DAY_STANDARD\", \"Working Day Standard\"}}),",
+                "    #\"Changed Type\" = Table.TransformColumnTypes(#\"Renamed Columns\",{{\"Actual Resource\", type number}, {\"Planned Resource\", type number}, {\"Planned Qty\", type number}, {\"Planned Productivity\", type number}})",
+                "in",
+                "    #\"Changed Type\""
+              ]
+            }
+          }
+        ],
+        "measures": [
+          {
+            "name": ".Planned Productivity",
+            "expression": [
+              " ",
+              "Calculate(sumx('Dim - Production Labor Planned', 'Dim - Production Labor Planned'[Planned Resource] * 'Dim - Production Labor Planned'[Working Day Standard]), Filter ('Dim - Production Labor', [Productivity Type] = \"DIEM\"))",
+              "+ Calculate(sum('Dim - Production Labor Planned'[Planned Productivity]), Filter ('Dim - Production Labor', [Productivity Type] = \"SL\"))"
+            ]
+          },
+          {
+            "name": "%Human Resource",
+            "expression": " sum('Dim - Production Labor Planned'[Actual Resource])/sum('Dim - Production Labor Planned'[Planned Resource])",
+            "formatString": "0.00%;-0.00%;0.00%"
+          }
+        ]
+      },
+      {
+        "name": "Dim - Production Labor",
+        "columns": [
+          {
+            "name": "Area Code",
+            "dataType": "string",
+            "sourceColumn": "Area Code"
+          },
+          {
+            "name": "Team Code",
+            "dataType": "string",
+            "sourceColumn": "Team Code"
+          },
+          {
+            "name": "Team Name",
+            "dataType": "string",
+            "sourceColumn": "Team Name"
+          },
+          {
+            "name": "STK Keeper Code",
+            "dataType": "string",
+            "sourceColumn": "STK Keeper Code"
+          },
+          {
+            "name": "Productivity Type",
+            "dataType": "string",
+            "sourceColumn": "Productivity Type"
+          },
+          {
+            "name": "Score Type",
+            "dataType": "string",
+            "sourceColumn": "Score Type"
+          },
+          {
+            "name": "ROW_WID",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "ROW_WID"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "dataView": "full",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
+                "    SELECT [AREA_CODE]",
+                "      ,[TEAM_CODE]",
+                "      ,[TEAM_NAME]",
+                "      ,[STOCK_KEEPER_CODE]",
+                "      ,[PRODUCTIVITY_TYPE]",
+                "      ,[SCORE_TYPE]",
+                "      ,[ROW_WID]",
+                "    FROM [PNJ_ROLAP].[dbo].[W_VW_PRODUCTION_LABOR_D]",
+                "    WHERE [FINAL_STAGE] IS NULL \"),",
+                "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"AREA_CODE\", \"Area Code\"}, {\"TEAM_CODE\", \"Team Code\"}, {\"TEAM_NAME\", \"Team Name\"}, {\"STOCK_KEEPER_CODE\", \"STK Keeper Code\"}, {\"PRODUCTIVITY_TYPE\", \"Productivity Type\"}, {\"SCORE_TYPE\", \"Score Type\"}})",
+                "in",
+                "    #\"Renamed Columns\""
               ]
             }
           }
@@ -16756,32 +16827,11 @@
         "toColumn": "ROW_WID"
       },
       {
-        "name": "702278b8-1437-43cd-b8f1-dbfb51ba0a6c",
-        "fromTable": "Fact - Actual Production",
-        "fromColumn": "STK Keeper Code",
-        "toTable": "Dim - Production Labor",
-        "toColumn": "STK Keeper Code"
-      },
-      {
         "name": "de6226c1-02c8-4583-83ec-a2544f25be1e",
         "fromTable": "Fact - Actual Production",
         "fromColumn": "STK Keeper Transfer Code",
         "toTable": "Dim - STK Keeper Finished Goods",
         "toColumn": "STK Keeper Code"
-      },
-      {
-        "name": "43704cb1-8e2b-4d30-a9be-a09c6c6b249b",
-        "fromTable": "Fact - Production Employee Plan",
-        "fromColumn": "Stock Keeper",
-        "toTable": "Dim - Production Labor",
-        "toColumn": "STK Keeper Code"
-      },
-      {
-        "name": "7d2a3e2e-af50-45ec-aca8-cfe43062a61f",
-        "fromTable": "Fact - Production Employee Plan",
-        "fromColumn": "Date Key",
-        "toTable": "Dim - Time",
-        "toColumn": "ROW_WID"
       },
       {
         "name": "e52379fd-61d4-4528-87f7-f7459210022f",
@@ -16851,6 +16901,27 @@
         "fromTable": "Fact - PO Schedule Line Z06",
         "fromColumn": "SUPPLIER_WID",
         "toTable": "Dim - Vendor",
+        "toColumn": "ROW_WID"
+      },
+      {
+        "name": "669665c1-3b82-4a77-8d1b-3ad5b3e2c614",
+        "fromTable": "Dim - Production Labor Planned",
+        "fromColumn": "Date Key",
+        "toTable": "Dim - Time",
+        "toColumn": "ROW_WID"
+      },
+      {
+        "name": "28e2dca3-709d-434a-a986-a8ecb04e69af",
+        "fromTable": "Dim - Production Labor Planned",
+        "fromColumn": "STOCK_KEEPER_WID",
+        "toTable": "Dim - Production Labor",
+        "toColumn": "ROW_WID"
+      },
+      {
+        "name": "60c5eb0c-9ee0-4f93-8a42-c12837241952",
+        "fromTable": "Fact - Actual Production",
+        "fromColumn": "STOCK_KEEPER_WID",
+        "toTable": "Dim - Production Labor",
         "toColumn": "ROW_WID"
       }
     ],
@@ -18674,16 +18745,16 @@
                 "name": "STK Keeper Transfer Code"
               },
               {
-                "name": "Date Time"
-              },
-              {
-                "name": "Team Code"
-              },
-              {
                 "name": "Cooling Score"
               },
               {
                 "name": "Prong Score"
+              },
+              {
+                "name": "STOCK_KEEPER_WID"
+              },
+              {
+                "name": "Time"
               }
             ]
           },
