@@ -17,7 +17,6 @@
           "authentication": null,
           "query": null
         },
-        "options": {},
         "credential": {
           "AuthenticationKind": "UsernamePassword",
           "kind": "SQL",
@@ -39,7 +38,6 @@
           "authentication": null,
           "query": null
         },
-        "options": {},
         "credential": {
           "AuthenticationKind": "UsernamePassword",
           "kind": "SQL",
@@ -4554,6 +4552,147 @@
         ],
         "measures": [
           {
+            "name": "QC %Cancel .Q10",
+            "expression": [
+              "",
+              " VAR GI = CALCULATE(SUM('Fact - Actual Production'[Q10]) * -1, 'Fact - Actual Production'[TYPES] = \"OUT\")",
+              " VAR Cancel = CALCULATE(sum('Fact - Actual Production'[Q10]),",
+              "\tFILTER('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"IN\"  && 'Fact - Actual Production'[STK Keeper Code] = \"9998\"))",
+              "\t",
+              "RETURN  DIVIDE(Cancel, GI,BLANK())"
+            ],
+            "formatString": "0.0%;-0.0%;0.0%"
+          },
+          {
+            "name": ".Qty GI Finish Goods",
+            "expression": [
+              " CALCULATE(",
+              "    CALCULATE(Sum('Fact - Actual Production'[Actual QTY]),",
+              "\tFilter('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"IN\"),",
+              "\tFILTER('Fact - Actual Production', 'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\", \"1102\", \"1104\", \"1105\",\"1106\"}))",
+              "--,FILTER(ALL('Dim - Actual Production'), 'Dim - Actual Production'[STD Keeper Group] IN {\"KVSX1\", \"KVSX2\", \"KVSX3\", \"NM LONG HẬU\"})",
+              ")",
+              ""
+            ],
+            "formatString": "#,0"
+          },
+          {
+            "name": "QC %Cancel .Qty",
+            "description": "[CL1.2] Lỗi hủy trong sản xuất",
+            "expression": [
+              "",
+              "  DIVIDE([QC Cancel .Qty], [.Qty GI Finish Goods],BLANK())"
+            ],
+            "formatString": "0.00%;-0.00%;0.00%"
+          },
+          {
+            "name": "%STD Weight Error",
+            "expression": [
+              " ",
+              " VAR GR = CALCULATE(sum('Fact - Actual Production'[Actual QTY]),",
+              "Filter('Dim - Product', 'Dim - Product'[Product Group LV2] in {\"PS\", \"PT\", \"PG\", \"PP\"}),",
+              "Filter('Fact - Actual Production', 'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\",\"1102\", \"1104\", \"1105\", \"1106\"}),",
+              "Filter('Fact - Actual Production', 'Fact - Actual Production'[STD Weight Flag] in {\"Failed\", \"Passed\"}),",
+              "Filter('Fact - Actual Production', 'Fact - Actual Production'[Types] in {\"IN\"})",
+              ")",
+              "",
+              "VAR Failed = CALCULATE(sum('Fact - Actual Production'[Actual QTY]),",
+              "Filter('Dim - Product', 'Dim - Product'[Product Group LV2] in {\"PS\", \"PT\", \"PG\", \"PP\"}),",
+              "Filter('Fact - Actual Production', 'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\",\"1102\", \"1104\", \"1105\", \"1106\"}),",
+              "Filter('Fact - Actual Production', 'Fact - Actual Production'[STD Weight Flag] = \"Failed\"),",
+              "Filter('Fact - Actual Production', 'Fact - Actual Production'[Types] in {\"IN\"})",
+              ")",
+              "",
+              "Return Failed/ GR"
+            ]
+          },
+          {
+            "name": "%STD Weight Pass",
+            "expression": [
+              "  VAR GR = CALCULATE(sum('Fact - Actual Production'[Actual QTY]),",
+              "Filter('Dim - Product', 'Dim - Product'[Product Group LV2] in {\"PS\", \"PT\", \"PG\", \"PP\"}),",
+              "Filter('Fact - Actual Production', 'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\",\"1102\", \"1104\", \"1105\", \"1106\"}),",
+              "Filter('Fact - Actual Production', 'Fact - Actual Production'[STD Weight Flag] in {\"Failed\", \"Passed\"}),",
+              "Filter('Fact - Actual Production', 'Fact - Actual Production'[Types] in {\"IN\"})",
+              ")",
+              "",
+              "VAR Passed = CALCULATE(sum('Fact - Actual Production'[Actual QTY]),",
+              "Filter('Dim - Product', 'Dim - Product'[Product Group LV2] in {\"PS\", \"PT\", \"PG\", \"PP\"}),",
+              "Filter('Fact - Actual Production', 'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\",\"1102\", \"1104\", \"1105\", \"1106\"}),",
+              "Filter('Fact - Actual Production', 'Fact - Actual Production'[STD Weight Flag] = \"Passed\"),",
+              "Filter('Fact - Actual Production', 'Fact - Actual Production'[Types] in {\"IN\"})",
+              ")",
+              "",
+              "Return Passed / GR"
+            ],
+            "formatString": "0.00%;-0.00%;0.00%"
+          },
+          {
+            "name": "QC Cancel .Q10",
+            "expression": [
+              " CALCULATE(sum('Fact - Actual Production'[Q10]),",
+              "\tFILTER('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"IN\"  && 'Fact - Actual Production'[STK Keeper Code] = \"9998\"))",
+              ""
+            ],
+            "formatString": "#,0.00"
+          },
+          {
+            "name": ".Qty GI Finish_F1018",
+            "expression": [
+              " CALCULATE(Sum('Fact - Actual Production'[Actual QTY]),",
+              "Filter('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"IN\"),",
+              "FILTER('Fact - Actual Production', 'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\", \"1102\", \"1104\", \"1105\",\"1106\"} ||",
+              "'Fact - Actual Production'[STK Keeper Transfer Code] = \"F1018\"))",
+              ""
+            ],
+            "formatString": "#,0"
+          },
+          {
+            "name": "Total Weight Avg.",
+            "expression": [
+              " CALCULATE(sum('Fact - Actual Production'[Total Weight])/[.Qty GI Finish Goods],",
+              "FILTER('Fact - Actual Production', 'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\", \"1102\", \"1104\", \"1105\", \"1106\"})",
+              ")"
+            ]
+          },
+          {
+            "name": "STD Weight Avg.",
+            "expression": [
+              " CALCULATE(sum('Fact - Actual Production'[Standard Weight])/countrows ('Fact - Actual Production'),",
+              "FILTER('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"IN\")",
+              ")"
+            ]
+          },
+          {
+            "name": "%Ttl Weight vs .STD",
+            "expression": " [Total Weight Avg.]/[STD Weight Avg.] - 1",
+            "formatString": "0.00%;-0.00%;0.00%"
+          },
+          {
+            "name": "All Finish Goods",
+            "expression": [
+              " CALCULATE([.Qty GI Finish Goods],",
+              "FILTER(ALL('Dim - Actual Production'), 'Dim - Actual Production'[STD Keeper Group] IN {\"KVSX1\", \"KVSX2\", \"KVSX3\", \"NM LONG HẬU\"})",
+              ")"
+            ]
+          },
+          {
+            "name": "QC Cancel .Qty",
+            "description": "Tổng số lượng hủy",
+            "expression": [
+              " CALCULATE(sum('Fact - Actual Production'[Actual QTY]),",
+              "Filter('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"IN\" && 'Fact - Actual Production'[STK Keeper Code] = \"9998\" && 'Fact - Actual Production'[Filters] = 1)",
+              ")",
+              "/*",
+              "Filter('Dim - Product', not left( 'Dim - Product'[Product Code], 11) in {\"00000000003\"}), ",
+              "Filter('Dim - Product', not left( 'Dim - Product'[Product Code], 2) in {\"G1\",\"S1\", \"T1\"}), ",
+              "FILTER('Fact - Actual Production', not right('Fact - Actual Production'[STK Keeper Output], 1) in {\"M\"}),",
+              "Filter('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"IN\" && 'Fact - Actual Production'[STK Keeper Code] = \"9998\"))",
+              "*/"
+            ],
+            "formatString": "#,0"
+          },
+          {
             "name": ".Net Qty",
             "description": "Ton kho qty theo thoi diem va cong doan",
             "expression": [
@@ -4848,61 +4987,6 @@
             ]
           },
           {
-            "name": "QC %Cancel .Q10",
-            "expression": [
-              "",
-              " VAR GI = CALCULATE(SUM('Fact - Actual Production'[Q10]) * -1, 'Fact - Actual Production'[TYPES] = \"OUT\")",
-              " VAR Cancel = CALCULATE(sum('Fact - Actual Production'[Q10]),",
-              "\tFILTER('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"IN\"  && 'Fact - Actual Production'[STK Keeper Code] = \"9998\"))",
-              "\t",
-              "RETURN  DIVIDE(Cancel, GI,BLANK())"
-            ],
-            "formatString": "0.0%;-0.0%;0.0%"
-          },
-          {
-            "name": ".Qty GI Finish Goods",
-            "expression": [
-              " CALCULATE(",
-              "    CALCULATE(Sum('Fact - Actual Production'[Actual QTY]),",
-              "\tFilter('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"IN\"),",
-              "\tFILTER('Fact - Actual Production', 'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\", \"1102\", \"1104\", \"1105\",\"1106\"}))",
-              "--,FILTER(ALL('Dim - Actual Production'), 'Dim - Actual Production'[STD Keeper Group] IN {\"KVSX1\", \"KVSX2\", \"KVSX3\", \"NM LONG HẬU\"})",
-              ")",
-              ""
-            ],
-            "formatString": "#,0"
-          },
-          {
-            "name": "QC %Cancel .Qty",
-            "description": "[CL1.2] Lỗi hủy trong sản xuất",
-            "expression": [
-              "",
-              "  DIVIDE([QC Cancel .Qty], [.Qty GI Finish Goods],BLANK())"
-            ],
-            "formatString": "0.00%;-0.00%;0.00%"
-          },
-          {
-            "name": "%STD Weight Error",
-            "expression": [
-              " ",
-              " VAR GR = CALCULATE(sum('Fact - Actual Production'[Actual QTY]),",
-              "Filter('Dim - Product', 'Dim - Product'[Product Group LV2] in {\"PS\", \"PT\", \"PG\", \"PP\"}),",
-              "Filter('Fact - Actual Production', 'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\",\"1102\", \"1104\", \"1105\", \"1106\"}),",
-              "Filter('Fact - Actual Production', 'Fact - Actual Production'[STD Weight Flag] in {\"Failed\", \"Passed\"}),",
-              "Filter('Fact - Actual Production', 'Fact - Actual Production'[Types] in {\"IN\"})",
-              ")",
-              "",
-              "VAR Failed = CALCULATE(sum('Fact - Actual Production'[Actual QTY]),",
-              "Filter('Dim - Product', 'Dim - Product'[Product Group LV2] in {\"PS\", \"PT\", \"PG\", \"PP\"}),",
-              "Filter('Fact - Actual Production', 'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\",\"1102\", \"1104\", \"1105\", \"1106\"}),",
-              "Filter('Fact - Actual Production', 'Fact - Actual Production'[STD Weight Flag] = \"Failed\"),",
-              "Filter('Fact - Actual Production', 'Fact - Actual Production'[Types] in {\"IN\"})",
-              ")",
-              "",
-              "Return Failed/ GR"
-            ]
-          },
-          {
             "name": "AVG .Q10",
             "expression": [
               " CALCULATE(sum('Fact - Actual Production'[Q10]) / sum('Fact - Actual Production'[Actual QTY]),",
@@ -4913,92 +4997,6 @@
               ")",
               ""
             ]
-          },
-          {
-            "name": "%STD Weight Pass",
-            "expression": [
-              "  VAR GR = CALCULATE(sum('Fact - Actual Production'[Actual QTY]),",
-              "Filter('Dim - Product', 'Dim - Product'[Product Group LV2] in {\"PS\", \"PT\", \"PG\", \"PP\"}),",
-              "Filter('Fact - Actual Production', 'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\",\"1102\", \"1104\", \"1105\", \"1106\"}),",
-              "Filter('Fact - Actual Production', 'Fact - Actual Production'[STD Weight Flag] in {\"Failed\", \"Passed\"}),",
-              "Filter('Fact - Actual Production', 'Fact - Actual Production'[Types] in {\"IN\"})",
-              ")",
-              "",
-              "VAR Passed = CALCULATE(sum('Fact - Actual Production'[Actual QTY]),",
-              "Filter('Dim - Product', 'Dim - Product'[Product Group LV2] in {\"PS\", \"PT\", \"PG\", \"PP\"}),",
-              "Filter('Fact - Actual Production', 'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\",\"1102\", \"1104\", \"1105\", \"1106\"}),",
-              "Filter('Fact - Actual Production', 'Fact - Actual Production'[STD Weight Flag] = \"Passed\"),",
-              "Filter('Fact - Actual Production', 'Fact - Actual Production'[Types] in {\"IN\"})",
-              ")",
-              "",
-              "Return Passed / GR"
-            ],
-            "formatString": "0.00%;-0.00%;0.00%"
-          },
-          {
-            "name": "QC Cancel .Q10",
-            "expression": [
-              " CALCULATE(sum('Fact - Actual Production'[Q10]),",
-              "\tFILTER('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"IN\"  && 'Fact - Actual Production'[STK Keeper Code] = \"9998\"))",
-              ""
-            ],
-            "formatString": "#,0.00"
-          },
-          {
-            "name": ".Qty GI Finish_F1018",
-            "expression": [
-              " CALCULATE(Sum('Fact - Actual Production'[Actual QTY]),",
-              "Filter('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"IN\"),",
-              "FILTER('Fact - Actual Production', 'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\", \"1102\", \"1104\", \"1105\",\"1106\"} ||",
-              "'Fact - Actual Production'[STK Keeper Transfer Code] = \"F1018\"))",
-              ""
-            ],
-            "formatString": "#,0"
-          },
-          {
-            "name": "Total Weight Avg.",
-            "expression": [
-              " CALCULATE(sum('Fact - Actual Production'[Total Weight])/[.Qty GI Finish Goods],",
-              "FILTER('Fact - Actual Production', 'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\", \"1102\", \"1104\", \"1105\", \"1106\"})",
-              ")"
-            ]
-          },
-          {
-            "name": "STD Weight Avg.",
-            "expression": [
-              " CALCULATE(sum('Fact - Actual Production'[Standard Weight])/countrows ('Fact - Actual Production'),",
-              "FILTER('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"IN\")",
-              ")"
-            ]
-          },
-          {
-            "name": "%Ttl Weight vs .STD",
-            "expression": " [Total Weight Avg.]/[STD Weight Avg.] - 1",
-            "formatString": "0.00%;-0.00%;0.00%"
-          },
-          {
-            "name": "All Finish Goods",
-            "expression": [
-              " CALCULATE([.Qty GI Finish Goods],",
-              "FILTER(ALL('Dim - Actual Production'), 'Dim - Actual Production'[STD Keeper Group] IN {\"KVSX1\", \"KVSX2\", \"KVSX3\", \"NM LONG HẬU\"})",
-              ")"
-            ]
-          },
-          {
-            "name": "QC Cancel .Qty",
-            "description": "Tổng số lượng hủy",
-            "expression": [
-              " CALCULATE(sum('Fact - Actual Production'[Actual QTY]),",
-              "Filter('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"IN\" && 'Fact - Actual Production'[STK Keeper Code] = \"9998\" && 'Fact - Actual Production'[Filters] = 1)",
-              ")",
-              "/*",
-              "Filter('Dim - Product', not left( 'Dim - Product'[Product Code], 11) in {\"00000000003\"}), ",
-              "Filter('Dim - Product', not left( 'Dim - Product'[Product Code], 2) in {\"G1\",\"S1\", \"T1\"}), ",
-              "FILTER('Fact - Actual Production', not right('Fact - Actual Production'[STK Keeper Output], 1) in {\"M\"}),",
-              "Filter('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"IN\" && 'Fact - Actual Production'[STK Keeper Code] = \"9998\"))",
-              "*/"
-            ],
-            "formatString": "#,0"
           },
           {
             "name": ".Actual Productivity",
@@ -7386,19 +7384,9 @@
             "formatString": "0.00%;-0.00%;0.00%"
           },
           {
-            "name": ". All Net Amt LY (YTD)",
-            "expression": " CALCULATE([. All Net Amt (LY)], DATESYTD('Dim - Time'[Date]))",
-            "formatString": "#,0.00"
-          },
-          {
             "name": "% Net_Amt_LY",
             "expression": "if(ISBLANK([. All Net Amt (LY)]), 1, ([. All Net Amt]/[. All Net Amt (LY)]-1 ))",
             "formatString": "0.00%;-0.00%;0.00%"
-          },
-          {
-            "name": ". All Net Amt (YTD)",
-            "expression": " CALCULATE([. All Net Amt],DATESYTD('Dim - Time'[Date]))",
-            "formatString": "#,0.00"
           },
           {
             "name": "AVG Qty/Trx",
@@ -7515,6 +7503,16 @@
           {
             "name": "AVG All Net Amt/Sales Person (LY)",
             "expression": " CALCULATE([. All Net Amt (LY)]/[# Sales person (LY)])"
+          },
+          {
+            "name": ". All Net Amt LY (YTD)",
+            "expression": " CALCULATE([. All Net Amt (LY)], DATESYTD('Dim - Time'[Date]))",
+            "formatString": "#,0.00"
+          },
+          {
+            "name": ". All Net Amt (YTD)",
+            "expression": " CALCULATE([. All Net Amt],DATESYTD('Dim - Time'[Date]))",
+            "formatString": "#,0.00"
           },
           {
             "name": "% All Net_Amt (LM)",
@@ -13419,9 +13417,17 @@
               "type": "m",
               "expression": [
                 "let",
-                "    Source = #\"SQL/192 168 3 31;PNJ_ROLAP\",",
-                "    dbo_W_VW_ACTUAL_PRODUCTION_D = Source{[Schema=\"dbo\",Item=\"W_VW_ACTUAL_PRODUCTION_D\"]}[Data],",
-                "    #\"Renamed Columns\" = Table.RenameColumns(dbo_W_VW_ACTUAL_PRODUCTION_D,{{\"STANDARD_TEXT_KEY\", \"STD Text Key\"}, {\"STK_KEEPING_CODE\", \"STK Keeper Code\"}, {\"STK_KEEPING_GROUP\", \"STD Keeper Group\"}, {\"DESCRIPTION\", \"TextKey Name\"}, {\"WORK_CENTER\", \"Work Center\"}, {\"IS_TP\", \"TP Flag\"}})",
+                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
+                "    SELECT [PLANT_WID]",
+                "      ,[ROW_WID]",
+                "      ,[STK_KEEPING_CODE]",
+                "      ,[STANDARD_TEXT_KEY]",
+                "      ,[STK_KEEPING_GROUP]",
+                "      ,[DESCRIPTION]",
+                "      ,[WORK_CENTER]",
+                "      ,[IS_TP]",
+                "  FROM [PNJ_ROLAP].[dbo].[W_VW_ACTUAL_PRODUCTION_D]\"),",
+                "    #\"Renamed Columns\" = Table.RenameColumns(Source ,{{\"STANDARD_TEXT_KEY\", \"STD Text Key\"}, {\"STK_KEEPING_CODE\", \"STK Keeper Code\"}, {\"STK_KEEPING_GROUP\", \"STD Keeper Group\"}, {\"DESCRIPTION\", \"TextKey Name\"}, {\"WORK_CENTER\", \"Work Center\"}, {\"IS_TP\", \"TP Flag\"}})",
                 "in",
                 "    #\"Renamed Columns\""
               ]
@@ -14163,72 +14169,6 @@
               ""
             ],
             "formatString": "0.000%;-0.000%;0.000%"
-          }
-        ]
-      },
-      {
-        "name": "Fact - Production Deffect Summary",
-        "columns": [
-          {
-            "name": "ROW_WID",
-            "dataType": "int64",
-            "sourceColumn": "ROW_WID"
-          },
-          {
-            "name": "MONTH_KEY",
-            "dataType": "int64",
-            "sourceColumn": "MONTH_KEY"
-          },
-          {
-            "name": "STK_KEEPING_GROUP",
-            "dataType": "string",
-            "sourceColumn": "STK_KEEPING_GROUP"
-          },
-          {
-            "name": "DEF_QTY",
-            "dataType": "int64",
-            "sourceColumn": "DEF_QTY",
-            "formatString": "#,0"
-          },
-          {
-            "name": "FGoods",
-            "dataType": "double",
-            "sourceColumn": "FGoods",
-            "formatString": "#,0"
-          },
-          {
-            "name": "Actual",
-            "dataType": "double",
-            "sourceColumn": "Actual",
-            "formatString": "0.00%;-0.00%;0.00%"
-          },
-          {
-            "name": "Quota",
-            "dataType": "double",
-            "sourceColumn": "Quota",
-            "formatString": "0.00%;-0.00%;0.00%"
-          },
-          {
-            "name": "Result",
-            "dataType": "string",
-            "sourceColumn": "Result"
-          }
-        ],
-        "partitions": [
-          {
-            "name": "Partition",
-            "dataView": "full",
-            "source": {
-              "type": "m",
-              "expression": [
-                "let",
-                "    Source = #\"SQL/192 168 3 31;PNJ_ROLAP\",",
-                "    dbo_W_VW_DEFFECT_SUMMARY_F = Source{[Schema=\"dbo\",Item=\"W_VW_DEFFECT_SUMMARY_F\"]}[Data],",
-                "    #\"Renamed Columns\" = Table.RenameColumns(dbo_W_VW_DEFFECT_SUMMARY_F,{{\"M_END_CAL_DT_WID\", \"MONTH_KEY\"}})",
-                "in",
-                "    #\"Renamed Columns\""
-              ]
-            }
           }
         ]
       },
@@ -16663,13 +16603,6 @@
         "fromTable": "Fact - Production Deffects",
         "fromColumn": "WORK_CENTER_WID",
         "toTable": "Dim - Work Center",
-        "toColumn": "ROW_WID"
-      },
-      {
-        "name": "9c18abf8-fa73-4506-8c79-1da27303cf3c",
-        "fromTable": "Fact - Production Deffect Summary",
-        "fromColumn": "MONTH_KEY",
-        "toTable": "Dim - Time",
         "toColumn": "ROW_WID"
       },
       {
