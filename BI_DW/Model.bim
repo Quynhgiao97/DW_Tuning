@@ -4510,8 +4510,7 @@
         ],
         "partitions": [
           {
-            "name": "Partition",
-            "dataView": "full",
+            "name": "Partition 2022",
             "source": {
               "type": "m",
               "expression": [
@@ -4542,156 +4541,375 @@
                 "      ,[STOCK_KEEPER_WID]",
                 "      ,[COOLING_SCORE]",
                 "      ,[PRONG_SCORE]",
-                "  FROM [PNJ_ROLAP].[dbo].[W_VW_ACTUAL_PRODUCTION_F]\"),",
+                "  FROM [PNJ_ROLAP].[dbo].[W_VW_ACTUAL_PRODUCTION_F]",
+                "  WHERE [DATE_KEY] BETWEEN 20220101 AND CAST(Convert(CHAR(8),DATEADD(DAY,- 30,GETDATE()),112) as int)\"),",
                 "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"STOCK_KEEPER_CODE\", \"STK Keeper Code\"},{\"ORDER_NUMBER\", \"Order Number\"}, {\"BASE_UOM_CODE\", \"UOM\"}, {\"ACTUAL_QTY\", \"Actual QTY\"}, {\"LOCATION_CODE\", \"Location Wid\"}, {\"DOCUMENT_NUMBER\", \"Document Number\"}, {\"STANDARD_WEIGHT_FLAG\", \"STD Weight Flag\"}, {\"STANDARD_TEXT_KEY\", \"STD Text Key\"}, {\"LOCATION_TRANSFER_CODE\", \"Output sloc\"}, {\"STOCK_KEEPER_TRANSFER_CODE\", \"STK Keeper Transfer Code\"}, {\"BATCH\", \"Batch\"}, {\"STK_KEEPER_WID\", \"Booklet_ID\"}, {\"TOTAL_WEIGHT\", \"Total Weight\"}, {\"STANDARD_WEIGHT\", \"Standard Weight\"}, {\"TIME\", \"Time\"}, {\"COOLING_SCORE\", \"Cooling Score\"}, {\"PRONG_SCORE\", \"Prong Score\"}})",
                 "in",
                 "    #\"Renamed Columns\""
               ]
-            }
+            },
+            "annotations": [
+              {
+                "name": "QueryEditorSerialization",
+                "value": [
+                  "<?xml version=\"1.0\" encoding=\"UTF-16\"?><Gemini xmlns=\"QueryEditorSerialization\"><AnnotationContent><![CDATA[<RSQueryCommandText>let",
+                  "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
+                  "    SELECT [TYPES]",
+                  "      ,[DATE_KEY]",
+                  "      ,[PLANT_WID]",
+                  "      ,[MRP_CONTROLLER_WID]",
+                  "      ,[PRODUCT_WID]",
+                  "      ,[ORDER_NUMBER]",
+                  "      ,[BASE_UOM_CODE]",
+                  "      ,[ACTUAL_QTY]",
+                  "      ,[STOCK_KEEPER_CODE]",
+                  "      ,[LOCATION_CODE]",
+                  "      ,[DOCUMENT_NUMBER]",
+                  "      ,[Q10]",
+                  "      ,[STANDARD_WEIGHT]",
+                  "      ,[STANDARD_WEIGHT_FLAG]",
+                  "      ,[STOCK_KEEPER_TRANSFER_CODE]",
+                  "      ,[LOCATION_TRANSFER_CODE]",
+                  "      ,[STANDARD_TEXT_KEY]",
+                  "      ,[BATCH]",
+                  "      ,[STK_KEEPER_WID]",
+                  "      ,[TOTAL_WEIGHT]",
+                  "      ,[STK_KEEPING_GROUP]",
+                  "      ,[TIME]",
+                  "      ,[STOCK_KEEPER_WID]",
+                  "      ,[COOLING_SCORE]",
+                  "      ,[PRONG_SCORE]",
+                  "  FROM [PNJ_ROLAP].[dbo].[W_VW_ACTUAL_PRODUCTION_F]",
+                  "  WHERE [DATE_KEY] BETWEEN 20220101 AND CAST(Convert(CHAR(8),DATEADD(DAY,- 30,GETDATE()),112) as int)\"),",
+                  "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"STOCK_KEEPER_CODE\", \"STK Keeper Code\"},{\"ORDER_NUMBER\", \"Order Number\"}, {\"BASE_UOM_CODE\", \"UOM\"}, {\"ACTUAL_QTY\", \"Actual QTY\"}, {\"LOCATION_CODE\", \"Location Wid\"}, {\"DOCUMENT_NUMBER\", \"Document Number\"}, {\"STANDARD_WEIGHT_FLAG\", \"STD Weight Flag\"}, {\"STANDARD_TEXT_KEY\", \"STD Text Key\"}, {\"LOCATION_TRANSFER_CODE\", \"Output sloc\"}, {\"STOCK_KEEPER_TRANSFER_CODE\", \"STK Keeper Transfer Code\"}, {\"BATCH\", \"Batch\"}, {\"STK_KEEPER_WID\", \"Booklet_ID\"}, {\"TOTAL_WEIGHT\", \"Total Weight\"}, {\"STANDARD_WEIGHT\", \"Standard Weight\"}, {\"TIME\", \"Time\"}, {\"COOLING_SCORE\", \"Cooling Score\"}, {\"PRONG_SCORE\", \"Prong Score\"}})",
+                  "in",
+                  "    #\"Renamed Columns\"</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Partition 2021",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
+                "    SELECT [TYPES]",
+                "      ,[DATE_KEY]",
+                "      ,[PLANT_WID]",
+                "      ,[MRP_CONTROLLER_WID]",
+                "      ,[PRODUCT_WID]",
+                "      ,[ORDER_NUMBER]",
+                "      ,[BASE_UOM_CODE]",
+                "      ,[ACTUAL_QTY]",
+                "      ,[STOCK_KEEPER_CODE]",
+                "      ,[LOCATION_CODE]",
+                "      ,[DOCUMENT_NUMBER]",
+                "      ,[Q10]",
+                "      ,[STANDARD_WEIGHT]",
+                "      ,[STANDARD_WEIGHT_FLAG]",
+                "      ,[STOCK_KEEPER_TRANSFER_CODE]",
+                "      ,[LOCATION_TRANSFER_CODE]",
+                "      ,[STANDARD_TEXT_KEY]",
+                "      ,[BATCH]",
+                "      ,[STK_KEEPER_WID]",
+                "      ,[TOTAL_WEIGHT]",
+                "      ,[STK_KEEPING_GROUP]",
+                "      ,[TIME]",
+                "      ,[STOCK_KEEPER_WID]",
+                "      ,[COOLING_SCORE]",
+                "      ,[PRONG_SCORE]",
+                "  FROM [PNJ_ROLAP].[dbo].[W_VW_ACTUAL_PRODUCTION_F]",
+                "  WHERE  [DATE_KEY] BETWEEN 20210101 AND 20211231\"),",
+                "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"STOCK_KEEPER_CODE\", \"STK Keeper Code\"},{\"ORDER_NUMBER\", \"Order Number\"}, {\"BASE_UOM_CODE\", \"UOM\"}, {\"ACTUAL_QTY\", \"Actual QTY\"}, {\"LOCATION_CODE\", \"Location Wid\"}, {\"DOCUMENT_NUMBER\", \"Document Number\"}, {\"STANDARD_WEIGHT_FLAG\", \"STD Weight Flag\"}, {\"STANDARD_TEXT_KEY\", \"STD Text Key\"}, {\"LOCATION_TRANSFER_CODE\", \"Output sloc\"}, {\"STOCK_KEEPER_TRANSFER_CODE\", \"STK Keeper Transfer Code\"}, {\"BATCH\", \"Batch\"}, {\"STK_KEEPER_WID\", \"Booklet_ID\"}, {\"TOTAL_WEIGHT\", \"Total Weight\"}, {\"STANDARD_WEIGHT\", \"Standard Weight\"}, {\"TIME\", \"Time\"}, {\"COOLING_SCORE\", \"Cooling Score\"}, {\"PRONG_SCORE\", \"Prong Score\"}})",
+                "in",
+                "    #\"Renamed Columns\""
+              ]
+            },
+            "annotations": [
+              {
+                "name": "QueryEditorSerialization",
+                "value": [
+                  "<?xml version=\"1.0\" encoding=\"UTF-16\"?><Gemini xmlns=\"QueryEditorSerialization\"><AnnotationContent><![CDATA[<RSQueryCommandText>let",
+                  "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
+                  "    SELECT [TYPES]",
+                  "      ,[DATE_KEY]",
+                  "      ,[PLANT_WID]",
+                  "      ,[MRP_CONTROLLER_WID]",
+                  "      ,[PRODUCT_WID]",
+                  "      ,[ORDER_NUMBER]",
+                  "      ,[BASE_UOM_CODE]",
+                  "      ,[ACTUAL_QTY]",
+                  "      ,[STOCK_KEEPER_CODE]",
+                  "      ,[LOCATION_CODE]",
+                  "      ,[DOCUMENT_NUMBER]",
+                  "      ,[Q10]",
+                  "      ,[STANDARD_WEIGHT]",
+                  "      ,[STANDARD_WEIGHT_FLAG]",
+                  "      ,[STOCK_KEEPER_TRANSFER_CODE]",
+                  "      ,[LOCATION_TRANSFER_CODE]",
+                  "      ,[STANDARD_TEXT_KEY]",
+                  "      ,[BATCH]",
+                  "      ,[STK_KEEPER_WID]",
+                  "      ,[TOTAL_WEIGHT]",
+                  "      ,[STK_KEEPING_GROUP]",
+                  "      ,[TIME]",
+                  "      ,[STOCK_KEEPER_WID]",
+                  "      ,[COOLING_SCORE]",
+                  "      ,[PRONG_SCORE]",
+                  "  FROM [PNJ_ROLAP].[dbo].[W_VW_ACTUAL_PRODUCTION_F]",
+                  "  WHERE  [DATE_KEY] BETWEEN 20210101 AND 20211231\"),",
+                  "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"STOCK_KEEPER_CODE\", \"STK Keeper Code\"},{\"ORDER_NUMBER\", \"Order Number\"}, {\"BASE_UOM_CODE\", \"UOM\"}, {\"ACTUAL_QTY\", \"Actual QTY\"}, {\"LOCATION_CODE\", \"Location Wid\"}, {\"DOCUMENT_NUMBER\", \"Document Number\"}, {\"STANDARD_WEIGHT_FLAG\", \"STD Weight Flag\"}, {\"STANDARD_TEXT_KEY\", \"STD Text Key\"}, {\"LOCATION_TRANSFER_CODE\", \"Output sloc\"}, {\"STOCK_KEEPER_TRANSFER_CODE\", \"STK Keeper Transfer Code\"}, {\"BATCH\", \"Batch\"}, {\"STK_KEEPER_WID\", \"Booklet_ID\"}, {\"TOTAL_WEIGHT\", \"Total Weight\"}, {\"STANDARD_WEIGHT\", \"Standard Weight\"}, {\"TIME\", \"Time\"}, {\"COOLING_SCORE\", \"Cooling Score\"}, {\"PRONG_SCORE\", \"Prong Score\"}})",
+                  "in",
+                  "    #\"Renamed Columns\"</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Partition 2020",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
+                "    SELECT [TYPES]",
+                "      ,[DATE_KEY]",
+                "      ,[PLANT_WID]",
+                "      ,[MRP_CONTROLLER_WID]",
+                "      ,[PRODUCT_WID]",
+                "      ,[ORDER_NUMBER]",
+                "      ,[BASE_UOM_CODE]",
+                "      ,[ACTUAL_QTY]",
+                "      ,[STOCK_KEEPER_CODE]",
+                "      ,[LOCATION_CODE]",
+                "      ,[DOCUMENT_NUMBER]",
+                "      ,[Q10]",
+                "      ,[STANDARD_WEIGHT]",
+                "      ,[STANDARD_WEIGHT_FLAG]",
+                "      ,[STOCK_KEEPER_TRANSFER_CODE]",
+                "      ,[LOCATION_TRANSFER_CODE]",
+                "      ,[STANDARD_TEXT_KEY]",
+                "      ,[BATCH]",
+                "      ,[STK_KEEPER_WID]",
+                "      ,[TOTAL_WEIGHT]",
+                "      ,[STK_KEEPING_GROUP]",
+                "      ,[TIME]",
+                "      ,[STOCK_KEEPER_WID]",
+                "      ,[COOLING_SCORE]",
+                "      ,[PRONG_SCORE]",
+                "  FROM [PNJ_ROLAP].[dbo].[W_VW_ACTUAL_PRODUCTION_F]",
+                "  WHERE [DATE_KEY] BETWEEN 20200101 AND 20201231\"),",
+                "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"STOCK_KEEPER_CODE\", \"STK Keeper Code\"},{\"ORDER_NUMBER\", \"Order Number\"}, {\"BASE_UOM_CODE\", \"UOM\"}, {\"ACTUAL_QTY\", \"Actual QTY\"}, {\"LOCATION_CODE\", \"Location Wid\"}, {\"DOCUMENT_NUMBER\", \"Document Number\"}, {\"STANDARD_WEIGHT_FLAG\", \"STD Weight Flag\"}, {\"STANDARD_TEXT_KEY\", \"STD Text Key\"}, {\"LOCATION_TRANSFER_CODE\", \"Output sloc\"}, {\"STOCK_KEEPER_TRANSFER_CODE\", \"STK Keeper Transfer Code\"}, {\"BATCH\", \"Batch\"}, {\"STK_KEEPER_WID\", \"Booklet_ID\"}, {\"TOTAL_WEIGHT\", \"Total Weight\"}, {\"STANDARD_WEIGHT\", \"Standard Weight\"}, {\"TIME\", \"Time\"}, {\"COOLING_SCORE\", \"Cooling Score\"}, {\"PRONG_SCORE\", \"Prong Score\"}})",
+                "in",
+                "    #\"Renamed Columns\""
+              ]
+            },
+            "annotations": [
+              {
+                "name": "QueryEditorSerialization",
+                "value": [
+                  "<?xml version=\"1.0\" encoding=\"UTF-16\"?><Gemini xmlns=\"QueryEditorSerialization\"><AnnotationContent><![CDATA[<RSQueryCommandText>let",
+                  "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
+                  "    SELECT [TYPES]",
+                  "      ,[DATE_KEY]",
+                  "      ,[PLANT_WID]",
+                  "      ,[MRP_CONTROLLER_WID]",
+                  "      ,[PRODUCT_WID]",
+                  "      ,[ORDER_NUMBER]",
+                  "      ,[BASE_UOM_CODE]",
+                  "      ,[ACTUAL_QTY]",
+                  "      ,[STOCK_KEEPER_CODE]",
+                  "      ,[LOCATION_CODE]",
+                  "      ,[DOCUMENT_NUMBER]",
+                  "      ,[Q10]",
+                  "      ,[STANDARD_WEIGHT]",
+                  "      ,[STANDARD_WEIGHT_FLAG]",
+                  "      ,[STOCK_KEEPER_TRANSFER_CODE]",
+                  "      ,[LOCATION_TRANSFER_CODE]",
+                  "      ,[STANDARD_TEXT_KEY]",
+                  "      ,[BATCH]",
+                  "      ,[STK_KEEPER_WID]",
+                  "      ,[TOTAL_WEIGHT]",
+                  "      ,[STK_KEEPING_GROUP]",
+                  "      ,[TIME]",
+                  "      ,[STOCK_KEEPER_WID]",
+                  "      ,[COOLING_SCORE]",
+                  "      ,[PRONG_SCORE]",
+                  "  FROM [PNJ_ROLAP].[dbo].[W_VW_ACTUAL_PRODUCTION_F]",
+                  "  WHERE [DATE_KEY] BETWEEN 20200101 AND 20201231\"),",
+                  "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"STOCK_KEEPER_CODE\", \"STK Keeper Code\"},{\"ORDER_NUMBER\", \"Order Number\"}, {\"BASE_UOM_CODE\", \"UOM\"}, {\"ACTUAL_QTY\", \"Actual QTY\"}, {\"LOCATION_CODE\", \"Location Wid\"}, {\"DOCUMENT_NUMBER\", \"Document Number\"}, {\"STANDARD_WEIGHT_FLAG\", \"STD Weight Flag\"}, {\"STANDARD_TEXT_KEY\", \"STD Text Key\"}, {\"LOCATION_TRANSFER_CODE\", \"Output sloc\"}, {\"STOCK_KEEPER_TRANSFER_CODE\", \"STK Keeper Transfer Code\"}, {\"BATCH\", \"Batch\"}, {\"STK_KEEPER_WID\", \"Booklet_ID\"}, {\"TOTAL_WEIGHT\", \"Total Weight\"}, {\"STANDARD_WEIGHT\", \"Standard Weight\"}, {\"TIME\", \"Time\"}, {\"COOLING_SCORE\", \"Cooling Score\"}, {\"PRONG_SCORE\", \"Prong Score\"}})",
+                  "in",
+                  "    #\"Renamed Columns\"</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Partition Before 2019",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
+                "    SELECT [TYPES]",
+                "      ,[DATE_KEY]",
+                "      ,[PLANT_WID]",
+                "      ,[MRP_CONTROLLER_WID]",
+                "      ,[PRODUCT_WID]",
+                "      ,[ORDER_NUMBER]",
+                "      ,[BASE_UOM_CODE]",
+                "      ,[ACTUAL_QTY]",
+                "      ,[STOCK_KEEPER_CODE]",
+                "      ,[LOCATION_CODE]",
+                "      ,[DOCUMENT_NUMBER]",
+                "      ,[Q10]",
+                "      ,[STANDARD_WEIGHT]",
+                "      ,[STANDARD_WEIGHT_FLAG]",
+                "      ,[STOCK_KEEPER_TRANSFER_CODE]",
+                "      ,[LOCATION_TRANSFER_CODE]",
+                "      ,[STANDARD_TEXT_KEY]",
+                "      ,[BATCH]",
+                "      ,[STK_KEEPER_WID]",
+                "      ,[TOTAL_WEIGHT]",
+                "      ,[STK_KEEPING_GROUP]",
+                "      ,[TIME]",
+                "      ,[STOCK_KEEPER_WID]",
+                "      ,[COOLING_SCORE]",
+                "      ,[PRONG_SCORE]",
+                "  FROM [PNJ_ROLAP].[dbo].[W_VW_ACTUAL_PRODUCTION_F]",
+                "  WHERE [DATE_KEY] < 20200101\"),",
+                "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"STOCK_KEEPER_CODE\", \"STK Keeper Code\"},{\"ORDER_NUMBER\", \"Order Number\"}, {\"BASE_UOM_CODE\", \"UOM\"}, {\"ACTUAL_QTY\", \"Actual QTY\"}, {\"LOCATION_CODE\", \"Location Wid\"}, {\"DOCUMENT_NUMBER\", \"Document Number\"}, {\"STANDARD_WEIGHT_FLAG\", \"STD Weight Flag\"}, {\"STANDARD_TEXT_KEY\", \"STD Text Key\"}, {\"LOCATION_TRANSFER_CODE\", \"Output sloc\"}, {\"STOCK_KEEPER_TRANSFER_CODE\", \"STK Keeper Transfer Code\"}, {\"BATCH\", \"Batch\"}, {\"STK_KEEPER_WID\", \"Booklet_ID\"}, {\"TOTAL_WEIGHT\", \"Total Weight\"}, {\"STANDARD_WEIGHT\", \"Standard Weight\"}, {\"TIME\", \"Time\"}, {\"COOLING_SCORE\", \"Cooling Score\"}, {\"PRONG_SCORE\", \"Prong Score\"}})",
+                "in",
+                "    #\"Renamed Columns\""
+              ]
+            },
+            "annotations": [
+              {
+                "name": "QueryEditorSerialization",
+                "value": [
+                  "<?xml version=\"1.0\" encoding=\"UTF-16\"?><Gemini xmlns=\"QueryEditorSerialization\"><AnnotationContent><![CDATA[<RSQueryCommandText>let",
+                  "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
+                  "    SELECT [TYPES]",
+                  "      ,[DATE_KEY]",
+                  "      ,[PLANT_WID]",
+                  "      ,[MRP_CONTROLLER_WID]",
+                  "      ,[PRODUCT_WID]",
+                  "      ,[ORDER_NUMBER]",
+                  "      ,[BASE_UOM_CODE]",
+                  "      ,[ACTUAL_QTY]",
+                  "      ,[STOCK_KEEPER_CODE]",
+                  "      ,[LOCATION_CODE]",
+                  "      ,[DOCUMENT_NUMBER]",
+                  "      ,[Q10]",
+                  "      ,[STANDARD_WEIGHT]",
+                  "      ,[STANDARD_WEIGHT_FLAG]",
+                  "      ,[STOCK_KEEPER_TRANSFER_CODE]",
+                  "      ,[LOCATION_TRANSFER_CODE]",
+                  "      ,[STANDARD_TEXT_KEY]",
+                  "      ,[BATCH]",
+                  "      ,[STK_KEEPER_WID]",
+                  "      ,[TOTAL_WEIGHT]",
+                  "      ,[STK_KEEPING_GROUP]",
+                  "      ,[TIME]",
+                  "      ,[STOCK_KEEPER_WID]",
+                  "      ,[COOLING_SCORE]",
+                  "      ,[PRONG_SCORE]",
+                  "  FROM [PNJ_ROLAP].[dbo].[W_VW_ACTUAL_PRODUCTION_F]",
+                  "  WHERE [DATE_KEY] < 20200101\"),",
+                  "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"STOCK_KEEPER_CODE\", \"STK Keeper Code\"},{\"ORDER_NUMBER\", \"Order Number\"}, {\"BASE_UOM_CODE\", \"UOM\"}, {\"ACTUAL_QTY\", \"Actual QTY\"}, {\"LOCATION_CODE\", \"Location Wid\"}, {\"DOCUMENT_NUMBER\", \"Document Number\"}, {\"STANDARD_WEIGHT_FLAG\", \"STD Weight Flag\"}, {\"STANDARD_TEXT_KEY\", \"STD Text Key\"}, {\"LOCATION_TRANSFER_CODE\", \"Output sloc\"}, {\"STOCK_KEEPER_TRANSFER_CODE\", \"STK Keeper Transfer Code\"}, {\"BATCH\", \"Batch\"}, {\"STK_KEEPER_WID\", \"Booklet_ID\"}, {\"TOTAL_WEIGHT\", \"Total Weight\"}, {\"STANDARD_WEIGHT\", \"Standard Weight\"}, {\"TIME\", \"Time\"}, {\"COOLING_SCORE\", \"Cooling Score\"}, {\"PRONG_SCORE\", \"Prong Score\"}})",
+                  "in",
+                  "    #\"Renamed Columns\"</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Partition",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
+                "    SELECT [TYPES]",
+                "      ,[DATE_KEY]",
+                "      ,[PLANT_WID]",
+                "      ,[MRP_CONTROLLER_WID]",
+                "      ,[PRODUCT_WID]",
+                "      ,[ORDER_NUMBER]",
+                "      ,[BASE_UOM_CODE]",
+                "      ,[ACTUAL_QTY]",
+                "      ,[STOCK_KEEPER_CODE]",
+                "      ,[LOCATION_CODE]",
+                "      ,[DOCUMENT_NUMBER]",
+                "      ,[Q10]",
+                "      ,[STANDARD_WEIGHT]",
+                "      ,[STANDARD_WEIGHT_FLAG]",
+                "      ,[STOCK_KEEPER_TRANSFER_CODE]",
+                "      ,[LOCATION_TRANSFER_CODE]",
+                "      ,[STANDARD_TEXT_KEY]",
+                "      ,[BATCH]",
+                "      ,[STK_KEEPER_WID]",
+                "      ,[TOTAL_WEIGHT]",
+                "      ,[STK_KEEPING_GROUP]",
+                "      ,[TIME]",
+                "      ,[STOCK_KEEPER_WID]",
+                "      ,[COOLING_SCORE]",
+                "      ,[PRONG_SCORE]",
+                "  FROM [PNJ_ROLAP].[dbo].[W_VW_ACTUAL_PRODUCTION_F]",
+                "  WHERE [DATE_KEY]> CAST(Convert(CHAR(8),DATEADD(DAY,- 30,GETDATE()),112) as int)\"),",
+                "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"STOCK_KEEPER_CODE\", \"STK Keeper Code\"},{\"ORDER_NUMBER\", \"Order Number\"}, {\"BASE_UOM_CODE\", \"UOM\"}, {\"ACTUAL_QTY\", \"Actual QTY\"}, {\"LOCATION_CODE\", \"Location Wid\"}, {\"DOCUMENT_NUMBER\", \"Document Number\"}, {\"STANDARD_WEIGHT_FLAG\", \"STD Weight Flag\"}, {\"STANDARD_TEXT_KEY\", \"STD Text Key\"}, {\"LOCATION_TRANSFER_CODE\", \"Output sloc\"}, {\"STOCK_KEEPER_TRANSFER_CODE\", \"STK Keeper Transfer Code\"}, {\"BATCH\", \"Batch\"}, {\"STK_KEEPER_WID\", \"Booklet_ID\"}, {\"TOTAL_WEIGHT\", \"Total Weight\"}, {\"STANDARD_WEIGHT\", \"Standard Weight\"}, {\"TIME\", \"Time\"}, {\"COOLING_SCORE\", \"Cooling Score\"}, {\"PRONG_SCORE\", \"Prong Score\"}})",
+                "in",
+                "    #\"Renamed Columns\""
+              ]
+            },
+            "annotations": [
+              {
+                "name": "QueryEditorSerialization",
+                "value": [
+                  "<?xml version=\"1.0\" encoding=\"UTF-16\"?><Gemini xmlns=\"QueryEditorSerialization\"><AnnotationContent><![CDATA[<RSQueryCommandText>let",
+                  "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
+                  "    SELECT [TYPES]",
+                  "      ,[DATE_KEY]",
+                  "      ,[PLANT_WID]",
+                  "      ,[MRP_CONTROLLER_WID]",
+                  "      ,[PRODUCT_WID]",
+                  "      ,[ORDER_NUMBER]",
+                  "      ,[BASE_UOM_CODE]",
+                  "      ,[ACTUAL_QTY]",
+                  "      ,[STOCK_KEEPER_CODE]",
+                  "      ,[LOCATION_CODE]",
+                  "      ,[DOCUMENT_NUMBER]",
+                  "      ,[Q10]",
+                  "      ,[STANDARD_WEIGHT]",
+                  "      ,[STANDARD_WEIGHT_FLAG]",
+                  "      ,[STOCK_KEEPER_TRANSFER_CODE]",
+                  "      ,[LOCATION_TRANSFER_CODE]",
+                  "      ,[STANDARD_TEXT_KEY]",
+                  "      ,[BATCH]",
+                  "      ,[STK_KEEPER_WID]",
+                  "      ,[TOTAL_WEIGHT]",
+                  "      ,[STK_KEEPING_GROUP]",
+                  "      ,[TIME]",
+                  "      ,[STOCK_KEEPER_WID]",
+                  "      ,[COOLING_SCORE]",
+                  "      ,[PRONG_SCORE]",
+                  "  FROM [PNJ_ROLAP].[dbo].[W_VW_ACTUAL_PRODUCTION_F]",
+                  "  WHERE [DATE_KEY]> CAST(Convert(CHAR(8),DATEADD(DAY,- 30,GETDATE()),112) as int)\"),",
+                  "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"STOCK_KEEPER_CODE\", \"STK Keeper Code\"},{\"ORDER_NUMBER\", \"Order Number\"}, {\"BASE_UOM_CODE\", \"UOM\"}, {\"ACTUAL_QTY\", \"Actual QTY\"}, {\"LOCATION_CODE\", \"Location Wid\"}, {\"DOCUMENT_NUMBER\", \"Document Number\"}, {\"STANDARD_WEIGHT_FLAG\", \"STD Weight Flag\"}, {\"STANDARD_TEXT_KEY\", \"STD Text Key\"}, {\"LOCATION_TRANSFER_CODE\", \"Output sloc\"}, {\"STOCK_KEEPER_TRANSFER_CODE\", \"STK Keeper Transfer Code\"}, {\"BATCH\", \"Batch\"}, {\"STK_KEEPER_WID\", \"Booklet_ID\"}, {\"TOTAL_WEIGHT\", \"Total Weight\"}, {\"STANDARD_WEIGHT\", \"Standard Weight\"}, {\"TIME\", \"Time\"}, {\"COOLING_SCORE\", \"Cooling Score\"}, {\"PRONG_SCORE\", \"Prong Score\"}})",
+                  "in",
+                  "    #\"Renamed Columns\"</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
+                ]
+              }
+            ]
           }
         ],
         "measures": [
-          {
-            "name": "QC %Cancel .Q10",
-            "expression": [
-              "",
-              " VAR GI = CALCULATE(SUM('Fact - Actual Production'[Q10]) * -1, 'Fact - Actual Production'[TYPES] = \"OUT\")",
-              " VAR Cancel = CALCULATE(sum('Fact - Actual Production'[Q10]),",
-              "\tFILTER('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"IN\"  && 'Fact - Actual Production'[STK Keeper Code] = \"9998\"))",
-              "\t",
-              "RETURN  DIVIDE(Cancel, GI,BLANK())"
-            ],
-            "formatString": "0.0%;-0.0%;0.0%"
-          },
-          {
-            "name": ".Qty GI Finish Goods",
-            "expression": [
-              " CALCULATE(",
-              "    CALCULATE(Sum('Fact - Actual Production'[Actual QTY]),",
-              "\tFilter('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"IN\"),",
-              "\tFILTER('Fact - Actual Production', 'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\", \"1102\", \"1104\", \"1105\",\"1106\"}))",
-              "--,FILTER(ALL('Dim - Actual Production'), 'Dim - Actual Production'[STD Keeper Group] IN {\"KVSX1\", \"KVSX2\", \"KVSX3\", \"NM LONG HẬU\"})",
-              ")",
-              ""
-            ],
-            "formatString": "#,0"
-          },
-          {
-            "name": "QC %Cancel .Qty",
-            "description": "[CL1.2] Lỗi hủy trong sản xuất",
-            "expression": [
-              "",
-              "  DIVIDE([QC Cancel .Qty], [.Qty GI Finish Goods],BLANK())"
-            ],
-            "formatString": "0.00%;-0.00%;0.00%"
-          },
-          {
-            "name": "%STD Weight Error",
-            "expression": [
-              " ",
-              " VAR GR = CALCULATE(sum('Fact - Actual Production'[Actual QTY]),",
-              "Filter('Dim - Product', 'Dim - Product'[Product Group LV2] in {\"PS\", \"PT\", \"PG\", \"PP\"}),",
-              "Filter('Fact - Actual Production', 'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\",\"1102\", \"1104\", \"1105\", \"1106\"}),",
-              "Filter('Fact - Actual Production', 'Fact - Actual Production'[STD Weight Flag] in {\"Failed\", \"Passed\"}),",
-              "Filter('Fact - Actual Production', 'Fact - Actual Production'[Types] in {\"IN\"})",
-              ")",
-              "",
-              "VAR Failed = CALCULATE(sum('Fact - Actual Production'[Actual QTY]),",
-              "Filter('Dim - Product', 'Dim - Product'[Product Group LV2] in {\"PS\", \"PT\", \"PG\", \"PP\"}),",
-              "Filter('Fact - Actual Production', 'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\",\"1102\", \"1104\", \"1105\", \"1106\"}),",
-              "Filter('Fact - Actual Production', 'Fact - Actual Production'[STD Weight Flag] = \"Failed\"),",
-              "Filter('Fact - Actual Production', 'Fact - Actual Production'[Types] in {\"IN\"})",
-              ")",
-              "",
-              "Return Failed/ GR"
-            ]
-          },
-          {
-            "name": "%STD Weight Pass",
-            "expression": [
-              "  VAR GR = CALCULATE(sum('Fact - Actual Production'[Actual QTY]),",
-              "Filter('Dim - Product', 'Dim - Product'[Product Group LV2] in {\"PS\", \"PT\", \"PG\", \"PP\"}),",
-              "Filter('Fact - Actual Production', 'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\",\"1102\", \"1104\", \"1105\", \"1106\"}),",
-              "Filter('Fact - Actual Production', 'Fact - Actual Production'[STD Weight Flag] in {\"Failed\", \"Passed\"}),",
-              "Filter('Fact - Actual Production', 'Fact - Actual Production'[Types] in {\"IN\"})",
-              ")",
-              "",
-              "VAR Passed = CALCULATE(sum('Fact - Actual Production'[Actual QTY]),",
-              "Filter('Dim - Product', 'Dim - Product'[Product Group LV2] in {\"PS\", \"PT\", \"PG\", \"PP\"}),",
-              "Filter('Fact - Actual Production', 'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\",\"1102\", \"1104\", \"1105\", \"1106\"}),",
-              "Filter('Fact - Actual Production', 'Fact - Actual Production'[STD Weight Flag] = \"Passed\"),",
-              "Filter('Fact - Actual Production', 'Fact - Actual Production'[Types] in {\"IN\"})",
-              ")",
-              "",
-              "Return Passed / GR"
-            ],
-            "formatString": "0.00%;-0.00%;0.00%"
-          },
-          {
-            "name": "QC Cancel .Q10",
-            "expression": [
-              " CALCULATE(sum('Fact - Actual Production'[Q10]),",
-              "\tFILTER('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"IN\"  && 'Fact - Actual Production'[STK Keeper Code] = \"9998\"))",
-              ""
-            ],
-            "formatString": "#,0.00"
-          },
-          {
-            "name": ".Qty GI Finish_F1018",
-            "expression": [
-              " CALCULATE(Sum('Fact - Actual Production'[Actual QTY]),",
-              "Filter('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"IN\"),",
-              "FILTER('Fact - Actual Production', 'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\", \"1102\", \"1104\", \"1105\",\"1106\"} ||",
-              "'Fact - Actual Production'[STK Keeper Transfer Code] = \"F1018\"))",
-              ""
-            ],
-            "formatString": "#,0"
-          },
-          {
-            "name": "Total Weight Avg.",
-            "expression": [
-              " CALCULATE(sum('Fact - Actual Production'[Total Weight])/[.Qty GI Finish Goods],",
-              "FILTER('Fact - Actual Production', 'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\", \"1102\", \"1104\", \"1105\", \"1106\"})",
-              ")"
-            ]
-          },
-          {
-            "name": "STD Weight Avg.",
-            "expression": [
-              " CALCULATE(sum('Fact - Actual Production'[Standard Weight])/countrows ('Fact - Actual Production'),",
-              "FILTER('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"IN\")",
-              ")"
-            ]
-          },
-          {
-            "name": "%Ttl Weight vs .STD",
-            "expression": " [Total Weight Avg.]/[STD Weight Avg.] - 1",
-            "formatString": "0.00%;-0.00%;0.00%"
-          },
-          {
-            "name": "All Finish Goods",
-            "expression": [
-              " CALCULATE([.Qty GI Finish Goods],",
-              "FILTER(ALL('Dim - Actual Production'), 'Dim - Actual Production'[STD Keeper Group] IN {\"KVSX1\", \"KVSX2\", \"KVSX3\", \"NM LONG HẬU\"})",
-              ")"
-            ]
-          },
-          {
-            "name": "QC Cancel .Qty",
-            "description": "Tổng số lượng hủy",
-            "expression": [
-              " CALCULATE(sum('Fact - Actual Production'[Actual QTY]),",
-              "Filter('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"IN\" && 'Fact - Actual Production'[STK Keeper Code] = \"9998\" && 'Fact - Actual Production'[Filters] = 1)",
-              ")",
-              "/*",
-              "Filter('Dim - Product', not left( 'Dim - Product'[Product Code], 11) in {\"00000000003\"}), ",
-              "Filter('Dim - Product', not left( 'Dim - Product'[Product Code], 2) in {\"G1\",\"S1\", \"T1\"}), ",
-              "FILTER('Fact - Actual Production', not right('Fact - Actual Production'[STK Keeper Output], 1) in {\"M\"}),",
-              "Filter('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"IN\" && 'Fact - Actual Production'[STK Keeper Code] = \"9998\"))",
-              "*/"
-            ],
-            "formatString": "#,0"
-          },
           {
             "name": ".Net Qty",
             "description": "Ton kho qty theo thoi diem va cong doan",
@@ -4987,6 +5205,61 @@
             ]
           },
           {
+            "name": "QC %Cancel .Q10",
+            "expression": [
+              "",
+              " VAR GI = CALCULATE(SUM('Fact - Actual Production'[Q10]) * -1, 'Fact - Actual Production'[TYPES] = \"OUT\")",
+              " VAR Cancel = CALCULATE(sum('Fact - Actual Production'[Q10]),",
+              "\tFILTER('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"IN\"  && 'Fact - Actual Production'[STK Keeper Code] = \"9998\"))",
+              "\t",
+              "RETURN  DIVIDE(Cancel, GI,BLANK())"
+            ],
+            "formatString": "0.0%;-0.0%;0.0%"
+          },
+          {
+            "name": ".Qty GI Finish Goods",
+            "expression": [
+              " CALCULATE(",
+              "    CALCULATE(Sum('Fact - Actual Production'[Actual QTY]),",
+              "\tFilter('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"IN\"),",
+              "\tFILTER('Fact - Actual Production', 'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\", \"1102\", \"1104\", \"1105\",\"1106\"}))",
+              "--,FILTER(ALL('Dim - Actual Production'), 'Dim - Actual Production'[STD Keeper Group] IN {\"KVSX1\", \"KVSX2\", \"KVSX3\", \"NM LONG HẬU\"})",
+              ")",
+              ""
+            ],
+            "formatString": "#,0"
+          },
+          {
+            "name": "QC %Cancel .Qty",
+            "description": "[CL1.2] Lỗi hủy trong sản xuất",
+            "expression": [
+              "",
+              "  DIVIDE([QC Cancel .Qty], [.Qty GI Finish Goods],BLANK())"
+            ],
+            "formatString": "0.00%;-0.00%;0.00%"
+          },
+          {
+            "name": "%STD Weight Error",
+            "expression": [
+              " ",
+              " VAR GR = CALCULATE(sum('Fact - Actual Production'[Actual QTY]),",
+              "Filter('Dim - Product', 'Dim - Product'[Product Group LV2] in {\"PS\", \"PT\", \"PG\", \"PP\"}),",
+              "Filter('Fact - Actual Production', 'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\",\"1102\", \"1104\", \"1105\", \"1106\"}),",
+              "Filter('Fact - Actual Production', 'Fact - Actual Production'[STD Weight Flag] in {\"Failed\", \"Passed\"}),",
+              "Filter('Fact - Actual Production', 'Fact - Actual Production'[Types] in {\"IN\"})",
+              ")",
+              "",
+              "VAR Failed = CALCULATE(sum('Fact - Actual Production'[Actual QTY]),",
+              "Filter('Dim - Product', 'Dim - Product'[Product Group LV2] in {\"PS\", \"PT\", \"PG\", \"PP\"}),",
+              "Filter('Fact - Actual Production', 'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\",\"1102\", \"1104\", \"1105\", \"1106\"}),",
+              "Filter('Fact - Actual Production', 'Fact - Actual Production'[STD Weight Flag] = \"Failed\"),",
+              "Filter('Fact - Actual Production', 'Fact - Actual Production'[Types] in {\"IN\"})",
+              ")",
+              "",
+              "Return Failed/ GR"
+            ]
+          },
+          {
             "name": "AVG .Q10",
             "expression": [
               " CALCULATE(sum('Fact - Actual Production'[Q10]) / sum('Fact - Actual Production'[Actual QTY]),",
@@ -4997,6 +5270,92 @@
               ")",
               ""
             ]
+          },
+          {
+            "name": "%STD Weight Pass",
+            "expression": [
+              "  VAR GR = CALCULATE(sum('Fact - Actual Production'[Actual QTY]),",
+              "Filter('Dim - Product', 'Dim - Product'[Product Group LV2] in {\"PS\", \"PT\", \"PG\", \"PP\"}),",
+              "Filter('Fact - Actual Production', 'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\",\"1102\", \"1104\", \"1105\", \"1106\"}),",
+              "Filter('Fact - Actual Production', 'Fact - Actual Production'[STD Weight Flag] in {\"Failed\", \"Passed\"}),",
+              "Filter('Fact - Actual Production', 'Fact - Actual Production'[Types] in {\"IN\"})",
+              ")",
+              "",
+              "VAR Passed = CALCULATE(sum('Fact - Actual Production'[Actual QTY]),",
+              "Filter('Dim - Product', 'Dim - Product'[Product Group LV2] in {\"PS\", \"PT\", \"PG\", \"PP\"}),",
+              "Filter('Fact - Actual Production', 'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\",\"1102\", \"1104\", \"1105\", \"1106\"}),",
+              "Filter('Fact - Actual Production', 'Fact - Actual Production'[STD Weight Flag] = \"Passed\"),",
+              "Filter('Fact - Actual Production', 'Fact - Actual Production'[Types] in {\"IN\"})",
+              ")",
+              "",
+              "Return Passed / GR"
+            ],
+            "formatString": "0.00%;-0.00%;0.00%"
+          },
+          {
+            "name": "QC Cancel .Q10",
+            "expression": [
+              " CALCULATE(sum('Fact - Actual Production'[Q10]),",
+              "\tFILTER('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"IN\"  && 'Fact - Actual Production'[STK Keeper Code] = \"9998\"))",
+              ""
+            ],
+            "formatString": "#,0.00"
+          },
+          {
+            "name": ".Qty GI Finish_F1018",
+            "expression": [
+              " CALCULATE(Sum('Fact - Actual Production'[Actual QTY]),",
+              "Filter('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"IN\"),",
+              "FILTER('Fact - Actual Production', 'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\", \"1102\", \"1104\", \"1105\",\"1106\"} ||",
+              "'Fact - Actual Production'[STK Keeper Transfer Code] = \"F1018\"))",
+              ""
+            ],
+            "formatString": "#,0"
+          },
+          {
+            "name": "Total Weight Avg.",
+            "expression": [
+              " CALCULATE(sum('Fact - Actual Production'[Total Weight])/[.Qty GI Finish Goods],",
+              "FILTER('Fact - Actual Production', 'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\", \"1102\", \"1104\", \"1105\", \"1106\"})",
+              ")"
+            ]
+          },
+          {
+            "name": "STD Weight Avg.",
+            "expression": [
+              " CALCULATE(sum('Fact - Actual Production'[Standard Weight])/countrows ('Fact - Actual Production'),",
+              "FILTER('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"IN\")",
+              ")"
+            ]
+          },
+          {
+            "name": "%Ttl Weight vs .STD",
+            "expression": " [Total Weight Avg.]/[STD Weight Avg.] - 1",
+            "formatString": "0.00%;-0.00%;0.00%"
+          },
+          {
+            "name": "All Finish Goods",
+            "expression": [
+              " CALCULATE([.Qty GI Finish Goods],",
+              "FILTER(ALL('Dim - Actual Production'), 'Dim - Actual Production'[STD Keeper Group] IN {\"KVSX1\", \"KVSX2\", \"KVSX3\", \"NM LONG HẬU\"})",
+              ")"
+            ]
+          },
+          {
+            "name": "QC Cancel .Qty",
+            "description": "Tổng số lượng hủy",
+            "expression": [
+              " CALCULATE(sum('Fact - Actual Production'[Actual QTY]),",
+              "Filter('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"IN\" && 'Fact - Actual Production'[STK Keeper Code] = \"9998\" && 'Fact - Actual Production'[Filters] = 1)",
+              ")",
+              "/*",
+              "Filter('Dim - Product', not left( 'Dim - Product'[Product Code], 11) in {\"00000000003\"}), ",
+              "Filter('Dim - Product', not left( 'Dim - Product'[Product Code], 2) in {\"G1\",\"S1\", \"T1\"}), ",
+              "FILTER('Fact - Actual Production', not right('Fact - Actual Production'[STK Keeper Output], 1) in {\"M\"}),",
+              "Filter('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"IN\" && 'Fact - Actual Production'[STK Keeper Code] = \"9998\"))",
+              "*/"
+            ],
+            "formatString": "#,0"
           },
           {
             "name": ".Actual Productivity",
@@ -7384,9 +7743,19 @@
             "formatString": "0.00%;-0.00%;0.00%"
           },
           {
+            "name": ". All Net Amt LY (YTD)",
+            "expression": " CALCULATE([. All Net Amt (LY)], DATESYTD('Dim - Time'[Date]))",
+            "formatString": "#,0.00"
+          },
+          {
             "name": "% Net_Amt_LY",
             "expression": "if(ISBLANK([. All Net Amt (LY)]), 1, ([. All Net Amt]/[. All Net Amt (LY)]-1 ))",
             "formatString": "0.00%;-0.00%;0.00%"
+          },
+          {
+            "name": ". All Net Amt (YTD)",
+            "expression": " CALCULATE([. All Net Amt],DATESYTD('Dim - Time'[Date]))",
+            "formatString": "#,0.00"
           },
           {
             "name": "AVG Qty/Trx",
@@ -7503,16 +7872,6 @@
           {
             "name": "AVG All Net Amt/Sales Person (LY)",
             "expression": " CALCULATE([. All Net Amt (LY)]/[# Sales person (LY)])"
-          },
-          {
-            "name": ". All Net Amt LY (YTD)",
-            "expression": " CALCULATE([. All Net Amt (LY)], DATESYTD('Dim - Time'[Date]))",
-            "formatString": "#,0.00"
-          },
-          {
-            "name": ". All Net Amt (YTD)",
-            "expression": " CALCULATE([. All Net Amt],DATESYTD('Dim - Time'[Date]))",
-            "formatString": "#,0.00"
           },
           {
             "name": "% All Net_Amt (LM)",
@@ -16844,18 +17203,19 @@
         "toColumn": "ROW_WID"
       },
       {
-        "name": "28e2dca3-709d-434a-a986-a8ecb04e69af",
-        "fromTable": "Dim - Production Labor Planned",
-        "fromColumn": "STOCK_KEEPER_WID",
-        "toTable": "Dim - Production Labor",
-        "toColumn": "ROW_WID"
-      },
-      {
         "name": "60c5eb0c-9ee0-4f93-8a42-c12837241952",
         "fromTable": "Fact - Actual Production",
         "fromColumn": "STOCK_KEEPER_WID",
         "toTable": "Dim - Production Labor",
         "toColumn": "ROW_WID"
+      },
+      {
+        "name": "bce87626-983d-4186-a2c0-afaae7de401c",
+        "fromTable": "Dim - Production Labor Planned",
+        "fromColumn": "STOCK_KEEPER_WID",
+        "toTable": "Dim - Production Labor",
+        "toColumn": "ROW_WID",
+        "crossFilteringBehavior": "bothDirections"
       }
     ],
     "perspectives": [
