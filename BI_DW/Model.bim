@@ -17,6 +17,9 @@
           "authentication": null,
           "query": null
         },
+        "options": {
+          "commandTimeout": "1200"
+        },
         "credential": {
           "AuthenticationKind": "UsernamePassword",
           "kind": "SQL",
@@ -37,6 +40,9 @@
           },
           "authentication": null,
           "query": null
+        },
+        "options": {
+          "commandTimeout": "1200"
         },
         "credential": {
           "AuthenticationKind": "UsernamePassword",
@@ -5363,13 +5369,13 @@
               " ",
               "Calculate(",
               "    sum('Fact - Actual Production'[Prong Score]), ",
-              "    filter ('Dim - Production Labor', [Score Type] = \"HOT\"), ",
+              "    filter ('Dim - Production Labor', [Score Type] = \"HOT\" || [Score Type] = \"ALL\") , ",
               "    filter ('Dim - Production Labor', [Productivity Type] = \"DIEM\")",
               "    ) ",
               "+ Calculate(",
               "    sumx('Fact - Actual Production',",
               "    'Fact - Actual Production'[Cooling Score] * 'Fact - Actual Production'[Actual QTY]*(-1)), ",
-              "    filter ('Dim - Production Labor', [Score Type] = \"NGUOI\"),",
+              "    filter ('Dim - Production Labor', [Score Type] = \"NGUOI\" ||  [Score Type] = \"ALL\"),",
               "    filter ('Dim - Production Labor', [Productivity Type] = \"DIEM\")",
               "    )",
               "+ Calculate(",
@@ -6196,10 +6202,7 @@
           {
             "name": "# Bill (LY)",
             "expression": [
-              "CALCULATE([# Bill], DATEADD('Dim - Time'[Date], -1, YEAR),  ALLEXCEPT('Fact - Sales Invoice Line', 'Dim - Plant'[REGION], 'Dim - Plant'[TIER], 'Dim - Plant'[PLANT KIND], 'Fact - Sales Invoice Line'[Customer Type (Month)],'Fact - Sales Invoice Line'[Customer Type (Year)], 'Dim - Product'[RPT_Product Group 4 Name], 'Dim - Product'[RPT_Product Group 2 Name], 'Dim - Product'[RPT - Product Group 7 Name], 'Dim - Product'[Co-Operate Brand],'Dim - Customer'[Customer Card],'Dim - Plant'[Plant Code], 'Dim - Plant'[PLANT NAME], 'Dim - Plant'[Sales District Name], 'Fact - Sales Invoice Line'[Group Age], 'Dim - Customer'[GENDER], 'Fact - Sales Invoice Line'[CUST_CARD_DESC], 'Fact - Sales Invoice Line'[MKT_Customer],  'Dim - Plant'[Plant Name 1] ),",
-              " 'Fact - Sales Invoice Line'[Program Category] = SELECTEDVALUE('Fact - Sales Invoice Line'[PROGRAM CATEGORY]) &&",
-              "VALUE('Fact - Sales Invoice Line'[MKT.YEAR]) = value(SELECTEDVALUE('Dim - Program'[MKT.Year])) - 1 &&",
-              " 'Fact - Sales Invoice Line'[Program Category] <> BLANK())",
+              "CALCULATE([# Bill], DATEADD('Dim - Time'[Date], -1, YEAR),  ALLEXCEPT('Fact - Sales Invoice Line', 'Dim - Plant'[REGION], 'Dim - Plant'[TIER], 'Dim - Plant'[PLANT KIND], 'Fact - Sales Invoice Line'[Customer Type (Month)],'Fact - Sales Invoice Line'[Customer Type (Year)], 'Dim - Product'[RPT_Product Group 4 Name], 'Dim - Product'[RPT_Product Group 2 Name], 'Dim - Product'[RPT - Product Group 7 Name], 'Dim - Product'[Co-Operate Brand],'Dim - Customer'[Customer Card],'Dim - Plant'[Plant Code], 'Dim - Plant'[PLANT NAME], 'Dim - Plant'[Sales District Name], 'Fact - Sales Invoice Line'[Group Age], 'Dim - Customer'[GENDER], 'Fact - Sales Invoice Line'[CUST_CARD_DESC]))",
               " ",
               "",
               ""
@@ -16045,6 +16048,43 @@
             }
           }
         ]
+      },
+      {
+        "name": "Fact - Actual Production Process",
+        "columns": [
+          {
+            "type": "calculated",
+            "name": "Last Refeshed",
+            "dataType": "dateTime",
+            "isDataTypeInferred": true,
+            "expression": "Now()",
+            "formatString": "dd/MM/yyyy HH:mm:ss",
+            "annotations": [
+              {
+                "name": "Format",
+                "value": "<Format Format=\"DateTimeCustom\"><DateTimes><DateTime LCID=\"1066\" Group=\"GeneralLongDateTime\" FormatString=\"dd/MM/yyyy HH:mm:ss\" /></DateTimes></Format>"
+              }
+            ]
+          },
+          {
+            "type": "calculatedTableColumn",
+            "name": "ID",
+            "dataType": "int64",
+            "isNameInferred": true,
+            "isDataTypeInferred": true,
+            "isHidden": true,
+            "sourceColumn": "[ID]"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "CalculatedTable 1",
+            "source": {
+              "type": "calculated",
+              "expression": "DATATABLE(\"ID\", INTEGER, {{1}})"
+            }
+          }
+        ]
       }
     ],
     "relationships": [
@@ -17210,12 +17250,11 @@
         "toColumn": "ROW_WID"
       },
       {
-        "name": "bce87626-983d-4186-a2c0-afaae7de401c",
+        "name": "c1219833-97cd-4bef-9722-5393b1e19ea7",
         "fromTable": "Dim - Production Labor Planned",
         "fromColumn": "STOCK_KEEPER_WID",
         "toTable": "Dim - Production Labor",
-        "toColumn": "ROW_WID",
-        "crossFilteringBehavior": "bothDirections"
+        "toColumn": "ROW_WID"
       }
     ],
     "perspectives": [
