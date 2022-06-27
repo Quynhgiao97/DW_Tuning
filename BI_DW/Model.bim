@@ -24,7 +24,7 @@
           "AuthenticationKind": "UsernamePassword",
           "kind": "SQL",
           "path": "192.168.2.19;PNJ_ROLAP",
-          "Username": "biread",
+          "Username": "Biread",
           "EncryptConnection": false
         }
       },
@@ -48,7 +48,7 @@
           "AuthenticationKind": "UsernamePassword",
           "kind": "SQL",
           "path": "192.168.2.19;DW_RAW",
-          "Username": "biread",
+          "Username": "Biread",
           "EncryptConnection": false
         }
       }
@@ -470,6 +470,11 @@
             "name": "Basic Material",
             "dataType": "string",
             "sourceColumn": "Basic Material"
+          },
+          {
+            "name": "Section Name",
+            "dataType": "string",
+            "sourceColumn": "Section Name"
           }
         ],
         "partitions": [
@@ -521,8 +526,9 @@
                 "      ,STANDARD_WEIGHT",
                 "      ,THANTAI_GRP",
                 "      ,TT_NET_WEIGHT",
+                "      ,SECTION_NAME",
                 "  FROM [dbo].[W_VW_PRODUCT_D]\"),",
-                "       #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"PROD_NUM\", \"Product Number\"}, {\"PRODUCT_NAME\", \"Product Name\"}, {\"PRODUCT_TYPE_CODE\", \"Product Type Code\"}, {\"PRODUCT_TYPE_NAME\", \"Product Type Name\"}, {\"PROD_GRP2\", \"Product Group LV2\"}, {\"PROD_GRP2_NAME\", \"Product Group Name LV2\"}, {\"PROD_GRP3\", \"Product Group LV3\"}, {\"PROD_GRP3_NAME\", \"Product Group Name LV3\"}, {\"PROD_GRP5_NAME\", \"Product Group Name LV5\"}, {\"PROD_GRP6_NAME\", \"Product Group Name LV6\"}, {\"PROD_GRP7_NAME\", \"Product Group Name LV7\"}, {\"ITEM_SIZE\", \"Item Size\"}, {\"PURITY_OF_GOLD\", \"Purity of Gold\"}}),",
+                "       #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"PROD_NUM\", \"Product Number\"}, {\"PRODUCT_NAME\", \"Product Name\"}, {\"PRODUCT_TYPE_CODE\", \"Product Type Code\"}, {\"PRODUCT_TYPE_NAME\", \"Product Type Name\"}, {\"PROD_GRP2\", \"Product Group LV2\"}, {\"PROD_GRP2_NAME\", \"Product Group Name LV2\"}, {\"PROD_GRP3\", \"Product Group LV3\"}, {\"PROD_GRP3_NAME\", \"Product Group Name LV3\"}, {\"PROD_GRP5_NAME\", \"Product Group Name LV5\"}, {\"PROD_GRP6_NAME\", \"Product Group Name LV6\"}, {\"PROD_GRP7_NAME\", \"Product Group Name LV7\"}, {\"ITEM_SIZE\", \"Item Size\"}, {\"PURITY_OF_GOLD\", \"Purity of Gold\"}, {\"SECTION_NAME\", \"Section Name\"}}),",
                 "    #\"Renamed Columns2\" = Table.RenameColumns(#\"Renamed Columns\",{{\"Product Number\", \"Product Code\"} }),",
                 "    #\"Renamed Columns1\" = Table.RenameColumns(#\"Renamed Columns2\",{{\"PROD_LV4_RPT\", \"RPT_Product Group 4 Name\"}, {\"PROD_LV2_RPT_NAME\", \"RPT_Product Group 2 Name\"}, {\"PROD_LV2_RPT\", \"RPT - Product Group 2 Code\"},   {\"PROD_CAT4_NAME\", \"Product Group 4 Name\"}, {\"COLECTION_NAME\", \"Colection Name\"}, {\"PROD_GRP_7_RPT\", \"RPT - Product Group 7 Name\"}, {\"STONE_TYPE\", \"Gem Type\"}, {\"STONE_MAIN\", \"Gem Main\"}, {\"STONE_SECOND\", \"Gem Second\"}, {\"PRODUCT_KIND\", \"Product Kind\"}, {\"SIZE\", \"Size\"},{\"STANDARD_WEIGHT\", \"Standard Weight\"} }),",
                 "    #\"Renamed Columns3\" = Table.RenameColumns(#\"Renamed Columns1\",{{\"SIZE_STONE\", \"Gem Group Size\"}, {\"SIZE_STONE_SAP\", \"Gem Group Size (SAP)\"}, {\"SIZE_STONE_MKT\", \"Gem Group Size (MKT)\"}, {\"BRAND\", \"Co-Operate Brand\"}, {\"BASIC_PRODUCT\", \"Basic Material\"}})",
@@ -8140,49 +8146,69 @@
           {
             "name": "age_range",
             "dataType": "int64",
-            "sourceColumn": "age_range",
+            "sourceColumn": "AGE_RANGE",
             "summarizeBy": "none"
           },
           {
             "name": "duration",
             "dataType": "double",
-            "sourceColumn": "duration",
+            "sourceColumn": "DURATION",
             "summarizeBy": "sum"
           },
           {
             "name": "recording_time",
             "dataType": "int64",
-            "sourceColumn": "recording_time",
+            "sourceColumn": "RECORDING_TIME",
             "formatString": "0",
             "summarizeBy": "none"
           },
           {
             "name": "action_type",
             "dataType": "string",
-            "sourceColumn": "action_type"
+            "sourceColumn": "ACTION_TYPE"
           },
           {
             "name": "Plant_wid",
             "dataType": "int64",
-            "sourceColumn": "Plant_wid",
+            "sourceColumn": "PLANT_WID",
             "summarizeBy": "none"
           },
           {
             "name": "PERSON_WID",
-            "dataType": "string",
+            "dataType": "int64",
             "sourceColumn": "PERSON_WID",
             "summarizeBy": "distinctCount"
           },
           {
             "name": "Area_ID",
             "dataType": "int64",
-            "sourceColumn": "Area_ID",
+            "sourceColumn": "AREA_ID",
             "summarizeBy": "none"
           },
           {
             "name": "SectionID",
             "dataType": "int64",
             "sourceColumn": "SectionID"
+          },
+          {
+            "name": "ROW_WID",
+            "dataType": "int64",
+            "sourceColumn": "ROW_WID"
+          },
+          {
+            "name": "STORE_ID",
+            "dataType": "int64",
+            "sourceColumn": "STORE_ID"
+          },
+          {
+            "name": "PRODUCT_SECTION_WID",
+            "dataType": "int64",
+            "sourceColumn": "PRODUCT_SECTION_WID"
+          },
+          {
+            "name": "Layer",
+            "dataType": "string",
+            "sourceColumn": "Layer"
           }
         ],
         "partitions": [
@@ -8193,17 +8219,20 @@
               "expression": [
                 "let",
                 "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;DW_RAW\",",
-                "    \" SELECT ",
-                "       [DATE_WID],",
-                "\tCONCAT_WS('_','PA', [PERSON_WID] )   [PERSON_WID] ,",
-                "\t   [age_range],",
-                "\t   [duration],",
-                "\t   [recording_time],",
-                "\t   [action_type],",
-                "\t   [Plant_wid],",
-                "\t   [Area_ID],",
-                "\t   SECTION_ID SectionID",
-                "    FROM  [DW_RAW].[dbo].[W_PA_ICA_BASELINE_F] with (nolock) where (action_type <> 'do_transaction' or action_type is null) and DATE_WID >=20200101 \"",
+                "    \" SELECT [ROW_WID]",
+                "      ,[DATE_WID]",
+                "      ,[AREA_ID]",
+                "      ,[PERSON_WID]",
+                "      ,[AGE_RANGE]",
+                "      ,[STORE_ID]",
+                "      ,[SECTION_ID] SectionID",
+                "      ,[PLANT_WID]",
+                "      ,[DURATION]",
+                "      ,[ACTION_TYPE]",
+                "      ,[PRODUCT_SECTION_WID]",
+                "      ,[RECORDING_TIME]",
+                "      ,[Layer]",
+                "  FROM [DW_RAW].[dbo].[W_PA_ICA_BASELINE_F_BK1] with (nolock) where (action_type <> 'do_transaction' or action_type is null) and DATE_WID >=20200101 \"",
                 "   )",
                 "in",
                 "   Source"
@@ -10353,7 +10382,7 @@
           },
           {
             "name": "ROW_WID",
-            "dataType": "string",
+            "dataType": "int64",
             "sourceColumn": "ROW_WID"
           },
           {
@@ -10384,7 +10413,7 @@
               "type": "m",
               "expression": [
                 "let",
-                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;DW_RAW\",\" SELECT CONCAT_WS('_','PA', ROW_WID) ROW_WID, ",
+                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;DW_RAW\",\" SELECT ROW_WID, ",
                 "\tCASE WHEN GENDER = 'F' THEN 0",
                 "\t\tWHEN GENDER = 'M' THEN 1 ",
                 "\t\tELSE 2 END Gender,",
@@ -10409,14 +10438,6 @@
                 "\t\tWHEN 1.0*(Style_end - style_start)/1000 >3600 THEN 'More than 1h'",
                 "\t\tEND Style_Time_bucket",
                 " FROM W_PA_PERSON_D WITH (NOLOCK) where starttime is not null",
-                "",
-                "/*UNION",
-                "\tSELECT CAST(ROW_WID AS VARCHAR) ROW_WID, CASE WHEN GENDER ='Female' THEN 0",
-                "\tWHEN GENDER ='Male' THEN 1 END Gender,",
-                "\tNULL Dwell_Time, NULL Dwell_time_bucket,",
-                "\tNULL Style_Dwell_Time,NULL Style_Time_bucket",
-                "\tFROM pnj_rolap.dbo.W_CUSTOMER_D WITH (NOLOCK) WHERE DATASOURCE_NUM_ID = 1 and",
-                "\tCUST_GRP not in ('ZDEP','Z005','Z006') */",
                 "\"",
                 "",
                 ")",
@@ -17269,6 +17290,13 @@
         "fromTable": "Dim - Production Labor Planned",
         "fromColumn": "STOCK_KEEPER_WID",
         "toTable": "Dim - Production Labor",
+        "toColumn": "ROW_WID"
+      },
+      {
+        "name": "2c54ffbc-fe9a-48d4-a9d1-cb0c259e2fd7",
+        "fromTable": "Fact - Camera InStore",
+        "fromColumn": "PRODUCT_SECTION_WID",
+        "toTable": "Dim - Product",
         "toColumn": "ROW_WID"
       }
     ],
