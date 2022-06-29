@@ -22,9 +22,7 @@
         },
         "credential": {
           "AuthenticationKind": "UsernamePassword",
-          "kind": "SQL",
-          "path": "192.168.3.31;PNJ_ROLAP",
-          "Username": "Biread",
+          "Username": "biread",
           "EncryptConnection": false
         }
       },
@@ -48,7 +46,7 @@
           "AuthenticationKind": "UsernamePassword",
           "kind": "SQL",
           "path": "192.168.3.31;DW_RAW",
-          "Username": "Biread",
+          "Username": "biread",
           "EncryptConnection": false
         }
       }
@@ -4938,6 +4936,147 @@
         ],
         "measures": [
           {
+            "name": "QC %Cancel .Q10",
+            "expression": [
+              "",
+              " VAR GI = CALCULATE(SUM('Fact - Actual Production'[Q10]) * -1, 'Fact - Actual Production'[TYPES] = \"OUT\")",
+              " VAR Cancel = CALCULATE(sum('Fact - Actual Production'[Q10]),",
+              "\tFILTER('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"IN\"  && 'Fact - Actual Production'[STK Keeper Code] = \"9998\"))",
+              "\t",
+              "RETURN  DIVIDE(Cancel, GI,BLANK())"
+            ],
+            "formatString": "0.0%;-0.0%;0.0%"
+          },
+          {
+            "name": ".Qty GI Finish Goods",
+            "expression": [
+              " CALCULATE(",
+              "    CALCULATE(Sum('Fact - Actual Production'[Actual QTY]),",
+              "\tFilter('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"IN\"),",
+              "\tFILTER('Fact - Actual Production', 'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\", \"1102\", \"1104\", \"1105\",\"1106\"}))",
+              "--,FILTER(ALL('Dim - Actual Production'), 'Dim - Actual Production'[STD Keeper Group] IN {\"KVSX1\", \"KVSX2\", \"KVSX3\", \"NM LONG HẬU\"})",
+              ")",
+              ""
+            ],
+            "formatString": "#,0"
+          },
+          {
+            "name": "QC %Cancel .Qty",
+            "description": "[CL1.2] Lỗi hủy trong sản xuất",
+            "expression": [
+              "",
+              "  DIVIDE([QC Cancel .Qty], [.Qty GI Finish Goods],BLANK())"
+            ],
+            "formatString": "0.00%;-0.00%;0.00%"
+          },
+          {
+            "name": "%STD Weight Error",
+            "expression": [
+              " ",
+              " VAR GR = CALCULATE(sum('Fact - Actual Production'[Actual QTY]),",
+              "Filter('Dim - Product', 'Dim - Product'[Product Group LV2] in {\"PS\", \"PT\", \"PG\", \"PP\"}),",
+              "Filter('Fact - Actual Production', 'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\",\"1102\", \"1104\", \"1105\", \"1106\"}),",
+              "Filter('Fact - Actual Production', 'Fact - Actual Production'[STD Weight Flag] in {\"Failed\", \"Passed\"}),",
+              "Filter('Fact - Actual Production', 'Fact - Actual Production'[Types] in {\"IN\"})",
+              ")",
+              "",
+              "VAR Failed = CALCULATE(sum('Fact - Actual Production'[Actual QTY]),",
+              "Filter('Dim - Product', 'Dim - Product'[Product Group LV2] in {\"PS\", \"PT\", \"PG\", \"PP\"}),",
+              "Filter('Fact - Actual Production', 'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\",\"1102\", \"1104\", \"1105\", \"1106\"}),",
+              "Filter('Fact - Actual Production', 'Fact - Actual Production'[STD Weight Flag] = \"Failed\"),",
+              "Filter('Fact - Actual Production', 'Fact - Actual Production'[Types] in {\"IN\"})",
+              ")",
+              "",
+              "Return Failed/ GR"
+            ]
+          },
+          {
+            "name": "%STD Weight Pass",
+            "expression": [
+              "  VAR GR = CALCULATE(sum('Fact - Actual Production'[Actual QTY]),",
+              "Filter('Dim - Product', 'Dim - Product'[Product Group LV2] in {\"PS\", \"PT\", \"PG\", \"PP\"}),",
+              "Filter('Fact - Actual Production', 'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\",\"1102\", \"1104\", \"1105\", \"1106\"}),",
+              "Filter('Fact - Actual Production', 'Fact - Actual Production'[STD Weight Flag] in {\"Failed\", \"Passed\"}),",
+              "Filter('Fact - Actual Production', 'Fact - Actual Production'[Types] in {\"IN\"})",
+              ")",
+              "",
+              "VAR Passed = CALCULATE(sum('Fact - Actual Production'[Actual QTY]),",
+              "Filter('Dim - Product', 'Dim - Product'[Product Group LV2] in {\"PS\", \"PT\", \"PG\", \"PP\"}),",
+              "Filter('Fact - Actual Production', 'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\",\"1102\", \"1104\", \"1105\", \"1106\"}),",
+              "Filter('Fact - Actual Production', 'Fact - Actual Production'[STD Weight Flag] = \"Passed\"),",
+              "Filter('Fact - Actual Production', 'Fact - Actual Production'[Types] in {\"IN\"})",
+              ")",
+              "",
+              "Return Passed / GR"
+            ],
+            "formatString": "0.00%;-0.00%;0.00%"
+          },
+          {
+            "name": "QC Cancel .Q10",
+            "expression": [
+              " CALCULATE(sum('Fact - Actual Production'[Q10]),",
+              "\tFILTER('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"IN\"  && 'Fact - Actual Production'[STK Keeper Code] = \"9998\"))",
+              ""
+            ],
+            "formatString": "#,0.00"
+          },
+          {
+            "name": ".Qty GI Finish_F1018",
+            "expression": [
+              " CALCULATE(Sum('Fact - Actual Production'[Actual QTY]),",
+              "Filter('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"IN\"),",
+              "FILTER('Fact - Actual Production', 'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\", \"1102\", \"1104\", \"1105\",\"1106\"} ||",
+              "'Fact - Actual Production'[STK Keeper Transfer Code] = \"F1018\"))",
+              ""
+            ],
+            "formatString": "#,0"
+          },
+          {
+            "name": "Total Weight Avg.",
+            "expression": [
+              " CALCULATE(sum('Fact - Actual Production'[Total Weight])/[.Qty GI Finish Goods],",
+              "FILTER('Fact - Actual Production', 'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\", \"1102\", \"1104\", \"1105\", \"1106\"})",
+              ")"
+            ]
+          },
+          {
+            "name": "STD Weight Avg.",
+            "expression": [
+              " CALCULATE(sum('Fact - Actual Production'[Standard Weight])/countrows ('Fact - Actual Production'),",
+              "FILTER('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"IN\")",
+              ")"
+            ]
+          },
+          {
+            "name": "%Ttl Weight vs .STD",
+            "expression": " [Total Weight Avg.]/[STD Weight Avg.] - 1",
+            "formatString": "0.00%;-0.00%;0.00%"
+          },
+          {
+            "name": "All Finish Goods",
+            "expression": [
+              " CALCULATE([.Qty GI Finish Goods],",
+              "FILTER(ALL('Dim - Actual Production'), 'Dim - Actual Production'[STD Keeper Group] IN {\"KVSX1\", \"KVSX2\", \"KVSX3\", \"NM LONG HẬU\"})",
+              ")"
+            ]
+          },
+          {
+            "name": "QC Cancel .Qty",
+            "description": "Tổng số lượng hủy",
+            "expression": [
+              " CALCULATE(sum('Fact - Actual Production'[Actual QTY]),",
+              "Filter('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"IN\" && 'Fact - Actual Production'[STK Keeper Code] = \"9998\" && 'Fact - Actual Production'[Filters] = 1)",
+              ")",
+              "/*",
+              "Filter('Dim - Product', not left( 'Dim - Product'[Product Code], 11) in {\"00000000003\"}), ",
+              "Filter('Dim - Product', not left( 'Dim - Product'[Product Code], 2) in {\"G1\",\"S1\", \"T1\"}), ",
+              "FILTER('Fact - Actual Production', not right('Fact - Actual Production'[STK Keeper Output], 1) in {\"M\"}),",
+              "Filter('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"IN\" && 'Fact - Actual Production'[STK Keeper Code] = \"9998\"))",
+              "*/"
+            ],
+            "formatString": "#,0"
+          },
+          {
             "name": ".Net Qty",
             "description": "Ton kho qty theo thoi diem va cong doan",
             "expression": [
@@ -5232,61 +5371,6 @@
             ]
           },
           {
-            "name": "QC %Cancel .Q10",
-            "expression": [
-              "",
-              " VAR GI = CALCULATE(SUM('Fact - Actual Production'[Q10]) * -1, 'Fact - Actual Production'[TYPES] = \"OUT\")",
-              " VAR Cancel = CALCULATE(sum('Fact - Actual Production'[Q10]),",
-              "\tFILTER('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"IN\"  && 'Fact - Actual Production'[STK Keeper Code] = \"9998\"))",
-              "\t",
-              "RETURN  DIVIDE(Cancel, GI,BLANK())"
-            ],
-            "formatString": "0.0%;-0.0%;0.0%"
-          },
-          {
-            "name": ".Qty GI Finish Goods",
-            "expression": [
-              " CALCULATE(",
-              "    CALCULATE(Sum('Fact - Actual Production'[Actual QTY]),",
-              "\tFilter('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"IN\"),",
-              "\tFILTER('Fact - Actual Production', 'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\", \"1102\", \"1104\", \"1105\",\"1106\"}))",
-              "--,FILTER(ALL('Dim - Actual Production'), 'Dim - Actual Production'[STD Keeper Group] IN {\"KVSX1\", \"KVSX2\", \"KVSX3\", \"NM LONG HẬU\"})",
-              ")",
-              ""
-            ],
-            "formatString": "#,0"
-          },
-          {
-            "name": "QC %Cancel .Qty",
-            "description": "[CL1.2] Lỗi hủy trong sản xuất",
-            "expression": [
-              "",
-              "  DIVIDE([QC Cancel .Qty], [.Qty GI Finish Goods],BLANK())"
-            ],
-            "formatString": "0.00%;-0.00%;0.00%"
-          },
-          {
-            "name": "%STD Weight Error",
-            "expression": [
-              " ",
-              " VAR GR = CALCULATE(sum('Fact - Actual Production'[Actual QTY]),",
-              "Filter('Dim - Product', 'Dim - Product'[Product Group LV2] in {\"PS\", \"PT\", \"PG\", \"PP\"}),",
-              "Filter('Fact - Actual Production', 'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\",\"1102\", \"1104\", \"1105\", \"1106\"}),",
-              "Filter('Fact - Actual Production', 'Fact - Actual Production'[STD Weight Flag] in {\"Failed\", \"Passed\"}),",
-              "Filter('Fact - Actual Production', 'Fact - Actual Production'[Types] in {\"IN\"})",
-              ")",
-              "",
-              "VAR Failed = CALCULATE(sum('Fact - Actual Production'[Actual QTY]),",
-              "Filter('Dim - Product', 'Dim - Product'[Product Group LV2] in {\"PS\", \"PT\", \"PG\", \"PP\"}),",
-              "Filter('Fact - Actual Production', 'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\",\"1102\", \"1104\", \"1105\", \"1106\"}),",
-              "Filter('Fact - Actual Production', 'Fact - Actual Production'[STD Weight Flag] = \"Failed\"),",
-              "Filter('Fact - Actual Production', 'Fact - Actual Production'[Types] in {\"IN\"})",
-              ")",
-              "",
-              "Return Failed/ GR"
-            ]
-          },
-          {
             "name": "AVG .Q10",
             "expression": [
               " CALCULATE(sum('Fact - Actual Production'[Q10]) / sum('Fact - Actual Production'[Actual QTY]),",
@@ -5297,92 +5381,6 @@
               ")",
               ""
             ]
-          },
-          {
-            "name": "%STD Weight Pass",
-            "expression": [
-              "  VAR GR = CALCULATE(sum('Fact - Actual Production'[Actual QTY]),",
-              "Filter('Dim - Product', 'Dim - Product'[Product Group LV2] in {\"PS\", \"PT\", \"PG\", \"PP\"}),",
-              "Filter('Fact - Actual Production', 'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\",\"1102\", \"1104\", \"1105\", \"1106\"}),",
-              "Filter('Fact - Actual Production', 'Fact - Actual Production'[STD Weight Flag] in {\"Failed\", \"Passed\"}),",
-              "Filter('Fact - Actual Production', 'Fact - Actual Production'[Types] in {\"IN\"})",
-              ")",
-              "",
-              "VAR Passed = CALCULATE(sum('Fact - Actual Production'[Actual QTY]),",
-              "Filter('Dim - Product', 'Dim - Product'[Product Group LV2] in {\"PS\", \"PT\", \"PG\", \"PP\"}),",
-              "Filter('Fact - Actual Production', 'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\",\"1102\", \"1104\", \"1105\", \"1106\"}),",
-              "Filter('Fact - Actual Production', 'Fact - Actual Production'[STD Weight Flag] = \"Passed\"),",
-              "Filter('Fact - Actual Production', 'Fact - Actual Production'[Types] in {\"IN\"})",
-              ")",
-              "",
-              "Return Passed / GR"
-            ],
-            "formatString": "0.00%;-0.00%;0.00%"
-          },
-          {
-            "name": "QC Cancel .Q10",
-            "expression": [
-              " CALCULATE(sum('Fact - Actual Production'[Q10]),",
-              "\tFILTER('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"IN\"  && 'Fact - Actual Production'[STK Keeper Code] = \"9998\"))",
-              ""
-            ],
-            "formatString": "#,0.00"
-          },
-          {
-            "name": ".Qty GI Finish_F1018",
-            "expression": [
-              " CALCULATE(Sum('Fact - Actual Production'[Actual QTY]),",
-              "Filter('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"IN\"),",
-              "FILTER('Fact - Actual Production', 'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\", \"1102\", \"1104\", \"1105\",\"1106\"} ||",
-              "'Fact - Actual Production'[STK Keeper Transfer Code] = \"F1018\"))",
-              ""
-            ],
-            "formatString": "#,0"
-          },
-          {
-            "name": "Total Weight Avg.",
-            "expression": [
-              " CALCULATE(sum('Fact - Actual Production'[Total Weight])/[.Qty GI Finish Goods],",
-              "FILTER('Fact - Actual Production', 'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\", \"1102\", \"1104\", \"1105\", \"1106\"})",
-              ")"
-            ]
-          },
-          {
-            "name": "STD Weight Avg.",
-            "expression": [
-              " CALCULATE(sum('Fact - Actual Production'[Standard Weight])/countrows ('Fact - Actual Production'),",
-              "FILTER('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"IN\")",
-              ")"
-            ]
-          },
-          {
-            "name": "%Ttl Weight vs .STD",
-            "expression": " [Total Weight Avg.]/[STD Weight Avg.] - 1",
-            "formatString": "0.00%;-0.00%;0.00%"
-          },
-          {
-            "name": "All Finish Goods",
-            "expression": [
-              " CALCULATE([.Qty GI Finish Goods],",
-              "FILTER(ALL('Dim - Actual Production'), 'Dim - Actual Production'[STD Keeper Group] IN {\"KVSX1\", \"KVSX2\", \"KVSX3\", \"NM LONG HẬU\"})",
-              ")"
-            ]
-          },
-          {
-            "name": "QC Cancel .Qty",
-            "description": "Tổng số lượng hủy",
-            "expression": [
-              " CALCULATE(sum('Fact - Actual Production'[Actual QTY]),",
-              "Filter('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"IN\" && 'Fact - Actual Production'[STK Keeper Code] = \"9998\" && 'Fact - Actual Production'[Filters] = 1)",
-              ")",
-              "/*",
-              "Filter('Dim - Product', not left( 'Dim - Product'[Product Code], 11) in {\"00000000003\"}), ",
-              "Filter('Dim - Product', not left( 'Dim - Product'[Product Code], 2) in {\"G1\",\"S1\", \"T1\"}), ",
-              "FILTER('Fact - Actual Production', not right('Fact - Actual Production'[STK Keeper Output], 1) in {\"M\"}),",
-              "Filter('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"IN\" && 'Fact - Actual Production'[STK Keeper Code] = \"9998\"))",
-              "*/"
-            ],
-            "formatString": "#,0"
           },
           {
             "name": ".Actual Productivity",
@@ -7410,19 +7408,9 @@
             "formatString": "0.00%;-0.00%;0.00%"
           },
           {
-            "name": ". All Net Amt LY (YTD)",
-            "expression": " CALCULATE([. All Net Amt (LY)], DATESYTD('Dim - Time'[Date]))",
-            "formatString": "#,0.00"
-          },
-          {
             "name": "% Net_Amt_LY",
             "expression": "if(ISBLANK([. All Net Amt (LY)]), 1, ([. All Net Amt]/[. All Net Amt (LY)]-1 ))",
             "formatString": "0.00%;-0.00%;0.00%"
-          },
-          {
-            "name": ". All Net Amt (YTD)",
-            "expression": " CALCULATE([. All Net Amt],DATESYTD('Dim - Time'[Date]))",
-            "formatString": "#,0.00"
           },
           {
             "name": "AVG Qty/Trx",
@@ -7539,6 +7527,16 @@
           {
             "name": "AVG All Net Amt/Sales Person (LY)",
             "expression": " CALCULATE([. All Net Amt (LY)]/[# Sales person (LY)])"
+          },
+          {
+            "name": ". All Net Amt LY (YTD)",
+            "expression": " CALCULATE([. All Net Amt (LY)], DATESYTD('Dim - Time'[Date]))",
+            "formatString": "#,0.00"
+          },
+          {
+            "name": ". All Net Amt (YTD)",
+            "expression": " CALCULATE([. All Net Amt],DATESYTD('Dim - Time'[Date]))",
+            "formatString": "#,0.00"
           },
           {
             "name": "% All Net_Amt (LM)",
@@ -11377,16 +11375,6 @@
             "name": "PRODUCTION_PLANNED_ALLOCATED",
             "dataType": "double",
             "sourceColumn": "PRODUCTION_PLANNED_ALLOCATED"
-          },
-          {
-            "name": "CUSTOMER_CREATE_DATE_SX",
-            "dataType": "int64",
-            "sourceColumn": "CUSTOMER_CREATE_DATE_SX"
-          },
-          {
-            "name": "CUSTOMER_CREATE_DATE_KD",
-            "dataType": "int64",
-            "sourceColumn": "CUSTOMER_CREATE_DATE_KD"
           }
         ],
         "partitions": [
@@ -11417,8 +11405,6 @@
                 "      ,[DATE_KEY]",
                 "      ,[PRODUCTION_PLANNED_ALLOCATED]",
                 "      ,[FILE_WID]",
-                "      ,[CUSTOMER_CREATE_DATE_SX]",
-                "      ,[CUSTOMER_CREATE_DATE_KD]",
                 "  FROM [PNJ_ROLAP].[dbo].[W_PRODUCTION_PLAN_AGREEMENT_F]\"),",
                 "    #\"Removed Columns\" = Table.RemoveColumns(Source,{\"DATASOURCE_NUM_ID\", \"FILE_WID\", \"INTEGRATION_ID\", \"PRD_GROUP_4_CODE\", \"PRD_GROUP_4_NAME\", \"PRODUCT_GROUP_7\"}),",
                 "    #\"Renamed Columns\" = Table.RenameColumns(#\"Removed Columns\",{{\"ORDER_TYPE\", \"Order Type\"}, {\"PURITY_OF_GOLD\", \"Prity Of Gold\"}, {\"PRODUCTION_PLANNED\", \"Production Planned\"}, {\"SALES_REQUIREMENT_DATE\", \"Sales Requirement DT\"}, {\"SALES_CREATE_DATE\", \"Sales Create DT\"}, {\"CUSTOMER_CREATE_DATE\", \"Customer Created DT\"}, {\"CUSTOMER_REQUIREMENT_DATE\", \"Customer Requirement DT\"}})",
@@ -13051,7 +13037,7 @@
               "expression": [
                 "let",
                 "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
-                "SELECT TOP (1000) [ROW_WID]",
+                "SELECT [ROW_WID]",
                 "      ,[PRODUCTION_ORDER]",
                 "      ,[PLANNED_ORDER]",
                 "      ,[TOTAL_PRODUCTION_QTY]",
@@ -13090,7 +13076,7 @@
                 "value": [
                   "<?xml version=\"1.0\" encoding=\"UTF-16\"?><Gemini xmlns=\"QueryEditorSerialization\"><AnnotationContent><![CDATA[<RSQueryCommandText>let",
                   "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
-                  "SELECT TOP (1000) [ROW_WID]",
+                  "SELECT [ROW_WID]",
                   "      ,[PRODUCTION_ORDER]",
                   "      ,[PLANNED_ORDER]",
                   "      ,[TOTAL_PRODUCTION_QTY]",
@@ -16528,786 +16514,6 @@
         ]
       },
       {
-        "name": "Fact - GotIt GiftPop",
-        "columns": [
-          {
-            "name": "ROW_WID",
-            "dataType": "int64",
-            "sourceColumn": "ROW_WID"
-          },
-          {
-            "name": "Document Number",
-            "dataType": "string",
-            "sourceColumn": "Document Number"
-          },
-          {
-            "name": "Date Key",
-            "dataType": "string",
-            "sourceColumn": "Date Key"
-          },
-          {
-            "name": "Invoice Number",
-            "dataType": "string",
-            "sourceColumn": "Invoice Number"
-          },
-          {
-            "name": "Type",
-            "dataType": "string",
-            "sourceColumn": "Type"
-          }
-        ],
-        "partitions": [
-          {
-            "name": "Partition",
-            "dataView": "full",
-            "source": {
-              "type": "m",
-              "expression": [
-                "let",
-                "    Source = #\"SQL/192 168 3 31;PNJ_ROLAP\",",
-                "    dbo_Z_GOT_IT = Source{[Schema=\"dbo\",Item=\"Z_GOT_IT\"]}[Data],",
-                "    #\"Renamed Columns\" = Table.RenameColumns(dbo_Z_GOT_IT,{{\"BELNR\", \"Document Number\"}, {\"H_BUDAT\", \"Date Key\"}, {\"ZUONR\", \"Invoice Number\"}, {\"TYPE\", \"Type\"}})",
-                "in",
-                "    #\"Renamed Columns\""
-              ]
-            }
-          }
-        ]
-      },
-      {
-        "name": "Dim - STK Keeper Finished Goods",
-        "columns": [
-          {
-            "name": "STK Keeper Code",
-            "dataType": "string",
-            "sourceColumn": "STK Keeper Code"
-          },
-          {
-            "name": "Final Stage",
-            "dataType": "string",
-            "sourceColumn": "Final Stage"
-          }
-        ],
-        "partitions": [
-          {
-            "name": "Partition",
-            "dataView": "full",
-            "source": {
-              "type": "m",
-              "expression": [
-                "let",
-                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
-                "    SELECT ",
-                "      [STOCK_KEEPER_CODE]",
-                "      ,[FINAL_STAGE]",
-                "    FROM [PNJ_ROLAP].[dbo].[W_VW_PRODUCTION_LABOR_D]",
-                "    WHERE [FINAL_STAGE] = 1 \"),",
-                "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"STOCK_KEEPER_CODE\", \"STK Keeper Code\"}, {\"FINAL_STAGE\", \"Final Stage\"}})",
-                "in",
-                "    #\"Renamed Columns\""
-              ]
-            }
-          }
-        ]
-      },
-      {
-        "name": "Fact - PO Schedule Line Z01",
-        "columns": [
-          {
-            "name": "Types",
-            "dataType": "string",
-            "sourceColumn": "Types"
-          },
-          {
-            "name": "PURCH_ORDER_NUM",
-            "dataType": "string",
-            "sourceColumn": "PURCH_ORDER_NUM"
-          },
-          {
-            "name": "PURCH_ORDER_ITEM",
-            "dataType": "string",
-            "sourceColumn": "PURCH_ORDER_ITEM"
-          },
-          {
-            "name": "PURCH_ORDER_TYPE",
-            "dataType": "string",
-            "sourceColumn": "PURCH_ORDER_TYPE"
-          },
-          {
-            "name": "SPLR_ACCT_NUM",
-            "dataType": "string",
-            "sourceColumn": "SPLR_ACCT_NUM"
-          },
-          {
-            "name": "ORDERED_ON_DT",
-            "dataType": "int64",
-            "sourceColumn": "ORDERED_ON_DT"
-          },
-          {
-            "name": "ORDER_QTY",
-            "dataType": "double",
-            "sourceColumn": "ORDER_QTY"
-          },
-          {
-            "name": "ALLOCATED_ORDER_QTY",
-            "dataType": "double",
-            "sourceColumn": "ALLOCATED_ORDER_QTY"
-          },
-          {
-            "name": "CONFIRMED_QTY",
-            "dataType": "int64",
-            "sourceColumn": "CONFIRMED_QTY"
-          },
-          {
-            "name": "TARGET_QTY",
-            "dataType": "double",
-            "sourceColumn": "TARGET_QTY"
-          },
-          {
-            "name": "UOM_CODE",
-            "dataType": "string",
-            "sourceColumn": "UOM_CODE"
-          },
-          {
-            "name": "COMPANY_WID",
-            "dataType": "int64",
-            "sourceColumn": "COMPANY_WID"
-          },
-          {
-            "name": "PLANT_WID",
-            "dataType": "int64",
-            "sourceColumn": "PLANT_WID"
-          },
-          {
-            "name": "STORAGE_LOC",
-            "dataType": "string",
-            "sourceColumn": "STORAGE_LOC"
-          },
-          {
-            "name": "PRODUCT_WID",
-            "dataType": "int64",
-            "sourceColumn": "PRODUCT_WID"
-          },
-          {
-            "name": "SUPPLIER_WID",
-            "dataType": "int64",
-            "sourceColumn": "SUPPLIER_WID"
-          },
-          {
-            "name": "CUSTOMER_WID",
-            "dataType": "int64",
-            "sourceColumn": "CUSTOMER_WID"
-          },
-          {
-            "name": "PURCH_GROUP_WID",
-            "dataType": "int64",
-            "sourceColumn": "PURCH_GROUP_WID"
-          },
-          {
-            "name": "STORAGE_LOC_WID",
-            "dataType": "int64",
-            "sourceColumn": "STORAGE_LOC_WID"
-          },
-          {
-            "name": "PURCH_ORDER_STATUS",
-            "dataType": "string",
-            "sourceColumn": "PURCH_ORDER_STATUS"
-          },
-          {
-            "name": "PURCH_ORDER_GRP",
-            "dataType": "string",
-            "sourceColumn": "PURCH_ORDER_GRP"
-          },
-          {
-            "name": "Q10_QTY",
-            "dataType": "double",
-            "sourceColumn": "Q10_QTY"
-          },
-          {
-            "name": "REQ_DELIVERY_DT",
-            "dataType": "int64",
-            "sourceColumn": "REQ_DELIVERY_DT"
-          },
-          {
-            "name": "DELIVERY_DT",
-            "dataType": "int64",
-            "sourceColumn": "DELIVERY_DT"
-          },
-          {
-            "name": "SCHEDULE_QTY",
-            "dataType": "int64",
-            "sourceColumn": "SCHEDULE_QTY"
-          },
-          {
-            "name": "RELEASE_STATE",
-            "dataType": "string",
-            "sourceColumn": "RELEASE_STATE"
-          },
-          {
-            "name": "GR_GI_DT",
-            "dataType": "int64",
-            "sourceColumn": "GR_GI_DT"
-          },
-          {
-            "name": "GR_GI_QTY",
-            "dataType": "double",
-            "sourceColumn": "GR_GI_QTY"
-          },
-          {
-            "name": "SCHEDULE_LINE_NUM",
-            "dataType": "int64",
-            "sourceColumn": "SCHEDULE_LINE_NUM"
-          },
-          {
-            "name": "NET_AMT",
-            "dataType": "double",
-            "sourceColumn": "NET_AMT"
-          }
-        ],
-        "partitions": [
-          {
-            "name": "Partition",
-            "dataView": "full",
-            "source": {
-              "type": "m",
-              "expression": [
-                "let",
-                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
-                "    SELECT [Types]",
-                "      ,[PURCH_ORDER_NUM]",
-                "      ,[PURCH_ORDER_ITEM]",
-                "      ,[PURCH_ORDER_TYPE]",
-                "      ,[SPLR_ACCT_NUM]",
-                "      ,[ORDERED_ON_DT]",
-                "      ,[ORDER_QTY]",
-                "      ,[ALLOCATED_ORDER_QTY]",
-                "      ,[CONFIRMED_QTY]",
-                "      ,[TARGET_QTY]",
-                "      ,[UOM_CODE]",
-                "      ,[COMPANY_WID]",
-                "      ,[PLANT_WID]",
-                "      ,[STORAGE_LOC]",
-                "      ,[PRODUCT_WID]",
-                "      ,[SUPPLIER_WID]",
-                "      ,[CUSTOMER_WID]",
-                "      ,[PURCH_GROUP_WID]",
-                "      ,[STORAGE_LOC_WID]",
-                "      ,[PURCH_ORDER_STATUS]",
-                "      ,[PURCH_ORDER_GRP]",
-                "      ,[Q10_QTY]",
-                "      ,[REQ_DELIVERY_DT]",
-                "      ,[DELIVERY_DT]",
-                "      ,[SCHEDULE_QTY]",
-                "      ,[RELEASE_STATE]",
-                "      ,[GR_GI_DT]",
-                "      ,[GR_GI_QTY]",
-                "      ,[SCHEDULE_LINE_NUM]",
-                "      ,[NET_AMT]",
-                "  FROM [PNJ_ROLAP].[dbo].[W_VW_PO_SCHEDULE_LINE_Z01_F]\")",
-                "in",
-                "    Source"
-              ]
-            }
-          }
-        ]
-      },
-      {
-        "name": "Fact - PO Schedule Line Z06",
-        "columns": [
-          {
-            "name": "Types",
-            "dataType": "string",
-            "sourceColumn": "Types"
-          },
-          {
-            "name": "PURCH_ORDER_NUM",
-            "dataType": "string",
-            "sourceColumn": "PURCH_ORDER_NUM"
-          },
-          {
-            "name": "PURCH_ORDER_ITEM",
-            "dataType": "string",
-            "sourceColumn": "PURCH_ORDER_ITEM"
-          },
-          {
-            "name": "PURCH_ORDER_TYPE",
-            "dataType": "string",
-            "sourceColumn": "PURCH_ORDER_TYPE"
-          },
-          {
-            "name": "SPLR_ACCT_NUM",
-            "dataType": "string",
-            "sourceColumn": "SPLR_ACCT_NUM"
-          },
-          {
-            "name": "ORDERED_ON_DT",
-            "dataType": "int64",
-            "sourceColumn": "ORDERED_ON_DT"
-          },
-          {
-            "name": "ORDER_QTY",
-            "dataType": "double",
-            "sourceColumn": "ORDER_QTY"
-          },
-          {
-            "name": "ALLOCATED_ORDER_QTY",
-            "dataType": "double",
-            "sourceColumn": "ALLOCATED_ORDER_QTY"
-          },
-          {
-            "name": "CONFIRMED_QTY",
-            "dataType": "int64",
-            "sourceColumn": "CONFIRMED_QTY"
-          },
-          {
-            "name": "TARGET_QTY",
-            "dataType": "double",
-            "sourceColumn": "TARGET_QTY"
-          },
-          {
-            "name": "UOM_CODE",
-            "dataType": "string",
-            "sourceColumn": "UOM_CODE"
-          },
-          {
-            "name": "COMPANY_WID",
-            "dataType": "int64",
-            "sourceColumn": "COMPANY_WID"
-          },
-          {
-            "name": "PLANT_WID",
-            "dataType": "int64",
-            "sourceColumn": "PLANT_WID"
-          },
-          {
-            "name": "STORAGE_LOC",
-            "dataType": "string",
-            "sourceColumn": "STORAGE_LOC"
-          },
-          {
-            "name": "PRODUCT_WID",
-            "dataType": "int64",
-            "sourceColumn": "PRODUCT_WID"
-          },
-          {
-            "name": "SUPPLIER_WID",
-            "dataType": "int64",
-            "sourceColumn": "SUPPLIER_WID"
-          },
-          {
-            "name": "CUSTOMER_WID",
-            "dataType": "int64",
-            "sourceColumn": "CUSTOMER_WID"
-          },
-          {
-            "name": "PURCH_GROUP_WID",
-            "dataType": "int64",
-            "sourceColumn": "PURCH_GROUP_WID"
-          },
-          {
-            "name": "STORAGE_LOC_WID",
-            "dataType": "int64",
-            "sourceColumn": "STORAGE_LOC_WID"
-          },
-          {
-            "name": "PURCH_ORDER_STATUS",
-            "dataType": "string",
-            "sourceColumn": "PURCH_ORDER_STATUS"
-          },
-          {
-            "name": "PURCH_ORDER_GRP",
-            "dataType": "string",
-            "sourceColumn": "PURCH_ORDER_GRP"
-          },
-          {
-            "name": "Q10_QTY",
-            "dataType": "double",
-            "sourceColumn": "Q10_QTY"
-          },
-          {
-            "name": "REQ_DELIVERY_DT",
-            "dataType": "int64",
-            "sourceColumn": "REQ_DELIVERY_DT"
-          },
-          {
-            "name": "DELIVERY_DT",
-            "dataType": "int64",
-            "sourceColumn": "DELIVERY_DT"
-          },
-          {
-            "name": "SCHEDULE_QTY",
-            "dataType": "int64",
-            "sourceColumn": "SCHEDULE_QTY"
-          },
-          {
-            "name": "RELEASE_STATE",
-            "dataType": "string",
-            "sourceColumn": "RELEASE_STATE"
-          },
-          {
-            "name": "GR_GI_DT",
-            "dataType": "int64",
-            "sourceColumn": "GR_GI_DT"
-          },
-          {
-            "name": "GR_GI_QTY",
-            "dataType": "double",
-            "sourceColumn": "GR_GI_QTY"
-          },
-          {
-            "name": "SCHEDULE_LINE_NUM",
-            "dataType": "int64",
-            "sourceColumn": "SCHEDULE_LINE_NUM"
-          },
-          {
-            "name": "NET_AMT",
-            "dataType": "double",
-            "sourceColumn": "NET_AMT"
-          }
-        ],
-        "partitions": [
-          {
-            "name": "Partition",
-            "dataView": "full",
-            "source": {
-              "type": "m",
-              "expression": [
-                "let",
-                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
-                "    SELECT [Types]",
-                "      ,[PURCH_ORDER_NUM]",
-                "      ,[PURCH_ORDER_ITEM]",
-                "      ,[PURCH_ORDER_TYPE]",
-                "      ,[SPLR_ACCT_NUM]",
-                "      ,[ORDERED_ON_DT]",
-                "      ,[ORDER_QTY]",
-                "      ,[ALLOCATED_ORDER_QTY]",
-                "      ,[CONFIRMED_QTY]",
-                "      ,[TARGET_QTY]",
-                "      ,[UOM_CODE]",
-                "      ,[COMPANY_WID]",
-                "      ,[PLANT_WID]",
-                "      ,[STORAGE_LOC]",
-                "      ,[PRODUCT_WID]",
-                "      ,[SUPPLIER_WID]",
-                "      ,[CUSTOMER_WID]",
-                "      ,[PURCH_GROUP_WID]",
-                "      ,[STORAGE_LOC_WID]",
-                "      ,[PURCH_ORDER_STATUS]",
-                "      ,[PURCH_ORDER_GRP]",
-                "      ,[Q10_QTY]",
-                "      ,[REQ_DELIVERY_DT]",
-                "      ,[DELIVERY_DT]",
-                "      ,[SCHEDULE_QTY]",
-                "      ,[RELEASE_STATE]",
-                "      ,[GR_GI_DT]",
-                "      ,[GR_GI_QTY]",
-                "      ,[SCHEDULE_LINE_NUM]",
-                "      ,[NET_AMT]",
-                "  FROM [PNJ_ROLAP].[dbo].[W_VW_PO_SCHEDULE_LINE_Z06_F]\")",
-                "in",
-                "    Source"
-              ]
-            }
-          }
-        ]
-      },
-      {
-        "name": "Dim - Production Labor Planned",
-        "columns": [
-          {
-            "name": "Date Key",
-            "dataType": "int64",
-            "sourceColumn": "Date Key"
-          },
-          {
-            "name": "Team Code",
-            "dataType": "string",
-            "sourceColumn": "Team Code"
-          },
-          {
-            "name": "Actual Resource",
-            "dataType": "double",
-            "sourceColumn": "Actual Resource",
-            "formatString": "#,0.00"
-          },
-          {
-            "name": "Planned Resource",
-            "dataType": "double",
-            "sourceColumn": "Planned Resource",
-            "formatString": "#,0.00"
-          },
-          {
-            "name": "Planned Qty",
-            "dataType": "double",
-            "sourceColumn": "Planned Qty",
-            "formatString": "#,0.00"
-          },
-          {
-            "name": "Planned TurnOver Q10",
-            "dataType": "double",
-            "sourceColumn": "Planned TurnOver Q10"
-          },
-          {
-            "name": "Planned Productivity",
-            "dataType": "double",
-            "sourceColumn": "Planned Productivity",
-            "formatString": "#,0.00"
-          },
-          {
-            "name": "Working Day Standard",
-            "dataType": "double",
-            "sourceColumn": "Working Day Standard"
-          },
-          {
-            "name": "STOCK_KEEPER_WID",
-            "dataType": "int64",
-            "isHidden": true,
-            "sourceColumn": "STOCK_KEEPER_WID"
-          }
-        ],
-        "partitions": [
-          {
-            "name": "Partition",
-            "dataView": "full",
-            "source": {
-              "type": "m",
-              "expression": [
-                "let",
-                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
-                "    SELECT [DATE_KEY]",
-                "      ,[TEAM_CODE]",
-                "      ,[STOCK_KEEPER_WID]",
-                "      ,[ACTUAL_RESOURCE]",
-                "      ,[PLANNED_RESOURCE]",
-                "      ,[PLANNED_QTY]",
-                "      ,[PLANNED_TURNOVER_Q10]",
-                "      ,[PLANNED_PRODUCTIVITY]",
-                "      ,[WORKING_DAY_STANDARD]",
-                "  FROM [PNJ_ROLAP].[dbo].[W_VW_PRODUCTION_LABOR_PLANNED_D]\"),",
-                "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"DATE_KEY\", \"Date Key\"}, {\"TEAM_CODE\", \"Team Code\"}, {\"ACTUAL_RESOURCE\", \"Actual Resource\"}, {\"PLANNED_RESOURCE\", \"Planned Resource\"}, {\"PLANNED_QTY\", \"Planned Qty\"}, {\"PLANNED_TURNOVER_Q10\", \"Planned TurnOver Q10\"}, {\"PLANNED_PRODUCTIVITY\", \"Planned Productivity\"}, {\"WORKING_DAY_STANDARD\", \"Working Day Standard\"}}),",
-                "    #\"Changed Type\" = Table.TransformColumnTypes(#\"Renamed Columns\",{{\"Actual Resource\", type number}, {\"Planned Resource\", type number}, {\"Planned Qty\", type number}, {\"Planned Productivity\", type number}})",
-                "in",
-                "    #\"Changed Type\""
-              ]
-            }
-          }
-        ],
-        "measures": [
-          {
-            "name": ".Planned Productivity",
-            "expression": [
-              " ",
-              "Calculate(sumx('Dim - Production Labor Planned', 'Dim - Production Labor Planned'[Planned Resource] * 'Dim - Production Labor Planned'[Working Day Standard]), Filter ('Dim - Production Labor', [Productivity Type] = \"DIEM\"))",
-              "+ Calculate(sum('Dim - Production Labor Planned'[Planned Productivity]), Filter ('Dim - Production Labor', [Productivity Type] = \"SL\"))"
-            ]
-          },
-          {
-            "name": "%Human Resource",
-            "expression": " sum('Dim - Production Labor Planned'[Actual Resource])/sum('Dim - Production Labor Planned'[Planned Resource])",
-            "formatString": "0.00%;-0.00%;0.00%"
-          }
-        ]
-      },
-      {
-        "name": "Dim - Production Labor",
-        "columns": [
-          {
-            "name": "Area Code",
-            "dataType": "string",
-            "sourceColumn": "Area Code"
-          },
-          {
-            "name": "Team Code",
-            "dataType": "string",
-            "sourceColumn": "Team Code"
-          },
-          {
-            "name": "Team Name",
-            "dataType": "string",
-            "sourceColumn": "Team Name"
-          },
-          {
-            "name": "STK Keeper Code",
-            "dataType": "string",
-            "sourceColumn": "STK Keeper Code"
-          },
-          {
-            "name": "Productivity Type",
-            "dataType": "string",
-            "sourceColumn": "Productivity Type"
-          },
-          {
-            "name": "Score Type",
-            "dataType": "string",
-            "sourceColumn": "Score Type"
-          },
-          {
-            "name": "ROW_WID",
-            "dataType": "int64",
-            "isHidden": true,
-            "sourceColumn": "ROW_WID"
-          }
-        ],
-        "partitions": [
-          {
-            "name": "Partition",
-            "dataView": "full",
-            "source": {
-              "type": "m",
-              "expression": [
-                "let",
-                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
-                "    SELECT [AREA_CODE]",
-                "      ,[TEAM_CODE]",
-                "      ,[TEAM_NAME]",
-                "      ,[STOCK_KEEPER_CODE]",
-                "      ,[PRODUCTIVITY_TYPE]",
-                "      ,[SCORE_TYPE]",
-                "      ,[ROW_WID]",
-                "    FROM [PNJ_ROLAP].[dbo].[W_VW_PRODUCTION_LABOR_D]",
-                "    WHERE [FINAL_STAGE] IS NULL \"),",
-                "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"AREA_CODE\", \"Area Code\"}, {\"TEAM_CODE\", \"Team Code\"}, {\"TEAM_NAME\", \"Team Name\"}, {\"STOCK_KEEPER_CODE\", \"STK Keeper Code\"}, {\"PRODUCTIVITY_TYPE\", \"Productivity Type\"}, {\"SCORE_TYPE\", \"Score Type\"}})",
-                "in",
-                "    #\"Renamed Columns\""
-              ]
-            }
-          }
-        ]
-      },
-      {
-        "name": "Fact - Actual Production Process",
-        "columns": [
-          {
-            "type": "calculated",
-            "name": "Last Refeshed",
-            "dataType": "dateTime",
-            "isDataTypeInferred": true,
-            "expression": "Now()",
-            "formatString": "dd/MM/yyyy HH:mm:ss",
-            "annotations": [
-              {
-                "name": "Format",
-                "value": "<Format Format=\"DateTimeCustom\"><DateTimes><DateTime LCID=\"1066\" Group=\"GeneralLongDateTime\" FormatString=\"dd/MM/yyyy HH:mm:ss\" /></DateTimes></Format>"
-              }
-            ]
-          },
-          {
-            "type": "calculatedTableColumn",
-            "name": "ID",
-            "dataType": "int64",
-            "isNameInferred": true,
-            "isDataTypeInferred": true,
-            "isHidden": true,
-            "sourceColumn": "[ID]"
-          }
-        ],
-        "partitions": [
-          {
-            "name": "CalculatedTable 1",
-            "source": {
-              "type": "calculated",
-              "expression": "DATATABLE(\"ID\", INTEGER, {{1}})"
-            }
-          }
-        ]
-      },
-      {
-        "name": "Dim - GL Account COPA",
-        "columns": [
-          {
-            "name": "LV1 Code",
-            "dataType": "string",
-            "sourceColumn": "LV1 Code"
-          },
-          {
-            "name": "LV1 Name",
-            "dataType": "string",
-            "sourceColumn": "LV1 Name"
-          },
-          {
-            "name": "LV2 Code",
-            "dataType": "string",
-            "sourceColumn": "LV2 Code"
-          },
-          {
-            "name": "LV2 Name",
-            "dataType": "string",
-            "sourceColumn": "LV2 Name"
-          },
-          {
-            "name": "LV3 Code",
-            "dataType": "string",
-            "sourceColumn": "LV3 Code"
-          },
-          {
-            "name": "LV3 Name",
-            "dataType": "string",
-            "sourceColumn": "LV3 Name"
-          },
-          {
-            "name": "Description 1",
-            "dataType": "string",
-            "sourceColumn": "Description 1"
-          },
-          {
-            "name": "Description 2",
-            "dataType": "string",
-            "sourceColumn": "Description 2"
-          },
-          {
-            "name": "GL Account Code",
-            "dataType": "string",
-            "sourceColumn": "GL Account Code"
-          },
-          {
-            "name": "GL_ACCOUNT_WID",
-            "dataType": "int64",
-            "isHidden": true,
-            "sourceColumn": "GL_ACCOUNT_WID"
-          },
-          {
-            "name": "L1 FR",
-            "dataType": "string",
-            "sourceColumn": "L1 FR"
-          },
-          {
-            "name": "L1 TO",
-            "dataType": "string",
-            "sourceColumn": "L1 TO"
-          }
-        ],
-        "partitions": [
-          {
-            "name": "Partition",
-            "dataView": "full",
-            "source": {
-              "type": "m",
-              "expression": [
-                "let",
-                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
-                "   SELECT[GL_ACT_LV1_CODE]",
-                "      ,[GL_ACT_LV1_NAME]",
-                "      ,[GL_ACT_LV2_CODE]",
-                "      ,[GL_ACT_LV2_NAME]",
-                "      ,[GL_ACT_LV3_CODE]",
-                "      ,[GL_ACT_LV3_NAME]",
-                "      ,[GL_TEXT1]",
-                "      ,[GL_TEXT2]",
-                "      ,[GL_ACCOUNT_CODE]",
-                "      ,[GL_ACCOUNT_WID]",
-                "      ,[L1_FR]",
-                "      ,[L1_TO]",
-                "  FROM [PNJ_ROLAP].[dbo].[W_VW_GL_ACCOUNT_COPA_DH]\"),",
-                "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"GL_ACT_LV1_CODE\", \"LV1 Code\"}, {\"GL_ACT_LV1_NAME\", \"LV1 Name\"}, {\"GL_ACT_LV2_CODE\", \"LV2 Code\"}, {\"GL_ACT_LV2_NAME\", \"LV2 Name\"}, {\"GL_ACT_LV3_CODE\", \"LV3 Code\"}, {\"GL_ACT_LV3_NAME\", \"LV3 Name\"}, {\"GL_TEXT1\", \"Description 1\"}, {\"GL_TEXT2\", \"Description 2\"}, {\"GL_ACCOUNT_CODE\", \"GL Account Code\"}, {\"L1_FR\", \"L1 FR\"}, {\"L1_TO\", \"L1 TO\"}})",
-                "in",
-                "    #\"Renamed Columns\""
-              ]
-            }
-          }
-        ]
-      },
-      {
         "name": "Fact - Finance",
         "columns": [
           {
@@ -19229,6 +18435,786 @@
                 ]
               }
             ]
+          }
+        ]
+      },
+      {
+        "name": "Fact - GotIt GiftPop",
+        "columns": [
+          {
+            "name": "ROW_WID",
+            "dataType": "int64",
+            "sourceColumn": "ROW_WID"
+          },
+          {
+            "name": "Document Number",
+            "dataType": "string",
+            "sourceColumn": "Document Number"
+          },
+          {
+            "name": "Date Key",
+            "dataType": "string",
+            "sourceColumn": "Date Key"
+          },
+          {
+            "name": "Invoice Number",
+            "dataType": "string",
+            "sourceColumn": "Invoice Number"
+          },
+          {
+            "name": "Type",
+            "dataType": "string",
+            "sourceColumn": "Type"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "dataView": "full",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = #\"SQL/192 168 3 31;PNJ_ROLAP\",",
+                "    dbo_Z_GOT_IT = Source{[Schema=\"dbo\",Item=\"Z_GOT_IT\"]}[Data],",
+                "    #\"Renamed Columns\" = Table.RenameColumns(dbo_Z_GOT_IT,{{\"BELNR\", \"Document Number\"}, {\"H_BUDAT\", \"Date Key\"}, {\"ZUONR\", \"Invoice Number\"}, {\"TYPE\", \"Type\"}})",
+                "in",
+                "    #\"Renamed Columns\""
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "Dim - STK Keeper Finished Goods",
+        "columns": [
+          {
+            "name": "STK Keeper Code",
+            "dataType": "string",
+            "sourceColumn": "STK Keeper Code"
+          },
+          {
+            "name": "Final Stage",
+            "dataType": "string",
+            "sourceColumn": "Final Stage"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "dataView": "full",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
+                "    SELECT ",
+                "      [STOCK_KEEPER_CODE]",
+                "      ,[FINAL_STAGE]",
+                "    FROM [PNJ_ROLAP].[dbo].[W_VW_PRODUCTION_LABOR_D]",
+                "    WHERE [FINAL_STAGE] = 1 \"),",
+                "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"STOCK_KEEPER_CODE\", \"STK Keeper Code\"}, {\"FINAL_STAGE\", \"Final Stage\"}})",
+                "in",
+                "    #\"Renamed Columns\""
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "Fact - PO Schedule Line Z01",
+        "columns": [
+          {
+            "name": "Types",
+            "dataType": "string",
+            "sourceColumn": "Types"
+          },
+          {
+            "name": "PURCH_ORDER_NUM",
+            "dataType": "string",
+            "sourceColumn": "PURCH_ORDER_NUM"
+          },
+          {
+            "name": "PURCH_ORDER_ITEM",
+            "dataType": "string",
+            "sourceColumn": "PURCH_ORDER_ITEM"
+          },
+          {
+            "name": "PURCH_ORDER_TYPE",
+            "dataType": "string",
+            "sourceColumn": "PURCH_ORDER_TYPE"
+          },
+          {
+            "name": "SPLR_ACCT_NUM",
+            "dataType": "string",
+            "sourceColumn": "SPLR_ACCT_NUM"
+          },
+          {
+            "name": "ORDERED_ON_DT",
+            "dataType": "int64",
+            "sourceColumn": "ORDERED_ON_DT"
+          },
+          {
+            "name": "ORDER_QTY",
+            "dataType": "double",
+            "sourceColumn": "ORDER_QTY"
+          },
+          {
+            "name": "ALLOCATED_ORDER_QTY",
+            "dataType": "double",
+            "sourceColumn": "ALLOCATED_ORDER_QTY"
+          },
+          {
+            "name": "CONFIRMED_QTY",
+            "dataType": "int64",
+            "sourceColumn": "CONFIRMED_QTY"
+          },
+          {
+            "name": "TARGET_QTY",
+            "dataType": "double",
+            "sourceColumn": "TARGET_QTY"
+          },
+          {
+            "name": "UOM_CODE",
+            "dataType": "string",
+            "sourceColumn": "UOM_CODE"
+          },
+          {
+            "name": "COMPANY_WID",
+            "dataType": "int64",
+            "sourceColumn": "COMPANY_WID"
+          },
+          {
+            "name": "PLANT_WID",
+            "dataType": "int64",
+            "sourceColumn": "PLANT_WID"
+          },
+          {
+            "name": "STORAGE_LOC",
+            "dataType": "string",
+            "sourceColumn": "STORAGE_LOC"
+          },
+          {
+            "name": "PRODUCT_WID",
+            "dataType": "int64",
+            "sourceColumn": "PRODUCT_WID"
+          },
+          {
+            "name": "SUPPLIER_WID",
+            "dataType": "int64",
+            "sourceColumn": "SUPPLIER_WID"
+          },
+          {
+            "name": "CUSTOMER_WID",
+            "dataType": "int64",
+            "sourceColumn": "CUSTOMER_WID"
+          },
+          {
+            "name": "PURCH_GROUP_WID",
+            "dataType": "int64",
+            "sourceColumn": "PURCH_GROUP_WID"
+          },
+          {
+            "name": "STORAGE_LOC_WID",
+            "dataType": "int64",
+            "sourceColumn": "STORAGE_LOC_WID"
+          },
+          {
+            "name": "PURCH_ORDER_STATUS",
+            "dataType": "string",
+            "sourceColumn": "PURCH_ORDER_STATUS"
+          },
+          {
+            "name": "PURCH_ORDER_GRP",
+            "dataType": "string",
+            "sourceColumn": "PURCH_ORDER_GRP"
+          },
+          {
+            "name": "Q10_QTY",
+            "dataType": "double",
+            "sourceColumn": "Q10_QTY"
+          },
+          {
+            "name": "REQ_DELIVERY_DT",
+            "dataType": "int64",
+            "sourceColumn": "REQ_DELIVERY_DT"
+          },
+          {
+            "name": "DELIVERY_DT",
+            "dataType": "int64",
+            "sourceColumn": "DELIVERY_DT"
+          },
+          {
+            "name": "SCHEDULE_QTY",
+            "dataType": "int64",
+            "sourceColumn": "SCHEDULE_QTY"
+          },
+          {
+            "name": "RELEASE_STATE",
+            "dataType": "string",
+            "sourceColumn": "RELEASE_STATE"
+          },
+          {
+            "name": "GR_GI_DT",
+            "dataType": "int64",
+            "sourceColumn": "GR_GI_DT"
+          },
+          {
+            "name": "GR_GI_QTY",
+            "dataType": "double",
+            "sourceColumn": "GR_GI_QTY"
+          },
+          {
+            "name": "SCHEDULE_LINE_NUM",
+            "dataType": "int64",
+            "sourceColumn": "SCHEDULE_LINE_NUM"
+          },
+          {
+            "name": "NET_AMT",
+            "dataType": "double",
+            "sourceColumn": "NET_AMT"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "dataView": "full",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
+                "    SELECT [Types]",
+                "      ,[PURCH_ORDER_NUM]",
+                "      ,[PURCH_ORDER_ITEM]",
+                "      ,[PURCH_ORDER_TYPE]",
+                "      ,[SPLR_ACCT_NUM]",
+                "      ,[ORDERED_ON_DT]",
+                "      ,[ORDER_QTY]",
+                "      ,[ALLOCATED_ORDER_QTY]",
+                "      ,[CONFIRMED_QTY]",
+                "      ,[TARGET_QTY]",
+                "      ,[UOM_CODE]",
+                "      ,[COMPANY_WID]",
+                "      ,[PLANT_WID]",
+                "      ,[STORAGE_LOC]",
+                "      ,[PRODUCT_WID]",
+                "      ,[SUPPLIER_WID]",
+                "      ,[CUSTOMER_WID]",
+                "      ,[PURCH_GROUP_WID]",
+                "      ,[STORAGE_LOC_WID]",
+                "      ,[PURCH_ORDER_STATUS]",
+                "      ,[PURCH_ORDER_GRP]",
+                "      ,[Q10_QTY]",
+                "      ,[REQ_DELIVERY_DT]",
+                "      ,[DELIVERY_DT]",
+                "      ,[SCHEDULE_QTY]",
+                "      ,[RELEASE_STATE]",
+                "      ,[GR_GI_DT]",
+                "      ,[GR_GI_QTY]",
+                "      ,[SCHEDULE_LINE_NUM]",
+                "      ,[NET_AMT]",
+                "  FROM [PNJ_ROLAP].[dbo].[W_VW_PO_SCHEDULE_LINE_Z01_F]\")",
+                "in",
+                "    Source"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "Fact - PO Schedule Line Z06",
+        "columns": [
+          {
+            "name": "Types",
+            "dataType": "string",
+            "sourceColumn": "Types"
+          },
+          {
+            "name": "PURCH_ORDER_NUM",
+            "dataType": "string",
+            "sourceColumn": "PURCH_ORDER_NUM"
+          },
+          {
+            "name": "PURCH_ORDER_ITEM",
+            "dataType": "string",
+            "sourceColumn": "PURCH_ORDER_ITEM"
+          },
+          {
+            "name": "PURCH_ORDER_TYPE",
+            "dataType": "string",
+            "sourceColumn": "PURCH_ORDER_TYPE"
+          },
+          {
+            "name": "SPLR_ACCT_NUM",
+            "dataType": "string",
+            "sourceColumn": "SPLR_ACCT_NUM"
+          },
+          {
+            "name": "ORDERED_ON_DT",
+            "dataType": "int64",
+            "sourceColumn": "ORDERED_ON_DT"
+          },
+          {
+            "name": "ORDER_QTY",
+            "dataType": "double",
+            "sourceColumn": "ORDER_QTY"
+          },
+          {
+            "name": "ALLOCATED_ORDER_QTY",
+            "dataType": "double",
+            "sourceColumn": "ALLOCATED_ORDER_QTY"
+          },
+          {
+            "name": "CONFIRMED_QTY",
+            "dataType": "int64",
+            "sourceColumn": "CONFIRMED_QTY"
+          },
+          {
+            "name": "TARGET_QTY",
+            "dataType": "double",
+            "sourceColumn": "TARGET_QTY"
+          },
+          {
+            "name": "UOM_CODE",
+            "dataType": "string",
+            "sourceColumn": "UOM_CODE"
+          },
+          {
+            "name": "COMPANY_WID",
+            "dataType": "int64",
+            "sourceColumn": "COMPANY_WID"
+          },
+          {
+            "name": "PLANT_WID",
+            "dataType": "int64",
+            "sourceColumn": "PLANT_WID"
+          },
+          {
+            "name": "STORAGE_LOC",
+            "dataType": "string",
+            "sourceColumn": "STORAGE_LOC"
+          },
+          {
+            "name": "PRODUCT_WID",
+            "dataType": "int64",
+            "sourceColumn": "PRODUCT_WID"
+          },
+          {
+            "name": "SUPPLIER_WID",
+            "dataType": "int64",
+            "sourceColumn": "SUPPLIER_WID"
+          },
+          {
+            "name": "CUSTOMER_WID",
+            "dataType": "int64",
+            "sourceColumn": "CUSTOMER_WID"
+          },
+          {
+            "name": "PURCH_GROUP_WID",
+            "dataType": "int64",
+            "sourceColumn": "PURCH_GROUP_WID"
+          },
+          {
+            "name": "STORAGE_LOC_WID",
+            "dataType": "int64",
+            "sourceColumn": "STORAGE_LOC_WID"
+          },
+          {
+            "name": "PURCH_ORDER_STATUS",
+            "dataType": "string",
+            "sourceColumn": "PURCH_ORDER_STATUS"
+          },
+          {
+            "name": "PURCH_ORDER_GRP",
+            "dataType": "string",
+            "sourceColumn": "PURCH_ORDER_GRP"
+          },
+          {
+            "name": "Q10_QTY",
+            "dataType": "double",
+            "sourceColumn": "Q10_QTY"
+          },
+          {
+            "name": "REQ_DELIVERY_DT",
+            "dataType": "int64",
+            "sourceColumn": "REQ_DELIVERY_DT"
+          },
+          {
+            "name": "DELIVERY_DT",
+            "dataType": "int64",
+            "sourceColumn": "DELIVERY_DT"
+          },
+          {
+            "name": "SCHEDULE_QTY",
+            "dataType": "int64",
+            "sourceColumn": "SCHEDULE_QTY"
+          },
+          {
+            "name": "RELEASE_STATE",
+            "dataType": "string",
+            "sourceColumn": "RELEASE_STATE"
+          },
+          {
+            "name": "GR_GI_DT",
+            "dataType": "int64",
+            "sourceColumn": "GR_GI_DT"
+          },
+          {
+            "name": "GR_GI_QTY",
+            "dataType": "double",
+            "sourceColumn": "GR_GI_QTY"
+          },
+          {
+            "name": "SCHEDULE_LINE_NUM",
+            "dataType": "int64",
+            "sourceColumn": "SCHEDULE_LINE_NUM"
+          },
+          {
+            "name": "NET_AMT",
+            "dataType": "double",
+            "sourceColumn": "NET_AMT"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "dataView": "full",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
+                "    SELECT [Types]",
+                "      ,[PURCH_ORDER_NUM]",
+                "      ,[PURCH_ORDER_ITEM]",
+                "      ,[PURCH_ORDER_TYPE]",
+                "      ,[SPLR_ACCT_NUM]",
+                "      ,[ORDERED_ON_DT]",
+                "      ,[ORDER_QTY]",
+                "      ,[ALLOCATED_ORDER_QTY]",
+                "      ,[CONFIRMED_QTY]",
+                "      ,[TARGET_QTY]",
+                "      ,[UOM_CODE]",
+                "      ,[COMPANY_WID]",
+                "      ,[PLANT_WID]",
+                "      ,[STORAGE_LOC]",
+                "      ,[PRODUCT_WID]",
+                "      ,[SUPPLIER_WID]",
+                "      ,[CUSTOMER_WID]",
+                "      ,[PURCH_GROUP_WID]",
+                "      ,[STORAGE_LOC_WID]",
+                "      ,[PURCH_ORDER_STATUS]",
+                "      ,[PURCH_ORDER_GRP]",
+                "      ,[Q10_QTY]",
+                "      ,[REQ_DELIVERY_DT]",
+                "      ,[DELIVERY_DT]",
+                "      ,[SCHEDULE_QTY]",
+                "      ,[RELEASE_STATE]",
+                "      ,[GR_GI_DT]",
+                "      ,[GR_GI_QTY]",
+                "      ,[SCHEDULE_LINE_NUM]",
+                "      ,[NET_AMT]",
+                "  FROM [PNJ_ROLAP].[dbo].[W_VW_PO_SCHEDULE_LINE_Z06_F]\")",
+                "in",
+                "    Source"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "Dim - Production Labor Planned",
+        "columns": [
+          {
+            "name": "Date Key",
+            "dataType": "int64",
+            "sourceColumn": "Date Key"
+          },
+          {
+            "name": "Team Code",
+            "dataType": "string",
+            "sourceColumn": "Team Code"
+          },
+          {
+            "name": "Actual Resource",
+            "dataType": "double",
+            "sourceColumn": "Actual Resource",
+            "formatString": "#,0.00"
+          },
+          {
+            "name": "Planned Resource",
+            "dataType": "double",
+            "sourceColumn": "Planned Resource",
+            "formatString": "#,0.00"
+          },
+          {
+            "name": "Planned Qty",
+            "dataType": "double",
+            "sourceColumn": "Planned Qty",
+            "formatString": "#,0.00"
+          },
+          {
+            "name": "Planned TurnOver Q10",
+            "dataType": "double",
+            "sourceColumn": "Planned TurnOver Q10"
+          },
+          {
+            "name": "Planned Productivity",
+            "dataType": "double",
+            "sourceColumn": "Planned Productivity",
+            "formatString": "#,0.00"
+          },
+          {
+            "name": "Working Day Standard",
+            "dataType": "double",
+            "sourceColumn": "Working Day Standard"
+          },
+          {
+            "name": "STOCK_KEEPER_WID",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "STOCK_KEEPER_WID"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "dataView": "full",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
+                "    SELECT [DATE_KEY]",
+                "      ,[TEAM_CODE]",
+                "      ,[STOCK_KEEPER_WID]",
+                "      ,[ACTUAL_RESOURCE]",
+                "      ,[PLANNED_RESOURCE]",
+                "      ,[PLANNED_QTY]",
+                "      ,[PLANNED_TURNOVER_Q10]",
+                "      ,[PLANNED_PRODUCTIVITY]",
+                "      ,[WORKING_DAY_STANDARD]",
+                "  FROM [PNJ_ROLAP].[dbo].[W_VW_PRODUCTION_LABOR_PLANNED_D]\"),",
+                "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"DATE_KEY\", \"Date Key\"}, {\"TEAM_CODE\", \"Team Code\"}, {\"ACTUAL_RESOURCE\", \"Actual Resource\"}, {\"PLANNED_RESOURCE\", \"Planned Resource\"}, {\"PLANNED_QTY\", \"Planned Qty\"}, {\"PLANNED_TURNOVER_Q10\", \"Planned TurnOver Q10\"}, {\"PLANNED_PRODUCTIVITY\", \"Planned Productivity\"}, {\"WORKING_DAY_STANDARD\", \"Working Day Standard\"}}),",
+                "    #\"Changed Type\" = Table.TransformColumnTypes(#\"Renamed Columns\",{{\"Actual Resource\", type number}, {\"Planned Resource\", type number}, {\"Planned Qty\", type number}, {\"Planned Productivity\", type number}})",
+                "in",
+                "    #\"Changed Type\""
+              ]
+            }
+          }
+        ],
+        "measures": [
+          {
+            "name": ".Planned Productivity",
+            "expression": [
+              " ",
+              "Calculate(sumx('Dim - Production Labor Planned', 'Dim - Production Labor Planned'[Planned Resource] * 'Dim - Production Labor Planned'[Working Day Standard]), Filter ('Dim - Production Labor', [Productivity Type] = \"DIEM\"))",
+              "+ Calculate(sum('Dim - Production Labor Planned'[Planned Productivity]), Filter ('Dim - Production Labor', [Productivity Type] = \"SL\"))"
+            ]
+          },
+          {
+            "name": "%Human Resource",
+            "expression": " sum('Dim - Production Labor Planned'[Actual Resource])/sum('Dim - Production Labor Planned'[Planned Resource])",
+            "formatString": "0.00%;-0.00%;0.00%"
+          }
+        ]
+      },
+      {
+        "name": "Dim - Production Labor",
+        "columns": [
+          {
+            "name": "Area Code",
+            "dataType": "string",
+            "sourceColumn": "Area Code"
+          },
+          {
+            "name": "Team Code",
+            "dataType": "string",
+            "sourceColumn": "Team Code"
+          },
+          {
+            "name": "Team Name",
+            "dataType": "string",
+            "sourceColumn": "Team Name"
+          },
+          {
+            "name": "STK Keeper Code",
+            "dataType": "string",
+            "sourceColumn": "STK Keeper Code"
+          },
+          {
+            "name": "Productivity Type",
+            "dataType": "string",
+            "sourceColumn": "Productivity Type"
+          },
+          {
+            "name": "Score Type",
+            "dataType": "string",
+            "sourceColumn": "Score Type"
+          },
+          {
+            "name": "ROW_WID",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "ROW_WID"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "dataView": "full",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
+                "    SELECT [AREA_CODE]",
+                "      ,[TEAM_CODE]",
+                "      ,[TEAM_NAME]",
+                "      ,[STOCK_KEEPER_CODE]",
+                "      ,[PRODUCTIVITY_TYPE]",
+                "      ,[SCORE_TYPE]",
+                "      ,[ROW_WID]",
+                "    FROM [PNJ_ROLAP].[dbo].[W_VW_PRODUCTION_LABOR_D]",
+                "    WHERE [FINAL_STAGE] IS NULL \"),",
+                "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"AREA_CODE\", \"Area Code\"}, {\"TEAM_CODE\", \"Team Code\"}, {\"TEAM_NAME\", \"Team Name\"}, {\"STOCK_KEEPER_CODE\", \"STK Keeper Code\"}, {\"PRODUCTIVITY_TYPE\", \"Productivity Type\"}, {\"SCORE_TYPE\", \"Score Type\"}})",
+                "in",
+                "    #\"Renamed Columns\""
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "Fact - Actual Production Process",
+        "columns": [
+          {
+            "type": "calculated",
+            "name": "Last Refeshed",
+            "dataType": "dateTime",
+            "isDataTypeInferred": true,
+            "expression": "Now()",
+            "formatString": "dd/MM/yyyy HH:mm:ss",
+            "annotations": [
+              {
+                "name": "Format",
+                "value": "<Format Format=\"DateTimeCustom\"><DateTimes><DateTime LCID=\"1066\" Group=\"GeneralLongDateTime\" FormatString=\"dd/MM/yyyy HH:mm:ss\" /></DateTimes></Format>"
+              }
+            ]
+          },
+          {
+            "type": "calculatedTableColumn",
+            "name": "ID",
+            "dataType": "int64",
+            "isNameInferred": true,
+            "isDataTypeInferred": true,
+            "isHidden": true,
+            "sourceColumn": "[ID]"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "CalculatedTable 1",
+            "source": {
+              "type": "calculated",
+              "expression": "DATATABLE(\"ID\", INTEGER, {{1}})"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Dim - GL Account COPA",
+        "columns": [
+          {
+            "name": "LV1 Code",
+            "dataType": "string",
+            "sourceColumn": "LV1 Code"
+          },
+          {
+            "name": "LV1 Name",
+            "dataType": "string",
+            "sourceColumn": "LV1 Name"
+          },
+          {
+            "name": "LV2 Code",
+            "dataType": "string",
+            "sourceColumn": "LV2 Code"
+          },
+          {
+            "name": "LV2 Name",
+            "dataType": "string",
+            "sourceColumn": "LV2 Name"
+          },
+          {
+            "name": "LV3 Code",
+            "dataType": "string",
+            "sourceColumn": "LV3 Code"
+          },
+          {
+            "name": "LV3 Name",
+            "dataType": "string",
+            "sourceColumn": "LV3 Name"
+          },
+          {
+            "name": "Description 1",
+            "dataType": "string",
+            "sourceColumn": "Description 1"
+          },
+          {
+            "name": "Description 2",
+            "dataType": "string",
+            "sourceColumn": "Description 2"
+          },
+          {
+            "name": "GL Account Code",
+            "dataType": "string",
+            "sourceColumn": "GL Account Code"
+          },
+          {
+            "name": "GL_ACCOUNT_WID",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "GL_ACCOUNT_WID"
+          },
+          {
+            "name": "L1 FR",
+            "dataType": "string",
+            "sourceColumn": "L1 FR"
+          },
+          {
+            "name": "L1 TO",
+            "dataType": "string",
+            "sourceColumn": "L1 TO"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "dataView": "full",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
+                "   SELECT[GL_ACT_LV1_CODE]",
+                "      ,[GL_ACT_LV1_NAME]",
+                "      ,[GL_ACT_LV2_CODE]",
+                "      ,[GL_ACT_LV2_NAME]",
+                "      ,[GL_ACT_LV3_CODE]",
+                "      ,[GL_ACT_LV3_NAME]",
+                "      ,[GL_TEXT1]",
+                "      ,[GL_TEXT2]",
+                "      ,[GL_ACCOUNT_CODE]",
+                "      ,[GL_ACCOUNT_WID]",
+                "      ,[L1_FR]",
+                "      ,[L1_TO]",
+                "  FROM [PNJ_ROLAP].[dbo].[W_VW_GL_ACCOUNT_COPA_DH]\"),",
+                "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"GL_ACT_LV1_CODE\", \"LV1 Code\"}, {\"GL_ACT_LV1_NAME\", \"LV1 Name\"}, {\"GL_ACT_LV2_CODE\", \"LV2 Code\"}, {\"GL_ACT_LV2_NAME\", \"LV2 Name\"}, {\"GL_ACT_LV3_CODE\", \"LV3 Code\"}, {\"GL_ACT_LV3_NAME\", \"LV3 Name\"}, {\"GL_TEXT1\", \"Description 1\"}, {\"GL_TEXT2\", \"Description 2\"}, {\"GL_ACCOUNT_CODE\", \"GL Account Code\"}, {\"L1_FR\", \"L1 FR\"}, {\"L1_TO\", \"L1 TO\"}})",
+                "in",
+                "    #\"Renamed Columns\""
+              ]
+            }
           }
         ]
       },
