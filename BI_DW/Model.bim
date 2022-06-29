@@ -22,7 +22,9 @@
         },
         "credential": {
           "AuthenticationKind": "UsernamePassword",
-          "Username": "biread",
+          "kind": "SQL",
+          "path": "192.168.3.31;PNJ_ROLAP",
+          "Username": "Biread",
           "EncryptConnection": false
         }
       },
@@ -44,7 +46,9 @@
         },
         "credential": {
           "AuthenticationKind": "UsernamePassword",
-          "Username": "biread",
+          "kind": "SQL",
+          "path": "192.168.3.31;DW_RAW",
+          "Username": "Biread",
           "EncryptConnection": false
         }
       }
