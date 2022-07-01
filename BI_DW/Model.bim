@@ -16317,6 +16317,26 @@
               "        "
             ],
             "formatString": "0.00"
+          },
+          {
+            "name": "Palexy Plant (prev)",
+            "expression": [
+              " CALCULATE(",
+              "\t [Palexy Plant], ",
+              "\t ALL ( 'Dim - Time' ), ",
+              "\t USERELATIONSHIP( 'Dim - Time'[Date], 'Dim - Time Compare'[Prev. Date] ) ",
+              ")"
+            ],
+            "formatString": "#,0.00"
+          },
+          {
+            "name": "Palexy Plant",
+            "expression": [
+              " CALCULATE(",
+              "\t DISTINCTCOUNT('Fact - Camera InStore'[Plant_wid])",
+              ")"
+            ],
+            "formatString": "#,0.00"
           }
         ]
       },
