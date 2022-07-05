@@ -22,6 +22,8 @@
         },
         "credential": {
           "AuthenticationKind": "UsernamePassword",
+          "kind": "SQL",
+          "path": "192.168.3.31;PNJ_ROLAP",
           "Username": "biread",
           "EncryptConnection": false
         }
@@ -4507,7 +4509,7 @@
           },
           {
             "name": "Time",
-            "dataType": "dateTime",
+            "dataType": "string",
             "sourceColumn": "Time",
             "formatString": "HH:mm",
             "annotations": [
@@ -4525,7 +4527,7 @@
         ],
         "partitions": [
           {
-            "name": "Partition",
+            "name": "Partition Latest 7 Days",
             "mode": "import",
             "source": {
               "type": "m",
@@ -4559,7 +4561,7 @@
                 "      ,[PRONG_SCORE]",
                 "     ,[PRODUCTION_MATERIAL_TYPE]",
                 "  FROM [PNJ_ROLAP].[dbo].[W_VW_ACTUAL_PRODUCTION_F]",
-                "  WHERE [DATE_KEY]> CAST(Convert(CHAR(8),DATEADD(DAY,- 30,GETDATE()),112) as int)\"),",
+                "  WHERE [DATE_KEY]> CAST(Convert(CHAR(8),DATEADD(DAY,- 7,GETDATE()),112) as int)\"),",
                 "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"STOCK_KEEPER_CODE\", \"STK Keeper Code\"},{\"ORDER_NUMBER\", \"Order Number\"}, {\"BASE_UOM_CODE\", \"UOM\"}, {\"ACTUAL_QTY\", \"Actual QTY\"}, {\"LOCATION_CODE\", \"Location Wid\"}, {\"DOCUMENT_NUMBER\", \"Document Number\"}, {\"STANDARD_WEIGHT_FLAG\", \"STD Weight Flag\"}, {\"STANDARD_TEXT_KEY\", \"STD Text Key\"}, {\"LOCATION_TRANSFER_CODE\", \"Output sloc\"}, {\"STOCK_KEEPER_TRANSFER_CODE\", \"STK Keeper Transfer Code\"}, {\"BATCH\", \"Batch\"}, {\"STK_KEEPER_WID\", \"Booklet_ID\"}, {\"TOTAL_WEIGHT\", \"Total Weight\"}, {\"STANDARD_WEIGHT\", \"Standard Weight\"}, {\"TIME\", \"Time\"}, {\"COOLING_SCORE\", \"Cooling Score\"}, {\"PRONG_SCORE\", \"Prong Score\"}, {\"PRODUCTION_MATERIAL_TYPE\", \"Material Type\"}})",
                 "in",
                 "    #\"Renamed Columns\""
@@ -4598,7 +4600,7 @@
                   "      ,[PRONG_SCORE]",
                   "     ,[PRODUCTION_MATERIAL_TYPE]",
                   "  FROM [PNJ_ROLAP].[dbo].[W_VW_ACTUAL_PRODUCTION_F]",
-                  "  WHERE [DATE_KEY]> CAST(Convert(CHAR(8),DATEADD(DAY,- 30,GETDATE()),112) as int)\"),",
+                  "  WHERE [DATE_KEY]> CAST(Convert(CHAR(8),DATEADD(DAY,- 7,GETDATE()),112) as int)\"),",
                   "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"STOCK_KEEPER_CODE\", \"STK Keeper Code\"},{\"ORDER_NUMBER\", \"Order Number\"}, {\"BASE_UOM_CODE\", \"UOM\"}, {\"ACTUAL_QTY\", \"Actual QTY\"}, {\"LOCATION_CODE\", \"Location Wid\"}, {\"DOCUMENT_NUMBER\", \"Document Number\"}, {\"STANDARD_WEIGHT_FLAG\", \"STD Weight Flag\"}, {\"STANDARD_TEXT_KEY\", \"STD Text Key\"}, {\"LOCATION_TRANSFER_CODE\", \"Output sloc\"}, {\"STOCK_KEEPER_TRANSFER_CODE\", \"STK Keeper Transfer Code\"}, {\"BATCH\", \"Batch\"}, {\"STK_KEEPER_WID\", \"Booklet_ID\"}, {\"TOTAL_WEIGHT\", \"Total Weight\"}, {\"STANDARD_WEIGHT\", \"Standard Weight\"}, {\"TIME\", \"Time\"}, {\"COOLING_SCORE\", \"Cooling Score\"}, {\"PRONG_SCORE\", \"Prong Score\"}, {\"PRODUCTION_MATERIAL_TYPE\", \"Material Type\"}})",
                   "in",
                   "    #\"Renamed Columns\"</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
@@ -4640,7 +4642,7 @@
                 "      ,[PRONG_SCORE]",
                 "      ,[PRODUCTION_MATERIAL_TYPE]",
                 "  FROM [PNJ_ROLAP].[dbo].[W_VW_ACTUAL_PRODUCTION_F]",
-                "  WHERE [DATE_KEY] BETWEEN 20220101 AND CAST(Convert(CHAR(8),DATEADD(DAY,- 30,GETDATE()),112) as int)\"),",
+                "  WHERE [DATE_KEY] BETWEEN 20220101 AND CAST(Convert(CHAR(8),DATEADD(DAY,- 101,GETDATE()),112) as int)\"),",
                 "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"STOCK_KEEPER_CODE\", \"STK Keeper Code\"},{\"ORDER_NUMBER\", \"Order Number\"}, {\"BASE_UOM_CODE\", \"UOM\"}, {\"ACTUAL_QTY\", \"Actual QTY\"}, {\"LOCATION_CODE\", \"Location Wid\"}, {\"DOCUMENT_NUMBER\", \"Document Number\"}, {\"STANDARD_WEIGHT_FLAG\", \"STD Weight Flag\"}, {\"STANDARD_TEXT_KEY\", \"STD Text Key\"}, {\"LOCATION_TRANSFER_CODE\", \"Output sloc\"}, {\"STOCK_KEEPER_TRANSFER_CODE\", \"STK Keeper Transfer Code\"}, {\"BATCH\", \"Batch\"}, {\"STK_KEEPER_WID\", \"Booklet_ID\"}, {\"TOTAL_WEIGHT\", \"Total Weight\"}, {\"STANDARD_WEIGHT\", \"Standard Weight\"}, {\"TIME\", \"Time\"}, {\"COOLING_SCORE\", \"Cooling Score\"}, {\"PRONG_SCORE\", \"Prong Score\"}, {\"PRODUCTION_MATERIAL_TYPE\", \"Material Type\"}})",
                 "in",
                 "    #\"Renamed Columns\""
@@ -4679,7 +4681,7 @@
                   "      ,[PRONG_SCORE]",
                   "      ,[PRODUCTION_MATERIAL_TYPE]",
                   "  FROM [PNJ_ROLAP].[dbo].[W_VW_ACTUAL_PRODUCTION_F]",
-                  "  WHERE [DATE_KEY] BETWEEN 20220101 AND CAST(Convert(CHAR(8),DATEADD(DAY,- 30,GETDATE()),112) as int)\"),",
+                  "  WHERE [DATE_KEY] BETWEEN 20220101 AND CAST(Convert(CHAR(8),DATEADD(DAY,- 101,GETDATE()),112) as int)\"),",
                   "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"STOCK_KEEPER_CODE\", \"STK Keeper Code\"},{\"ORDER_NUMBER\", \"Order Number\"}, {\"BASE_UOM_CODE\", \"UOM\"}, {\"ACTUAL_QTY\", \"Actual QTY\"}, {\"LOCATION_CODE\", \"Location Wid\"}, {\"DOCUMENT_NUMBER\", \"Document Number\"}, {\"STANDARD_WEIGHT_FLAG\", \"STD Weight Flag\"}, {\"STANDARD_TEXT_KEY\", \"STD Text Key\"}, {\"LOCATION_TRANSFER_CODE\", \"Output sloc\"}, {\"STOCK_KEEPER_TRANSFER_CODE\", \"STK Keeper Transfer Code\"}, {\"BATCH\", \"Batch\"}, {\"STK_KEEPER_WID\", \"Booklet_ID\"}, {\"TOTAL_WEIGHT\", \"Total Weight\"}, {\"STANDARD_WEIGHT\", \"Standard Weight\"}, {\"TIME\", \"Time\"}, {\"COOLING_SCORE\", \"Cooling Score\"}, {\"PRONG_SCORE\", \"Prong Score\"}, {\"PRODUCTION_MATERIAL_TYPE\", \"Material Type\"}})",
                   "in",
                   "    #\"Renamed Columns\"</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
@@ -4926,6 +4928,88 @@
                   "     ,[PRODUCTION_MATERIAL_TYPE]",
                   "  FROM [PNJ_ROLAP].[dbo].[W_VW_ACTUAL_PRODUCTION_F]",
                   "  WHERE [DATE_KEY] < 20200101\"),",
+                  "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"STOCK_KEEPER_CODE\", \"STK Keeper Code\"},{\"ORDER_NUMBER\", \"Order Number\"}, {\"BASE_UOM_CODE\", \"UOM\"}, {\"ACTUAL_QTY\", \"Actual QTY\"}, {\"LOCATION_CODE\", \"Location Wid\"}, {\"DOCUMENT_NUMBER\", \"Document Number\"}, {\"STANDARD_WEIGHT_FLAG\", \"STD Weight Flag\"}, {\"STANDARD_TEXT_KEY\", \"STD Text Key\"}, {\"LOCATION_TRANSFER_CODE\", \"Output sloc\"}, {\"STOCK_KEEPER_TRANSFER_CODE\", \"STK Keeper Transfer Code\"}, {\"BATCH\", \"Batch\"}, {\"STK_KEEPER_WID\", \"Booklet_ID\"}, {\"TOTAL_WEIGHT\", \"Total Weight\"}, {\"STANDARD_WEIGHT\", \"Standard Weight\"}, {\"TIME\", \"Time\"}, {\"COOLING_SCORE\", \"Cooling Score\"}, {\"PRONG_SCORE\", \"Prong Score\"}, {\"PRODUCTION_MATERIAL_TYPE\", \"Material Type\"}})",
+                  "in",
+                  "    #\"Renamed Columns\"</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Partition Latest 3 Months",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
+                "    SELECT [TYPES]",
+                "      ,[DATE_KEY]",
+                "      ,[PLANT_WID]",
+                "      ,[MRP_CONTROLLER_WID]",
+                "      ,[PRODUCT_WID]",
+                "      ,[ORDER_NUMBER]",
+                "      ,[BASE_UOM_CODE]",
+                "      ,[ACTUAL_QTY]",
+                "      ,[STOCK_KEEPER_CODE]",
+                "      ,[LOCATION_CODE]",
+                "      ,[DOCUMENT_NUMBER]",
+                "      ,[Q10]",
+                "      ,[STANDARD_WEIGHT]",
+                "      ,[STANDARD_WEIGHT_FLAG]",
+                "      ,[STOCK_KEEPER_TRANSFER_CODE]",
+                "      ,[LOCATION_TRANSFER_CODE]",
+                "      ,[STANDARD_TEXT_KEY]",
+                "      ,[BATCH]",
+                "      ,[STK_KEEPER_WID]",
+                "      ,[TOTAL_WEIGHT]",
+                "      ,[STK_KEEPING_GROUP]",
+                "      ,[TIME]",
+                "      ,[STOCK_KEEPER_WID]",
+                "      ,[COOLING_SCORE]",
+                "      ,[PRONG_SCORE]",
+                "      ,[PRODUCTION_MATERIAL_TYPE]",
+                "  FROM [PNJ_ROLAP].[dbo].[W_VW_ACTUAL_PRODUCTION_F]",
+                "  WHERE [DATE_KEY] BETWEEN CAST(Convert(CHAR(8),DATEADD(DAY,- 101,GETDATE()),112) as int) AND CAST(Convert(CHAR(8),DATEADD(DAY,- 7,GETDATE()),112) as int)\"),",
+                "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"STOCK_KEEPER_CODE\", \"STK Keeper Code\"},{\"ORDER_NUMBER\", \"Order Number\"}, {\"BASE_UOM_CODE\", \"UOM\"}, {\"ACTUAL_QTY\", \"Actual QTY\"}, {\"LOCATION_CODE\", \"Location Wid\"}, {\"DOCUMENT_NUMBER\", \"Document Number\"}, {\"STANDARD_WEIGHT_FLAG\", \"STD Weight Flag\"}, {\"STANDARD_TEXT_KEY\", \"STD Text Key\"}, {\"LOCATION_TRANSFER_CODE\", \"Output sloc\"}, {\"STOCK_KEEPER_TRANSFER_CODE\", \"STK Keeper Transfer Code\"}, {\"BATCH\", \"Batch\"}, {\"STK_KEEPER_WID\", \"Booklet_ID\"}, {\"TOTAL_WEIGHT\", \"Total Weight\"}, {\"STANDARD_WEIGHT\", \"Standard Weight\"}, {\"TIME\", \"Time\"}, {\"COOLING_SCORE\", \"Cooling Score\"}, {\"PRONG_SCORE\", \"Prong Score\"}, {\"PRODUCTION_MATERIAL_TYPE\", \"Material Type\"}})",
+                "in",
+                "    #\"Renamed Columns\""
+              ]
+            },
+            "annotations": [
+              {
+                "name": "QueryEditorSerialization",
+                "value": [
+                  "<?xml version=\"1.0\" encoding=\"UTF-16\"?><Gemini xmlns=\"QueryEditorSerialization\"><AnnotationContent><![CDATA[<RSQueryCommandText>let",
+                  "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
+                  "    SELECT [TYPES]",
+                  "      ,[DATE_KEY]",
+                  "      ,[PLANT_WID]",
+                  "      ,[MRP_CONTROLLER_WID]",
+                  "      ,[PRODUCT_WID]",
+                  "      ,[ORDER_NUMBER]",
+                  "      ,[BASE_UOM_CODE]",
+                  "      ,[ACTUAL_QTY]",
+                  "      ,[STOCK_KEEPER_CODE]",
+                  "      ,[LOCATION_CODE]",
+                  "      ,[DOCUMENT_NUMBER]",
+                  "      ,[Q10]",
+                  "      ,[STANDARD_WEIGHT]",
+                  "      ,[STANDARD_WEIGHT_FLAG]",
+                  "      ,[STOCK_KEEPER_TRANSFER_CODE]",
+                  "      ,[LOCATION_TRANSFER_CODE]",
+                  "      ,[STANDARD_TEXT_KEY]",
+                  "      ,[BATCH]",
+                  "      ,[STK_KEEPER_WID]",
+                  "      ,[TOTAL_WEIGHT]",
+                  "      ,[STK_KEEPING_GROUP]",
+                  "      ,[TIME]",
+                  "      ,[STOCK_KEEPER_WID]",
+                  "      ,[COOLING_SCORE]",
+                  "      ,[PRONG_SCORE]",
+                  "      ,[PRODUCTION_MATERIAL_TYPE]",
+                  "  FROM [PNJ_ROLAP].[dbo].[W_VW_ACTUAL_PRODUCTION_F]",
+                  "  WHERE [DATE_KEY] BETWEEN CAST(Convert(CHAR(8),DATEADD(DAY,- 101,GETDATE()),112) as int) AND CAST(Convert(CHAR(8),DATEADD(DAY,- 7,GETDATE()),112) as int)\"),",
                   "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"STOCK_KEEPER_CODE\", \"STK Keeper Code\"},{\"ORDER_NUMBER\", \"Order Number\"}, {\"BASE_UOM_CODE\", \"UOM\"}, {\"ACTUAL_QTY\", \"Actual QTY\"}, {\"LOCATION_CODE\", \"Location Wid\"}, {\"DOCUMENT_NUMBER\", \"Document Number\"}, {\"STANDARD_WEIGHT_FLAG\", \"STD Weight Flag\"}, {\"STANDARD_TEXT_KEY\", \"STD Text Key\"}, {\"LOCATION_TRANSFER_CODE\", \"Output sloc\"}, {\"STOCK_KEEPER_TRANSFER_CODE\", \"STK Keeper Transfer Code\"}, {\"BATCH\", \"Batch\"}, {\"STK_KEEPER_WID\", \"Booklet_ID\"}, {\"TOTAL_WEIGHT\", \"Total Weight\"}, {\"STANDARD_WEIGHT\", \"Standard Weight\"}, {\"TIME\", \"Time\"}, {\"COOLING_SCORE\", \"Cooling Score\"}, {\"PRONG_SCORE\", \"Prong Score\"}, {\"PRODUCTION_MATERIAL_TYPE\", \"Material Type\"}})",
                   "in",
                   "    #\"Renamed Columns\"</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
@@ -7122,6 +7206,7 @@
                 "      ,GOTIT_WID",
                 "      ,INVOICE_ZTG_WID",
                 "  FROM [PNJ_ROLAP].[dbo].[W_VW_SALES_INVOICE_LINE_F] ",
+                "where [INVOICED_ON_DT_WID] >= CAST(Convert(CHAR(8),DATEADD(DAY,- 10,GETDATE()),112) as int) ",
                 "  \"),",
                 "         #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"INVOICE_NUM\", \"Invoice Number\"}, {\"INVOICED_QTY\", \"Qty\"}, {\"INVOICE_Q10_QTY\", \"Q10\"}, {\"NET_AMT\", \"Net Amount\"}, {\"COST_AMT\", \"Cost Amount\"}, {\"DISCOUNT_AMT\", \"Discount Amount\"}, {\"GROSS_WEIGHT\", \"Gross Weight\"}, {\"NET_WEIGHT\", \"Net Weight\"}, {\"CHANNEL_CODE\", \"Channel Code\"}, {\"INVOICE_TYPE\", \"Invoice Type\"}, {\"LABOUR_COST\", \"Labour Cost\"}, {\"TYPE_PLANT\", \"Type Plant\"}, {\"CUST_TYPE_MONTH\", \"Customer Type (Month)\"}, {\"CUST_TYPE_YEAR\", \"Customer Type (Year)\"}, {\"GOLD_AMT\", \"Gold Amount\"}, {\"CUSTOMER_SOLD_TO_WID\", \"Customer WID\"}, {\"HAOLAI_AMT\", \"Hao Lai Amount\"}, {\"Group_age\", \"Group Age\"}, {\"PROGRAM_CODE\", \"Program Code\"}, {\"CUST_CARD_DESC\", \"Customer Card\"}, {\"PROFIT_AMT\", \"Profit Amount\"}, {\"PROGRAM_NAME\", \"Program Name\"}}),",
                 "    #\"Replaced Value\" = Table.ReplaceValue(#\"Renamed Columns\",null,\"#Not assign\",Replacer.ReplaceValue,{\"Program Code\"})",
@@ -7153,7 +7238,7 @@
                   "      ,[GOLD_AMT]",
                   "      ,[Invoice_Hour]",
                   "      ,[TYPE_PLANT]",
-                  "      ,[CUST_TYPE_MONTH]",
+                  "      ,[CUST_TYPE_MKT] CUST_TYPE_MONTH",
                   "      ,[CUST_TYPE_YEAR]",
                   "      ,[SALES_PERSON_WID]",
                   "      ,[DOC_CONDITION_NUM]",
@@ -7178,7 +7263,244 @@
                   "      ,GOTIT_WID",
                   "      ,INVOICE_ZTG_WID",
                   "  FROM [PNJ_ROLAP].[dbo].[W_VW_SALES_INVOICE_LINE_F] ",
-                  "  WHERE [INVOICED_ON_DT_WID] >= CAST(Convert(CHAR(8),DATEADD(DAY,- 30,GETDATE()),112) as int)\") ,",
+                  "where [INVOICED_ON_DT_WID] >= CAST(Convert(CHAR(8),DATEADD(DAY,- 10,GETDATE()),112) as int) ",
+                  "  \"),",
+                  "         #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"INVOICE_NUM\", \"Invoice Number\"}, {\"INVOICED_QTY\", \"Qty\"}, {\"INVOICE_Q10_QTY\", \"Q10\"}, {\"NET_AMT\", \"Net Amount\"}, {\"COST_AMT\", \"Cost Amount\"}, {\"DISCOUNT_AMT\", \"Discount Amount\"}, {\"GROSS_WEIGHT\", \"Gross Weight\"}, {\"NET_WEIGHT\", \"Net Weight\"}, {\"CHANNEL_CODE\", \"Channel Code\"}, {\"INVOICE_TYPE\", \"Invoice Type\"}, {\"LABOUR_COST\", \"Labour Cost\"}, {\"TYPE_PLANT\", \"Type Plant\"}, {\"CUST_TYPE_MONTH\", \"Customer Type (Month)\"}, {\"CUST_TYPE_YEAR\", \"Customer Type (Year)\"}, {\"GOLD_AMT\", \"Gold Amount\"}, {\"CUSTOMER_SOLD_TO_WID\", \"Customer WID\"}, {\"HAOLAI_AMT\", \"Hao Lai Amount\"}, {\"Group_age\", \"Group Age\"}, {\"PROGRAM_CODE\", \"Program Code\"}, {\"CUST_CARD_DESC\", \"Customer Card\"}, {\"PROFIT_AMT\", \"Profit Amount\"}, {\"PROGRAM_NAME\", \"Program Name\"}}),",
+                  "    #\"Replaced Value\" = Table.ReplaceValue(#\"Renamed Columns\",null,\"#Not assign\",Replacer.ReplaceValue,{\"Program Code\"})",
+                  "in",
+                  " #\"Replaced Value\"</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Fact - All Sales Invoice Line BF 2022",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"SELECT [INVOICED_ON_DT_WID]",
+                "      ,[INVOICE_NUM]",
+                "      ,[PRODUCT_WID]",
+                "      ,[INVOICED_QTY]",
+                "      ,[NET_AMT]",
+                "      ,[COST_AMT]",
+                "      ,[DISCOUNT_AMT]",
+                "      ,[GROSS_WEIGHT]",
+                "      ,[NET_WEIGHT]",
+                "      ,[CHANNEL_CODE]",
+                "      ,[INVOICE_TYPE]",
+                "      ,[CUSTOMER_SOLD_TO_WID]",
+                "      ,[COMPANY_WID]",
+                "      ,[PLANT_WID]",
+                "      ,[INVOICE_Q10_QTY]",
+                "      ,[LABOUR_COST]",
+                "      ,[GOLD_AMT]",
+                "      ,[Invoice_Hour]",
+                "      ,[TYPE_PLANT]",
+                "      ,[CUST_TYPE_MKT] CUST_TYPE_MONTH",
+                "      ,[CUST_TYPE_YEAR]",
+                "      ,[SALES_PERSON_WID]",
+                "      ,[DOC_CONDITION_NUM]",
+                "      ,[PAYMENT_TERM_WID]",
+                "      ,[Group_age]",
+                "      ,[PRODUCT_INVENTORY_WID]",
+                "      ,[HAOLAI_AMT]",
+                "      ,[DELIVERY_PRIORITY]",
+                "      ,[SHIPPING_CONDITION]",
+                "      ,[PROGRAM_CODE]",
+                "      ,[KOL_AMT]",
+                "      ,[PROGRAM_NAME]",
+                "      ,CUSTOMER_PAYER_WID",
+                "      ,TRAFFIC",
+                "      ,Palexy_AGEID",
+                "      ,ConditionID",
+                "      ,[SLOC_WID]",
+                "      ,[PROFIT_AMT]",
+                "      ,CUST_CARD_DESC",
+                "      ,MKT_CUSTOMER",
+                "      ,LUNAR_DT",
+                "      ,GOTIT_WID",
+                "      ,INVOICE_ZTG_WID",
+                "  FROM [PNJ_ROLAP].[dbo].[W_VW_SALES_INVOICE_LINE_F] ",
+                "where [INVOICED_ON_DT_WID] < 20220101",
+                "  \"),",
+                "         #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"INVOICE_NUM\", \"Invoice Number\"}, {\"INVOICED_QTY\", \"Qty\"}, {\"INVOICE_Q10_QTY\", \"Q10\"}, {\"NET_AMT\", \"Net Amount\"}, {\"COST_AMT\", \"Cost Amount\"}, {\"DISCOUNT_AMT\", \"Discount Amount\"}, {\"GROSS_WEIGHT\", \"Gross Weight\"}, {\"NET_WEIGHT\", \"Net Weight\"}, {\"CHANNEL_CODE\", \"Channel Code\"}, {\"INVOICE_TYPE\", \"Invoice Type\"}, {\"LABOUR_COST\", \"Labour Cost\"}, {\"TYPE_PLANT\", \"Type Plant\"}, {\"CUST_TYPE_MONTH\", \"Customer Type (Month)\"}, {\"CUST_TYPE_YEAR\", \"Customer Type (Year)\"}, {\"GOLD_AMT\", \"Gold Amount\"}, {\"CUSTOMER_SOLD_TO_WID\", \"Customer WID\"}, {\"HAOLAI_AMT\", \"Hao Lai Amount\"}, {\"Group_age\", \"Group Age\"}, {\"PROGRAM_CODE\", \"Program Code\"}, {\"CUST_CARD_DESC\", \"Customer Card\"}, {\"PROFIT_AMT\", \"Profit Amount\"}, {\"PROGRAM_NAME\", \"Program Name\"}}),",
+                "    #\"Replaced Value\" = Table.ReplaceValue(#\"Renamed Columns\",null,\"#Not assign\",Replacer.ReplaceValue,{\"Program Code\"})",
+                "in",
+                " #\"Replaced Value\""
+              ]
+            },
+            "annotations": [
+              {
+                "name": "QueryEditorSerialization",
+                "value": [
+                  "<?xml version=\"1.0\" encoding=\"UTF-16\"?><Gemini xmlns=\"QueryEditorSerialization\"><AnnotationContent><![CDATA[<RSQueryCommandText>let",
+                  "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"SELECT [INVOICED_ON_DT_WID]",
+                  "      ,[INVOICE_NUM]",
+                  "      ,[PRODUCT_WID]",
+                  "      ,[INVOICED_QTY]",
+                  "      ,[NET_AMT]",
+                  "      ,[COST_AMT]",
+                  "      ,[DISCOUNT_AMT]",
+                  "      ,[GROSS_WEIGHT]",
+                  "      ,[NET_WEIGHT]",
+                  "      ,[CHANNEL_CODE]",
+                  "      ,[INVOICE_TYPE]",
+                  "      ,[CUSTOMER_SOLD_TO_WID]",
+                  "      ,[COMPANY_WID]",
+                  "      ,[PLANT_WID]",
+                  "      ,[INVOICE_Q10_QTY]",
+                  "      ,[LABOUR_COST]",
+                  "      ,[GOLD_AMT]",
+                  "      ,[Invoice_Hour]",
+                  "      ,[TYPE_PLANT]",
+                  "      ,[CUST_TYPE_MKT] CUST_TYPE_MONTH",
+                  "      ,[CUST_TYPE_YEAR]",
+                  "      ,[SALES_PERSON_WID]",
+                  "      ,[DOC_CONDITION_NUM]",
+                  "      ,[PAYMENT_TERM_WID]",
+                  "      ,[Group_age]",
+                  "      ,[PRODUCT_INVENTORY_WID]",
+                  "      ,[HAOLAI_AMT]",
+                  "      ,[DELIVERY_PRIORITY]",
+                  "      ,[SHIPPING_CONDITION]",
+                  "      ,[PROGRAM_CODE]",
+                  "      ,[KOL_AMT]",
+                  "      ,[PROGRAM_NAME]",
+                  "      ,CUSTOMER_PAYER_WID",
+                  "      ,TRAFFIC",
+                  "      ,Palexy_AGEID",
+                  "      ,ConditionID",
+                  "      ,[SLOC_WID]",
+                  "      ,[PROFIT_AMT]",
+                  "      ,CUST_CARD_DESC",
+                  "      ,MKT_CUSTOMER",
+                  "      ,LUNAR_DT",
+                  "      ,GOTIT_WID",
+                  "      ,INVOICE_ZTG_WID",
+                  "  FROM [PNJ_ROLAP].[dbo].[W_VW_SALES_INVOICE_LINE_F] ",
+                  "where [INVOICED_ON_DT_WID] < 20220101",
+                  "  \"),",
+                  "         #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"INVOICE_NUM\", \"Invoice Number\"}, {\"INVOICED_QTY\", \"Qty\"}, {\"INVOICE_Q10_QTY\", \"Q10\"}, {\"NET_AMT\", \"Net Amount\"}, {\"COST_AMT\", \"Cost Amount\"}, {\"DISCOUNT_AMT\", \"Discount Amount\"}, {\"GROSS_WEIGHT\", \"Gross Weight\"}, {\"NET_WEIGHT\", \"Net Weight\"}, {\"CHANNEL_CODE\", \"Channel Code\"}, {\"INVOICE_TYPE\", \"Invoice Type\"}, {\"LABOUR_COST\", \"Labour Cost\"}, {\"TYPE_PLANT\", \"Type Plant\"}, {\"CUST_TYPE_MONTH\", \"Customer Type (Month)\"}, {\"CUST_TYPE_YEAR\", \"Customer Type (Year)\"}, {\"GOLD_AMT\", \"Gold Amount\"}, {\"CUSTOMER_SOLD_TO_WID\", \"Customer WID\"}, {\"HAOLAI_AMT\", \"Hao Lai Amount\"}, {\"Group_age\", \"Group Age\"}, {\"PROGRAM_CODE\", \"Program Code\"}, {\"CUST_CARD_DESC\", \"Customer Card\"}, {\"PROFIT_AMT\", \"Profit Amount\"}, {\"PROGRAM_NAME\", \"Program Name\"}}),",
+                  "    #\"Replaced Value\" = Table.ReplaceValue(#\"Renamed Columns\",null,\"#Not assign\",Replacer.ReplaceValue,{\"Program Code\"})",
+                  "in",
+                  " #\"Replaced Value\"</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Fact - All Sales Invoice Line 2022",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"SELECT [INVOICED_ON_DT_WID]",
+                "      ,[INVOICE_NUM]",
+                "      ,[PRODUCT_WID]",
+                "      ,[INVOICED_QTY]",
+                "      ,[NET_AMT]",
+                "      ,[COST_AMT]",
+                "      ,[DISCOUNT_AMT]",
+                "      ,[GROSS_WEIGHT]",
+                "      ,[NET_WEIGHT]",
+                "      ,[CHANNEL_CODE]",
+                "      ,[INVOICE_TYPE]",
+                "      ,[CUSTOMER_SOLD_TO_WID]",
+                "      ,[COMPANY_WID]",
+                "      ,[PLANT_WID]",
+                "      ,[INVOICE_Q10_QTY]",
+                "      ,[LABOUR_COST]",
+                "      ,[GOLD_AMT]",
+                "      ,[Invoice_Hour]",
+                "      ,[TYPE_PLANT]",
+                "      ,[CUST_TYPE_MKT] CUST_TYPE_MONTH",
+                "      ,[CUST_TYPE_YEAR]",
+                "      ,[SALES_PERSON_WID]",
+                "      ,[DOC_CONDITION_NUM]",
+                "      ,[PAYMENT_TERM_WID]",
+                "      ,[Group_age]",
+                "      ,[PRODUCT_INVENTORY_WID]",
+                "      ,[HAOLAI_AMT]",
+                "      ,[DELIVERY_PRIORITY]",
+                "      ,[SHIPPING_CONDITION]",
+                "      ,[PROGRAM_CODE]",
+                "      ,[KOL_AMT]",
+                "      ,[PROGRAM_NAME]",
+                "      ,CUSTOMER_PAYER_WID",
+                "      ,TRAFFIC",
+                "      ,Palexy_AGEID",
+                "      ,ConditionID",
+                "      ,[SLOC_WID]",
+                "      ,[PROFIT_AMT]",
+                "      ,CUST_CARD_DESC",
+                "      ,MKT_CUSTOMER",
+                "      ,LUNAR_DT",
+                "      ,GOTIT_WID",
+                "      ,INVOICE_ZTG_WID",
+                "  FROM [PNJ_ROLAP].[dbo].[W_VW_SALES_INVOICE_LINE_F] ",
+                "where [INVOICED_ON_DT_WID] < CAST(Convert(CHAR(8),DATEADD(DAY,- 10,GETDATE()),112) as int) and [INVOICED_ON_DT_WID] >= 20220101 ",
+                "  \"),",
+                "         #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"INVOICE_NUM\", \"Invoice Number\"}, {\"INVOICED_QTY\", \"Qty\"}, {\"INVOICE_Q10_QTY\", \"Q10\"}, {\"NET_AMT\", \"Net Amount\"}, {\"COST_AMT\", \"Cost Amount\"}, {\"DISCOUNT_AMT\", \"Discount Amount\"}, {\"GROSS_WEIGHT\", \"Gross Weight\"}, {\"NET_WEIGHT\", \"Net Weight\"}, {\"CHANNEL_CODE\", \"Channel Code\"}, {\"INVOICE_TYPE\", \"Invoice Type\"}, {\"LABOUR_COST\", \"Labour Cost\"}, {\"TYPE_PLANT\", \"Type Plant\"}, {\"CUST_TYPE_MONTH\", \"Customer Type (Month)\"}, {\"CUST_TYPE_YEAR\", \"Customer Type (Year)\"}, {\"GOLD_AMT\", \"Gold Amount\"}, {\"CUSTOMER_SOLD_TO_WID\", \"Customer WID\"}, {\"HAOLAI_AMT\", \"Hao Lai Amount\"}, {\"Group_age\", \"Group Age\"}, {\"PROGRAM_CODE\", \"Program Code\"}, {\"CUST_CARD_DESC\", \"Customer Card\"}, {\"PROFIT_AMT\", \"Profit Amount\"}, {\"PROGRAM_NAME\", \"Program Name\"}}),",
+                "    #\"Replaced Value\" = Table.ReplaceValue(#\"Renamed Columns\",null,\"#Not assign\",Replacer.ReplaceValue,{\"Program Code\"})",
+                "in",
+                " #\"Replaced Value\""
+              ]
+            },
+            "annotations": [
+              {
+                "name": "QueryEditorSerialization",
+                "value": [
+                  "<?xml version=\"1.0\" encoding=\"UTF-16\"?><Gemini xmlns=\"QueryEditorSerialization\"><AnnotationContent><![CDATA[<RSQueryCommandText>let",
+                  "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"SELECT [INVOICED_ON_DT_WID]",
+                  "      ,[INVOICE_NUM]",
+                  "      ,[PRODUCT_WID]",
+                  "      ,[INVOICED_QTY]",
+                  "      ,[NET_AMT]",
+                  "      ,[COST_AMT]",
+                  "      ,[DISCOUNT_AMT]",
+                  "      ,[GROSS_WEIGHT]",
+                  "      ,[NET_WEIGHT]",
+                  "      ,[CHANNEL_CODE]",
+                  "      ,[INVOICE_TYPE]",
+                  "      ,[CUSTOMER_SOLD_TO_WID]",
+                  "      ,[COMPANY_WID]",
+                  "      ,[PLANT_WID]",
+                  "      ,[INVOICE_Q10_QTY]",
+                  "      ,[LABOUR_COST]",
+                  "      ,[GOLD_AMT]",
+                  "      ,[Invoice_Hour]",
+                  "      ,[TYPE_PLANT]",
+                  "      ,[CUST_TYPE_MKT] CUST_TYPE_MONTH",
+                  "      ,[CUST_TYPE_YEAR]",
+                  "      ,[SALES_PERSON_WID]",
+                  "      ,[DOC_CONDITION_NUM]",
+                  "      ,[PAYMENT_TERM_WID]",
+                  "      ,[Group_age]",
+                  "      ,[PRODUCT_INVENTORY_WID]",
+                  "      ,[HAOLAI_AMT]",
+                  "      ,[DELIVERY_PRIORITY]",
+                  "      ,[SHIPPING_CONDITION]",
+                  "      ,[PROGRAM_CODE]",
+                  "      ,[KOL_AMT]",
+                  "      ,[PROGRAM_NAME]",
+                  "      ,CUSTOMER_PAYER_WID",
+                  "      ,TRAFFIC",
+                  "      ,Palexy_AGEID",
+                  "      ,ConditionID",
+                  "      ,[SLOC_WID]",
+                  "      ,[PROFIT_AMT]",
+                  "      ,CUST_CARD_DESC",
+                  "      ,MKT_CUSTOMER",
+                  "      ,LUNAR_DT",
+                  "      ,GOTIT_WID",
+                  "      ,INVOICE_ZTG_WID",
+                  "  FROM [PNJ_ROLAP].[dbo].[W_VW_SALES_INVOICE_LINE_F] ",
+                  "where [INVOICED_ON_DT_WID] < CAST(Convert(CHAR(8),DATEADD(DAY,- 10,GETDATE()),112) as int) and [INVOICED_ON_DT_WID] >= 20220101 ",
+                  "  \"),",
                   "         #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"INVOICE_NUM\", \"Invoice Number\"}, {\"INVOICED_QTY\", \"Qty\"}, {\"INVOICE_Q10_QTY\", \"Q10\"}, {\"NET_AMT\", \"Net Amount\"}, {\"COST_AMT\", \"Cost Amount\"}, {\"DISCOUNT_AMT\", \"Discount Amount\"}, {\"GROSS_WEIGHT\", \"Gross Weight\"}, {\"NET_WEIGHT\", \"Net Weight\"}, {\"CHANNEL_CODE\", \"Channel Code\"}, {\"INVOICE_TYPE\", \"Invoice Type\"}, {\"LABOUR_COST\", \"Labour Cost\"}, {\"TYPE_PLANT\", \"Type Plant\"}, {\"CUST_TYPE_MONTH\", \"Customer Type (Month)\"}, {\"CUST_TYPE_YEAR\", \"Customer Type (Year)\"}, {\"GOLD_AMT\", \"Gold Amount\"}, {\"CUSTOMER_SOLD_TO_WID\", \"Customer WID\"}, {\"HAOLAI_AMT\", \"Hao Lai Amount\"}, {\"Group_age\", \"Group Age\"}, {\"PROGRAM_CODE\", \"Program Code\"}, {\"CUST_CARD_DESC\", \"Customer Card\"}, {\"PROFIT_AMT\", \"Profit Amount\"}, {\"PROGRAM_NAME\", \"Program Name\"}}),",
                   "    #\"Replaced Value\" = Table.ReplaceValue(#\"Renamed Columns\",null,\"#Not assign\",Replacer.ReplaceValue,{\"Program Code\"})",
                   "in",
@@ -19773,6 +20095,177 @@
             }
           }
         ]
+      },
+      {
+        "name": "Dim - GL Account VN",
+        "columns": [
+          {
+            "name": "GL Account Code",
+            "dataType": "string",
+            "sourceColumn": "GL Account Code"
+          },
+          {
+            "name": "GL Account Name",
+            "dataType": "string",
+            "sourceColumn": "GL Account Name"
+          },
+          {
+            "name": "Short Name",
+            "dataType": "string",
+            "sourceColumn": "Short Name"
+          },
+          {
+            "name": "Chart Of Account",
+            "dataType": "string",
+            "sourceColumn": "Chart Of Account"
+          },
+          {
+            "name": "Group Account Num",
+            "dataType": "string",
+            "sourceColumn": "Group Account Num"
+          },
+          {
+            "name": "GL Account Group",
+            "dataType": "string",
+            "sourceColumn": "GL Account Group"
+          },
+          {
+            "name": "PL Account Type",
+            "dataType": "string",
+            "sourceColumn": "PL Account Type"
+          },
+          {
+            "name": "ROW_WID",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "ROW_WID"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "dataView": "full",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
+                "SELECT [GL_ACCOUNT_CODE]",
+                "      ,[GL_ACCOUNT_NAME]",
+                "      ,[SHORT_NAME]",
+                "      ,[CHART_OF_ACCOUNTS]",
+                "      ,[GROUP_ACCOUNT_NUM]",
+                "      ,[GL_ACCOUNT_GROUP]",
+                "      ,[PL_ACCOUNT_TYPE]",
+                "      ,[ROW_WID]",
+                "  FROM [PNJ_ROLAP].[dbo].[W_VW_GL_ACCOUNT_D]",
+                "    WHERE [CHART_OF_ACCOUNTS] = 'VN00'\"),",
+                "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"GL_ACCOUNT_CODE\", \"GL Account Code\"}, {\"GL_ACCOUNT_NAME\", \"GL Account Name\"}, {\"SHORT_NAME\", \"Short Name\"}, {\"CHART_OF_ACCOUNTS\", \"Chart Of Account\"}, {\"GROUP_ACCOUNT_NUM\", \"Group Account Num\"}, {\"GL_ACCOUNT_GROUP\", \"GL Account Group\"}, {\"PL_ACCOUNT_TYPE\", \"PL Account Type\"}})",
+                "in",
+                "    #\"Renamed Columns\""
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "Dim - GL Account PL",
+        "columns": [
+          {
+            "name": "GL_ACCOUNT_WID",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "GL_ACCOUNT_WID"
+          },
+          {
+            "name": "SET_CLASS",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "SET_CLASS"
+          },
+          {
+            "name": "VALOPTION",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "VALOPTION"
+          },
+          {
+            "name": "ACCT_FROM",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "ACCT_FROM"
+          },
+          {
+            "name": "ACCT_TO",
+            "dataType": "string",
+            "isHidden": true,
+            "sourceColumn": "ACCT_TO"
+          },
+          {
+            "name": "GL LV1 Code",
+            "dataType": "string",
+            "sourceColumn": "GL LV1 Code"
+          },
+          {
+            "name": "GL LV1 Name",
+            "dataType": "string",
+            "sourceColumn": "GL LV1 Name"
+          },
+          {
+            "name": "GL LV2 Code",
+            "dataType": "string",
+            "sourceColumn": "GL LV2 Code"
+          },
+          {
+            "name": "GL LV2 Name",
+            "dataType": "string",
+            "sourceColumn": "GL LV2 Name"
+          },
+          {
+            "name": "GL LV3 Code",
+            "dataType": "string",
+            "sourceColumn": "GL LV3 Code"
+          },
+          {
+            "name": "GL LV3 Name",
+            "dataType": "string",
+            "sourceColumn": "GL LV3 Name"
+          },
+          {
+            "name": "GL Account Code",
+            "dataType": "string",
+            "sourceColumn": "GL Account Code"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "dataView": "full",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
+                "    SELECT [GL_LV1_CODE]",
+                "      ,[GL_LV1_NAME]",
+                "      ,[GL_LV2_CODE]",
+                "      ,[GL_LV2_NAME]",
+                "      ,[GL_LV3_CODE]",
+                "      ,[GL_LV3_NAME]",
+                "      ,[GL_ACCOUNT_CODE]",
+                "      ,[GL_ACCOUNT_WID]",
+                "      ,[SET_CLASS]",
+                "      ,[VALOPTION]",
+                "      ,[ACCT_FROM]",
+                "      ,[ACCT_TO]",
+                "  FROM [PNJ_ROLAP].[dbo].[W_VW_GL_ACCOUNT_PL_DH]\"),",
+                "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"GL_LV1_CODE\", \"GL LV1 Code\"}, {\"GL_LV1_NAME\", \"GL LV1 Name\"}, {\"GL_LV2_CODE\", \"GL LV2 Code\"}, {\"GL_LV2_NAME\", \"GL LV2 Name\"}, {\"GL_LV3_CODE\", \"GL LV3 Code\"}, {\"GL_LV3_NAME\", \"GL LV3 Name\"}, {\"GL_ACCOUNT_CODE\", \"GL Account Code\"}, {\"SET_CLASS\", \"SET_CLASS\"}})",
+                "in",
+                "    #\"Renamed Columns\""
+              ]
+            }
+          }
+        ]
       }
     ],
     "relationships": [
@@ -20945,13 +21438,6 @@
         "toColumn": "ROW_WID"
       },
       {
-        "name": "7840beb7-ccd9-40e4-97f0-5c462d978437",
-        "fromTable": "Fact - Finance",
-        "fromColumn": "GL_ACCOUNT_WID",
-        "toTable": "Dim - GL Account COPA",
-        "toColumn": "GL_ACCOUNT_WID"
-      },
-      {
         "name": "e9ea42ec-f8a7-4ad3-9c45-a72faba7ad72",
         "fromTable": "Fact - Finance",
         "fromColumn": "PLANT_WID",
@@ -20984,6 +21470,27 @@
         "fromTable": "Fact - Finance",
         "fromColumn": "PAYMENT_TERM_WID",
         "toTable": "Dim - Payment Term",
+        "toColumn": "ROW_WID"
+      },
+      {
+        "name": "f27a0d39-dc36-4d9d-b2cd-f281e5dc0e5f",
+        "fromTable": "Fact - Finance",
+        "fromColumn": "GL_ACCOUNT_WID",
+        "toTable": "Dim - GL Account COPA",
+        "toColumn": "GL_ACCOUNT_WID"
+      },
+      {
+        "name": "75c934c8-a4eb-472b-bfa1-0c7258839a2b",
+        "fromTable": "Fact - Finance",
+        "fromColumn": "GL_ACCOUNT_WID",
+        "toTable": "Dim - GL Account PL",
+        "toColumn": "GL_ACCOUNT_WID"
+      },
+      {
+        "name": "e9699bbb-079c-4ec4-bf50-533ef9177d72",
+        "fromTable": "Fact - Finance",
+        "fromColumn": "GL_ACCOUNT_WID",
+        "toTable": "Dim - GL Account VN",
         "toColumn": "ROW_WID"
       }
     ],
