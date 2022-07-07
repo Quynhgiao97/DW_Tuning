@@ -11,7 +11,7 @@
         "connectionDetails": {
           "protocol": "tds",
           "address": {
-            "server": "192.168.3.31",
+            "server": "192.168.2.19",
             "database": "PNJ_ROLAP"
           },
           "authentication": null,
@@ -22,8 +22,6 @@
         },
         "credential": {
           "AuthenticationKind": "UsernamePassword",
-          "kind": "SQL",
-          "path": "192.168.3.31;PNJ_ROLAP",
           "Username": "biread",
           "EncryptConnection": false
         }
@@ -35,7 +33,7 @@
         "connectionDetails": {
           "protocol": "tds",
           "address": {
-            "server": "192.168.3.31",
+            "server": "192.168.2.19",
             "database": "DW_RAW"
           },
           "authentication": null,
@@ -46,8 +44,6 @@
         },
         "credential": {
           "AuthenticationKind": "UsernamePassword",
-          "kind": "SQL",
-          "path": "192.168.3.31;DW_RAW",
           "Username": "biread",
           "EncryptConnection": false
         }
@@ -4509,7 +4505,7 @@
           },
           {
             "name": "Time",
-            "dataType": "string",
+            "dataType": "dateTime",
             "sourceColumn": "Time",
             "formatString": "HH:mm",
             "annotations": [
@@ -7709,10 +7705,7 @@
           },
           {
             "name": "% Net_Amt_FC",
-            "expression": [
-              " DIVIDE",
-              "([. All Net Amt] , if(ISBLANK([. Net_Amt_FC] ) = TRUE, 0, [. Net_Amt_FC]),0)-1"
-            ],
+            "expression": " if(ISBLANK([. Net_Amt_FC] ) = TRUE,BLANK(), DIVIDE([. All Net Amt], [. Net_Amt_FC])-1)",
             "formatString": "0.00%;-0.00%;0.00%"
           },
           {
@@ -7731,7 +7724,7 @@
           },
           {
             "name": "% Net_Amt_LY",
-            "expression": "if(ISBLANK([. All Net Amt (LY)]), 1, ([. All Net Amt]/[. All Net Amt (LY)]-1 ))",
+            "expression": "if(ISBLANK([. All Net Amt (LY)]), BLANK(), ([. All Net Amt]/[. All Net Amt (LY)]-1 ))",
             "formatString": "0.00%;-0.00%;0.00%"
           },
           {
@@ -7741,12 +7734,12 @@
           {
             "name": "AVG Amt/Trx",
             "expression": " [. All Net Amt] / [# All Cust Transaction (PC)]",
-            "formatString": "0.00"
+            "formatString": "#,0.00"
           },
           {
             "name": "AVG Amt/Trx (LM)",
             "expression": " CALCULATE([. All Net Amt (LM)]/[# All Cust Transaction (PC) (LM)])",
-            "formatString": "0.00"
+            "formatString": "#,0.00"
           },
           {
             "name": "AVG Qty/Trx (LM)",
