@@ -22,7 +22,9 @@
         },
         "credential": {
           "AuthenticationKind": "UsernamePassword",
-          "Username": "biread",
+          "kind": "SQL",
+          "path": "192.168.2.19;PNJ_ROLAP",
+          "Username": "Biread",
           "EncryptConnection": false
         }
       },
@@ -44,6 +46,8 @@
         },
         "credential": {
           "AuthenticationKind": "UsernamePassword",
+          "kind": "SQL",
+          "path": "192.168.2.19;DW_RAW",
           "Username": "biread",
           "EncryptConnection": false
         }
@@ -160,9 +164,10 @@
           {
             "type": "calculated",
             "name": "VL_Flag",
-            "dataType": "string",
+            "dataType": "int64",
             "isDataTypeInferred": true,
-            "expression": " if((left('Dim - Customer'[Customer Code], 3) =\"VL_\")||'Dim - Customer'[Customer Code] in {\"KTG\",\"0000\", \"000\"},\"Y\",\"N\")"
+            "expression": " if((left('Dim - Customer'[Customer Code], 3) =\"VL_\")||'Dim - Customer'[Customer Code] in {\"KTG\",\"0000\", \"000\"},1,0)",
+            "summarizeBy": "none"
           },
           {
             "name": "Customer Name",
@@ -7149,6 +7154,11 @@
             "name": "Customer Card",
             "dataType": "string",
             "sourceColumn": "Customer Card"
+          },
+          {
+            "name": "SYS_CUST_PAR_WID",
+            "dataType": "int64",
+            "sourceColumn": "SYS_CUST_PAR_WID"
           }
         ],
         "partitions": [
@@ -7201,6 +7211,7 @@
                 "      ,LUNAR_DT",
                 "      ,GOTIT_WID",
                 "      ,INVOICE_ZTG_WID",
+                "      ,SYS_CUST_PAR_WID",
                 "  FROM [PNJ_ROLAP].[dbo].[W_VW_SALES_INVOICE_LINE_F] ",
                 "where [INVOICED_ON_DT_WID] >= CAST(Convert(CHAR(8),DATEADD(DAY,- 10,GETDATE()),112) as int) ",
                 "  \"),",
@@ -7258,244 +7269,9 @@
                   "      ,LUNAR_DT",
                   "      ,GOTIT_WID",
                   "      ,INVOICE_ZTG_WID",
+                  "      , SYS_CUST_PAR_WID",
                   "  FROM [PNJ_ROLAP].[dbo].[W_VW_SALES_INVOICE_LINE_F] ",
                   "where [INVOICED_ON_DT_WID] >= CAST(Convert(CHAR(8),DATEADD(DAY,- 10,GETDATE()),112) as int) ",
-                  "  \"),",
-                  "         #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"INVOICE_NUM\", \"Invoice Number\"}, {\"INVOICED_QTY\", \"Qty\"}, {\"INVOICE_Q10_QTY\", \"Q10\"}, {\"NET_AMT\", \"Net Amount\"}, {\"COST_AMT\", \"Cost Amount\"}, {\"DISCOUNT_AMT\", \"Discount Amount\"}, {\"GROSS_WEIGHT\", \"Gross Weight\"}, {\"NET_WEIGHT\", \"Net Weight\"}, {\"CHANNEL_CODE\", \"Channel Code\"}, {\"INVOICE_TYPE\", \"Invoice Type\"}, {\"LABOUR_COST\", \"Labour Cost\"}, {\"TYPE_PLANT\", \"Type Plant\"}, {\"CUST_TYPE_MONTH\", \"Customer Type (Month)\"}, {\"CUST_TYPE_YEAR\", \"Customer Type (Year)\"}, {\"GOLD_AMT\", \"Gold Amount\"}, {\"CUSTOMER_SOLD_TO_WID\", \"Customer WID\"}, {\"HAOLAI_AMT\", \"Hao Lai Amount\"}, {\"Group_age\", \"Group Age\"}, {\"PROGRAM_CODE\", \"Program Code\"}, {\"CUST_CARD_DESC\", \"Customer Card\"}, {\"PROFIT_AMT\", \"Profit Amount\"}, {\"PROGRAM_NAME\", \"Program Name\"}}),",
-                  "    #\"Replaced Value\" = Table.ReplaceValue(#\"Renamed Columns\",null,\"#Not assign\",Replacer.ReplaceValue,{\"Program Code\"})",
-                  "in",
-                  " #\"Replaced Value\"</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
-                ]
-              }
-            ]
-          },
-          {
-            "name": "Fact - All Sales Invoice Line BF 2022",
-            "mode": "import",
-            "source": {
-              "type": "m",
-              "expression": [
-                "let",
-                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"SELECT [INVOICED_ON_DT_WID]",
-                "      ,[INVOICE_NUM]",
-                "      ,[PRODUCT_WID]",
-                "      ,[INVOICED_QTY]",
-                "      ,[NET_AMT]",
-                "      ,[COST_AMT]",
-                "      ,[DISCOUNT_AMT]",
-                "      ,[GROSS_WEIGHT]",
-                "      ,[NET_WEIGHT]",
-                "      ,[CHANNEL_CODE]",
-                "      ,[INVOICE_TYPE]",
-                "      ,[CUSTOMER_SOLD_TO_WID]",
-                "      ,[COMPANY_WID]",
-                "      ,[PLANT_WID]",
-                "      ,[INVOICE_Q10_QTY]",
-                "      ,[LABOUR_COST]",
-                "      ,[GOLD_AMT]",
-                "      ,[Invoice_Hour]",
-                "      ,[TYPE_PLANT]",
-                "      ,[CUST_TYPE_MKT] CUST_TYPE_MONTH",
-                "      ,[CUST_TYPE_YEAR]",
-                "      ,[SALES_PERSON_WID]",
-                "      ,[DOC_CONDITION_NUM]",
-                "      ,[PAYMENT_TERM_WID]",
-                "      ,[Group_age]",
-                "      ,[PRODUCT_INVENTORY_WID]",
-                "      ,[HAOLAI_AMT]",
-                "      ,[DELIVERY_PRIORITY]",
-                "      ,[SHIPPING_CONDITION]",
-                "      ,[PROGRAM_CODE]",
-                "      ,[KOL_AMT]",
-                "      ,[PROGRAM_NAME]",
-                "      ,CUSTOMER_PAYER_WID",
-                "      ,TRAFFIC",
-                "      ,Palexy_AGEID",
-                "      ,ConditionID",
-                "      ,[SLOC_WID]",
-                "      ,[PROFIT_AMT]",
-                "      ,CUST_CARD_DESC",
-                "      ,MKT_CUSTOMER",
-                "      ,LUNAR_DT",
-                "      ,GOTIT_WID",
-                "      ,INVOICE_ZTG_WID",
-                "  FROM [PNJ_ROLAP].[dbo].[W_VW_SALES_INVOICE_LINE_F] ",
-                "where [INVOICED_ON_DT_WID] < 20220101",
-                "  \"),",
-                "         #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"INVOICE_NUM\", \"Invoice Number\"}, {\"INVOICED_QTY\", \"Qty\"}, {\"INVOICE_Q10_QTY\", \"Q10\"}, {\"NET_AMT\", \"Net Amount\"}, {\"COST_AMT\", \"Cost Amount\"}, {\"DISCOUNT_AMT\", \"Discount Amount\"}, {\"GROSS_WEIGHT\", \"Gross Weight\"}, {\"NET_WEIGHT\", \"Net Weight\"}, {\"CHANNEL_CODE\", \"Channel Code\"}, {\"INVOICE_TYPE\", \"Invoice Type\"}, {\"LABOUR_COST\", \"Labour Cost\"}, {\"TYPE_PLANT\", \"Type Plant\"}, {\"CUST_TYPE_MONTH\", \"Customer Type (Month)\"}, {\"CUST_TYPE_YEAR\", \"Customer Type (Year)\"}, {\"GOLD_AMT\", \"Gold Amount\"}, {\"CUSTOMER_SOLD_TO_WID\", \"Customer WID\"}, {\"HAOLAI_AMT\", \"Hao Lai Amount\"}, {\"Group_age\", \"Group Age\"}, {\"PROGRAM_CODE\", \"Program Code\"}, {\"CUST_CARD_DESC\", \"Customer Card\"}, {\"PROFIT_AMT\", \"Profit Amount\"}, {\"PROGRAM_NAME\", \"Program Name\"}}),",
-                "    #\"Replaced Value\" = Table.ReplaceValue(#\"Renamed Columns\",null,\"#Not assign\",Replacer.ReplaceValue,{\"Program Code\"})",
-                "in",
-                " #\"Replaced Value\""
-              ]
-            },
-            "annotations": [
-              {
-                "name": "QueryEditorSerialization",
-                "value": [
-                  "<?xml version=\"1.0\" encoding=\"UTF-16\"?><Gemini xmlns=\"QueryEditorSerialization\"><AnnotationContent><![CDATA[<RSQueryCommandText>let",
-                  "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"SELECT [INVOICED_ON_DT_WID]",
-                  "      ,[INVOICE_NUM]",
-                  "      ,[PRODUCT_WID]",
-                  "      ,[INVOICED_QTY]",
-                  "      ,[NET_AMT]",
-                  "      ,[COST_AMT]",
-                  "      ,[DISCOUNT_AMT]",
-                  "      ,[GROSS_WEIGHT]",
-                  "      ,[NET_WEIGHT]",
-                  "      ,[CHANNEL_CODE]",
-                  "      ,[INVOICE_TYPE]",
-                  "      ,[CUSTOMER_SOLD_TO_WID]",
-                  "      ,[COMPANY_WID]",
-                  "      ,[PLANT_WID]",
-                  "      ,[INVOICE_Q10_QTY]",
-                  "      ,[LABOUR_COST]",
-                  "      ,[GOLD_AMT]",
-                  "      ,[Invoice_Hour]",
-                  "      ,[TYPE_PLANT]",
-                  "      ,[CUST_TYPE_MKT] CUST_TYPE_MONTH",
-                  "      ,[CUST_TYPE_YEAR]",
-                  "      ,[SALES_PERSON_WID]",
-                  "      ,[DOC_CONDITION_NUM]",
-                  "      ,[PAYMENT_TERM_WID]",
-                  "      ,[Group_age]",
-                  "      ,[PRODUCT_INVENTORY_WID]",
-                  "      ,[HAOLAI_AMT]",
-                  "      ,[DELIVERY_PRIORITY]",
-                  "      ,[SHIPPING_CONDITION]",
-                  "      ,[PROGRAM_CODE]",
-                  "      ,[KOL_AMT]",
-                  "      ,[PROGRAM_NAME]",
-                  "      ,CUSTOMER_PAYER_WID",
-                  "      ,TRAFFIC",
-                  "      ,Palexy_AGEID",
-                  "      ,ConditionID",
-                  "      ,[SLOC_WID]",
-                  "      ,[PROFIT_AMT]",
-                  "      ,CUST_CARD_DESC",
-                  "      ,MKT_CUSTOMER",
-                  "      ,LUNAR_DT",
-                  "      ,GOTIT_WID",
-                  "      ,INVOICE_ZTG_WID",
-                  "  FROM [PNJ_ROLAP].[dbo].[W_VW_SALES_INVOICE_LINE_F] ",
-                  "where [INVOICED_ON_DT_WID] < 20220101",
-                  "  \"),",
-                  "         #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"INVOICE_NUM\", \"Invoice Number\"}, {\"INVOICED_QTY\", \"Qty\"}, {\"INVOICE_Q10_QTY\", \"Q10\"}, {\"NET_AMT\", \"Net Amount\"}, {\"COST_AMT\", \"Cost Amount\"}, {\"DISCOUNT_AMT\", \"Discount Amount\"}, {\"GROSS_WEIGHT\", \"Gross Weight\"}, {\"NET_WEIGHT\", \"Net Weight\"}, {\"CHANNEL_CODE\", \"Channel Code\"}, {\"INVOICE_TYPE\", \"Invoice Type\"}, {\"LABOUR_COST\", \"Labour Cost\"}, {\"TYPE_PLANT\", \"Type Plant\"}, {\"CUST_TYPE_MONTH\", \"Customer Type (Month)\"}, {\"CUST_TYPE_YEAR\", \"Customer Type (Year)\"}, {\"GOLD_AMT\", \"Gold Amount\"}, {\"CUSTOMER_SOLD_TO_WID\", \"Customer WID\"}, {\"HAOLAI_AMT\", \"Hao Lai Amount\"}, {\"Group_age\", \"Group Age\"}, {\"PROGRAM_CODE\", \"Program Code\"}, {\"CUST_CARD_DESC\", \"Customer Card\"}, {\"PROFIT_AMT\", \"Profit Amount\"}, {\"PROGRAM_NAME\", \"Program Name\"}}),",
-                  "    #\"Replaced Value\" = Table.ReplaceValue(#\"Renamed Columns\",null,\"#Not assign\",Replacer.ReplaceValue,{\"Program Code\"})",
-                  "in",
-                  " #\"Replaced Value\"</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
-                ]
-              }
-            ]
-          },
-          {
-            "name": "Fact - All Sales Invoice Line 2022",
-            "mode": "import",
-            "source": {
-              "type": "m",
-              "expression": [
-                "let",
-                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"SELECT [INVOICED_ON_DT_WID]",
-                "      ,[INVOICE_NUM]",
-                "      ,[PRODUCT_WID]",
-                "      ,[INVOICED_QTY]",
-                "      ,[NET_AMT]",
-                "      ,[COST_AMT]",
-                "      ,[DISCOUNT_AMT]",
-                "      ,[GROSS_WEIGHT]",
-                "      ,[NET_WEIGHT]",
-                "      ,[CHANNEL_CODE]",
-                "      ,[INVOICE_TYPE]",
-                "      ,[CUSTOMER_SOLD_TO_WID]",
-                "      ,[COMPANY_WID]",
-                "      ,[PLANT_WID]",
-                "      ,[INVOICE_Q10_QTY]",
-                "      ,[LABOUR_COST]",
-                "      ,[GOLD_AMT]",
-                "      ,[Invoice_Hour]",
-                "      ,[TYPE_PLANT]",
-                "      ,[CUST_TYPE_MKT] CUST_TYPE_MONTH",
-                "      ,[CUST_TYPE_YEAR]",
-                "      ,[SALES_PERSON_WID]",
-                "      ,[DOC_CONDITION_NUM]",
-                "      ,[PAYMENT_TERM_WID]",
-                "      ,[Group_age]",
-                "      ,[PRODUCT_INVENTORY_WID]",
-                "      ,[HAOLAI_AMT]",
-                "      ,[DELIVERY_PRIORITY]",
-                "      ,[SHIPPING_CONDITION]",
-                "      ,[PROGRAM_CODE]",
-                "      ,[KOL_AMT]",
-                "      ,[PROGRAM_NAME]",
-                "      ,CUSTOMER_PAYER_WID",
-                "      ,TRAFFIC",
-                "      ,Palexy_AGEID",
-                "      ,ConditionID",
-                "      ,[SLOC_WID]",
-                "      ,[PROFIT_AMT]",
-                "      ,CUST_CARD_DESC",
-                "      ,MKT_CUSTOMER",
-                "      ,LUNAR_DT",
-                "      ,GOTIT_WID",
-                "      ,INVOICE_ZTG_WID",
-                "  FROM [PNJ_ROLAP].[dbo].[W_VW_SALES_INVOICE_LINE_F] ",
-                "where [INVOICED_ON_DT_WID] < CAST(Convert(CHAR(8),DATEADD(DAY,- 10,GETDATE()),112) as int) and [INVOICED_ON_DT_WID] >= 20220101 ",
-                "  \"),",
-                "         #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"INVOICE_NUM\", \"Invoice Number\"}, {\"INVOICED_QTY\", \"Qty\"}, {\"INVOICE_Q10_QTY\", \"Q10\"}, {\"NET_AMT\", \"Net Amount\"}, {\"COST_AMT\", \"Cost Amount\"}, {\"DISCOUNT_AMT\", \"Discount Amount\"}, {\"GROSS_WEIGHT\", \"Gross Weight\"}, {\"NET_WEIGHT\", \"Net Weight\"}, {\"CHANNEL_CODE\", \"Channel Code\"}, {\"INVOICE_TYPE\", \"Invoice Type\"}, {\"LABOUR_COST\", \"Labour Cost\"}, {\"TYPE_PLANT\", \"Type Plant\"}, {\"CUST_TYPE_MONTH\", \"Customer Type (Month)\"}, {\"CUST_TYPE_YEAR\", \"Customer Type (Year)\"}, {\"GOLD_AMT\", \"Gold Amount\"}, {\"CUSTOMER_SOLD_TO_WID\", \"Customer WID\"}, {\"HAOLAI_AMT\", \"Hao Lai Amount\"}, {\"Group_age\", \"Group Age\"}, {\"PROGRAM_CODE\", \"Program Code\"}, {\"CUST_CARD_DESC\", \"Customer Card\"}, {\"PROFIT_AMT\", \"Profit Amount\"}, {\"PROGRAM_NAME\", \"Program Name\"}}),",
-                "    #\"Replaced Value\" = Table.ReplaceValue(#\"Renamed Columns\",null,\"#Not assign\",Replacer.ReplaceValue,{\"Program Code\"})",
-                "in",
-                " #\"Replaced Value\""
-              ]
-            },
-            "annotations": [
-              {
-                "name": "QueryEditorSerialization",
-                "value": [
-                  "<?xml version=\"1.0\" encoding=\"UTF-16\"?><Gemini xmlns=\"QueryEditorSerialization\"><AnnotationContent><![CDATA[<RSQueryCommandText>let",
-                  "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"SELECT [INVOICED_ON_DT_WID]",
-                  "      ,[INVOICE_NUM]",
-                  "      ,[PRODUCT_WID]",
-                  "      ,[INVOICED_QTY]",
-                  "      ,[NET_AMT]",
-                  "      ,[COST_AMT]",
-                  "      ,[DISCOUNT_AMT]",
-                  "      ,[GROSS_WEIGHT]",
-                  "      ,[NET_WEIGHT]",
-                  "      ,[CHANNEL_CODE]",
-                  "      ,[INVOICE_TYPE]",
-                  "      ,[CUSTOMER_SOLD_TO_WID]",
-                  "      ,[COMPANY_WID]",
-                  "      ,[PLANT_WID]",
-                  "      ,[INVOICE_Q10_QTY]",
-                  "      ,[LABOUR_COST]",
-                  "      ,[GOLD_AMT]",
-                  "      ,[Invoice_Hour]",
-                  "      ,[TYPE_PLANT]",
-                  "      ,[CUST_TYPE_MKT] CUST_TYPE_MONTH",
-                  "      ,[CUST_TYPE_YEAR]",
-                  "      ,[SALES_PERSON_WID]",
-                  "      ,[DOC_CONDITION_NUM]",
-                  "      ,[PAYMENT_TERM_WID]",
-                  "      ,[Group_age]",
-                  "      ,[PRODUCT_INVENTORY_WID]",
-                  "      ,[HAOLAI_AMT]",
-                  "      ,[DELIVERY_PRIORITY]",
-                  "      ,[SHIPPING_CONDITION]",
-                  "      ,[PROGRAM_CODE]",
-                  "      ,[KOL_AMT]",
-                  "      ,[PROGRAM_NAME]",
-                  "      ,CUSTOMER_PAYER_WID",
-                  "      ,TRAFFIC",
-                  "      ,Palexy_AGEID",
-                  "      ,ConditionID",
-                  "      ,[SLOC_WID]",
-                  "      ,[PROFIT_AMT]",
-                  "      ,CUST_CARD_DESC",
-                  "      ,MKT_CUSTOMER",
-                  "      ,LUNAR_DT",
-                  "      ,GOTIT_WID",
-                  "      ,INVOICE_ZTG_WID",
-                  "  FROM [PNJ_ROLAP].[dbo].[W_VW_SALES_INVOICE_LINE_F] ",
-                  "where [INVOICED_ON_DT_WID] < CAST(Convert(CHAR(8),DATEADD(DAY,- 10,GETDATE()),112) as int) and [INVOICED_ON_DT_WID] >= 20220101 ",
                   "  \"),",
                   "         #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"INVOICE_NUM\", \"Invoice Number\"}, {\"INVOICED_QTY\", \"Qty\"}, {\"INVOICE_Q10_QTY\", \"Q10\"}, {\"NET_AMT\", \"Net Amount\"}, {\"COST_AMT\", \"Cost Amount\"}, {\"DISCOUNT_AMT\", \"Discount Amount\"}, {\"GROSS_WEIGHT\", \"Gross Weight\"}, {\"NET_WEIGHT\", \"Net Weight\"}, {\"CHANNEL_CODE\", \"Channel Code\"}, {\"INVOICE_TYPE\", \"Invoice Type\"}, {\"LABOUR_COST\", \"Labour Cost\"}, {\"TYPE_PLANT\", \"Type Plant\"}, {\"CUST_TYPE_MONTH\", \"Customer Type (Month)\"}, {\"CUST_TYPE_YEAR\", \"Customer Type (Year)\"}, {\"GOLD_AMT\", \"Gold Amount\"}, {\"CUSTOMER_SOLD_TO_WID\", \"Customer WID\"}, {\"HAOLAI_AMT\", \"Hao Lai Amount\"}, {\"Group_age\", \"Group Age\"}, {\"PROGRAM_CODE\", \"Program Code\"}, {\"CUST_CARD_DESC\", \"Customer Card\"}, {\"PROFIT_AMT\", \"Profit Amount\"}, {\"PROGRAM_NAME\", \"Program Name\"}}),",
                   "    #\"Replaced Value\" = Table.ReplaceValue(#\"Renamed Columns\",null,\"#Not assign\",Replacer.ReplaceValue,{\"Program Code\"})",
@@ -7524,7 +7300,7 @@
           },
           {
             "name": "# All Cust Transaction (PC)",
-            "expression": " COUNTROWS(GROUPBY('Fact - ALL Sales Invoice Line', 'Fact - All Sales Invoice Line'[PLANT_WID], 'Fact - All Sales Invoice Line'[Customer WID], 'Fact - All Sales Invoice Line'[INVOICED_ON_DT_WID]))",
+            "expression": " COUNTROWS(GROUPBY('Fact - ALL Sales Invoice Line', 'Fact - All Sales Invoice Line'[PLANT_WID], 'Fact - All Sales Invoice Line'[SYS_CUST_PAR_WID],'Fact - All Sales Invoice Line'[INVOICED_ON_DT_WID]))",
             "formatString": "#,0"
           },
           {
@@ -8079,10 +7855,11 @@
               "type": "m",
               "expression": [
                 "let",
-                "    Source = #\"SQL/192 168 3 31;DW_RAW\",",
-                "    dbo_PA_AGE_RANGE = Source{[Schema=\"dbo\",Item=\"PA_AGE_RANGE\"]}[Data],",
-                "    #\"Removed Columns\" = Table.RemoveColumns(dbo_PA_AGE_RANGE,{\"CREATION_DATE\", \"FILE_NAME\"}),",
-                "    #\"Renamed Columns\" = Table.RenameColumns(#\"Removed Columns\",{{\"AGE_RANGE_ID\", \"Palexy AGEID\"}, {\"AGE_RANGE\", \"Palexy Age\"}})",
+                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
+                "    SELECT [AGE_RANGE_ID]",
+                "      ,[AGE_RANGE]",
+                "  FROM [DW_RAW].[dbo].[PA_AGE_RANGE]\"),",
+                "      #\"Renamed Columns\" = Table.RenameColumns(Source ,{{\"AGE_RANGE_ID\", \"Palexy AGEID\"}, {\"AGE_RANGE\", \"Palexy Age\"}})",
                 "in",
                 "    #\"Renamed Columns\""
               ]
@@ -8189,9 +7966,10 @@
                 "      ,[RECORDING_TIME]",
                 "      ,[Layer]",
                 "  FROM [DW_RAW].[dbo].[W_PA_ICA_BASELINE_F_BK1] with (nolock) where (action_type <> 'do_transaction' or action_type is null) and DATE_WID >=20200101 \"",
-                "   )",
+                "   ),",
+                "    #\"Changed Type\" = Table.TransformColumnTypes(Source,{{\"AGE_RANGE\", Int64.Type}})",
                 "in",
-                "   Source"
+                "   #\"Changed Type\""
               ]
             },
             "annotations": [
@@ -8217,71 +7995,6 @@
                 ]
               }
             ]
-          }
-        ],
-        "measures": [
-          {
-            "name": "# Visitors",
-            "expression": [
-              "",
-              "\tVAR CK_SDate = CALCULATE(VALUES('Dim - Program'[EFFECTIVE_FROM_DT]),",
-              "\t\tFilter('Dim - Program', 'Dim - Program'[PROGRAM_CATEGORY] = SELECTEDVALUE('Dim - Program'[PROGRAM_CATEGORY])",
-              "\t\t\t&& 'Dim - Program'[MKT.Year] = SELECTEDVALUE('Dim - Program'[MKT.Year])))",
-              "\t\t\t",
-              "\tVAR CK_EDate = CALCULATE(VALUES('Dim - Program'[EFFECTIVE_TO_DT]),",
-              "\t\tFilter('Dim - Program', 'Dim - Program'[PROGRAM_CATEGORY] = SELECTEDVALUE('Dim - Program'[PROGRAM_CATEGORY])",
-              "\t\t\t&& 'Dim - Program'[MKT.Year] = SELECTEDVALUE('Dim - Program'[MKT.Year])))",
-              "RETURN CALCULATE([# Ttl Store Visitors], ",
-              "\t\tALLEXCEPT('Fact - Sales Invoice Line', 'Dim - Plant'[REGION], 'Dim - Plant'[TIER], 'Dim - Plant'[PLANT KIND], 'Dim - Product'[RPT_Product Group 4 Name], 'Dim - Product'[RPT_Product Group 2 Name], 'Dim - Product'[RPT - Product Group 7 Name], 'Dim - Product'[Co-Operate Brand], 'Dim - Plant'[Plant Code], 'Dim - Plant'[PLANT NAME], 'Dim - Plant'[Sales District Name]),",
-              "\t\tFILTER('Dim - Time', 'Dim - time'[row_wid] >= VALUE(CK_SDate) &&",
-              "\t\t'Dim - time'[row_wid]  <= VALUE(CK_EDate)))"
-            ],
-            "formatString": "#,0"
-          },
-          {
-            "name": "# Ttl Store Visitors",
-            "expression": [
-              "",
-              "CALCULATE(DISTINCTCOUNT([PERSON_WID]))"
-            ],
-            "formatString": "#,0"
-          },
-          {
-            "name": "% CR",
-            "expression": [
-              " CALCULATE( DIVIDE([# Customer],[# visitors],0),",
-              "\tCROSSFILTER('Dim - Plant'[ROW_WID], 'Fact - Camera InStore'[Plant_wid],Both),",
-              "\t'Dim - Plant'[PALEXY ID]<> blank())"
-            ],
-            "formatString": "0.00%;-0.00%;0.00%"
-          },
-          {
-            "name": "# Visitor (CK)",
-            "expression": [
-              " ",
-              "    VAR CK_SDate = ",
-              "\t\tCALCULATE(VALUES('Dim - Program'[CK_DL_Sdate]),",
-              "\t\tFilter('Dim - Program', 'Dim - Program'[PROGRAM_CATEGORY] = SELECTEDVALUE('Dim - Program'[PROGRAM_CATEGORY])",
-              "\t\t\t&& 'Dim - Program'[MKT.Year] = SELECTEDVALUE('Dim - Program'[MKT.Year])))",
-              "\t\t\t",
-              "\tVAR CK_EDate = FORMAT(DATEADD(LASTDATE('Fact - Sales Invoice Line'[Invoice Date]),-1, YEAR), \"yyyymmdd\")",
-              "",
-              "RETURN ",
-              "\tCALCULATE([# Ttl Store Visitors], DATEADD('Dim - Time'[Date], -1, YEAR),",
-              "\t\tFILTER(ALL('Fact - Camera InStore'),",
-              "\t\tVALUE('Fact - Camera InStore'[DATE_WID]) >= value(CK_SDate) && VALUE('Fact - Camera InStore'[DATE_WID]) <= value(CK_EDate)))"
-            ],
-            "formatString": "#,0"
-          },
-          {
-            "name": "% Visitor (CK)",
-            "expression": " [# Visitors]/[# Visitor (CK)]-1",
-            "formatString": "0.00%;-0.00%;0.00%"
-          },
-          {
-            "name": "%CR (CK)",
-            "expression": " DIVIDE([# Visitor (CK)], [# MKT Customer (CK)],0)-1",
-            "formatString": "0.00%;-0.00%;0.00%"
           }
         ]
       },
@@ -10369,31 +10082,13 @@
               "type": "m",
               "expression": [
                 "let",
-                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;DW_RAW\",\" SELECT ROW_WID, ",
-                "\tCASE WHEN GENDER = 'F' THEN 0",
-                "\t\tWHEN GENDER = 'M' THEN 1 ",
-                "\t\tELSE 2 END Gender,",
-                "\t1.0*(endtime - starttime)/1000 Dwell_Time,",
-                "\tCASE WHEN ",
-                "\t\t\t 1.0*(endtime - starttime)/1000 <300 THEN '0-5min'",
-                "\t\tWHEN 1.0*(endtime - starttime)/1000 <600 THEN '5-10min'",
-                "\t\tWHEN 1.0*(endtime - starttime)/1000 <900 THEN '10-15min'",
-                "\t\tWHEN 1.0*(endtime - starttime)/1000 <1800 THEN '15-30min'",
-                "\t\tWHEN 1.0*(endtime - starttime)/1000 <2700 THEN '30-45min'",
-                "\t\tWHEN 1.0*(endtime - starttime)/1000 <3600 THEN '45-60min'",
-                "\t\tWHEN 1.0*(endtime - starttime)/1000 >3600 THEN 'More than 1h'",
-                "\t\tEND Dwell_time_bucket,",
-                "\t1.0*(Style_end - style_start)/1000 Style_Dwell_Time,",
-                "\tCASE WHEN ",
-                "\t\t\t 1.0*(Style_end - style_start)/1000 <300 THEN '0-5min'",
-                "\t\tWHEN 1.0*(Style_end - style_start)/1000 <600 THEN '5-10min'",
-                "\t\tWHEN 1.0*(Style_end - style_start)/1000 <900 THEN '10-15min'",
-                "\t\tWHEN 1.0*(Style_end - style_start)/1000 <1800 THEN '15-30min'",
-                "\t\tWHEN 1.0*(Style_end - style_start)/1000 <2700 THEN '30-45min'",
-                "\t\tWHEN 1.0*(Style_end - style_start)/1000 <3600 THEN '45-60min'",
-                "\t\tWHEN 1.0*(Style_end - style_start)/1000 >3600 THEN 'More than 1h'",
-                "\t\tEND Style_Time_bucket",
-                " FROM W_PA_PERSON_D WITH (NOLOCK) where starttime is not null",
+                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;DW_RAW\",\" SELECT [ROW_WID]",
+                "      ,[Gender]",
+                "      ,[Dwell_Time]",
+                "      ,[Dwell_time_bucket]",
+                "      ,[Style_Dwell_Time]",
+                "      ,[Style_Time_bucket]",
+                "  FROM [DW_RAW].[dbo].[W_VW_PA_PERSON_D]",
                 "\"",
                 "",
                 ")",
@@ -10418,48 +10113,6 @@
                 ]
               }
             ]
-          }
-        ]
-      },
-      {
-        "name": "Dim - Camera Stores",
-        "columns": [
-          {
-            "name": "PA StoreID",
-            "dataType": "int64",
-            "sourceColumn": "PA StoreID"
-          },
-          {
-            "name": "STORE_NAME",
-            "dataType": "string",
-            "sourceColumn": "STORE_NAME"
-          },
-          {
-            "name": "Plant Code",
-            "dataType": "string",
-            "sourceColumn": "Plant Code"
-          },
-          {
-            "name": "Plant_wid",
-            "dataType": "int64",
-            "sourceColumn": "Plant_wid"
-          }
-        ],
-        "partitions": [
-          {
-            "name": "Partition",
-            "dataView": "full",
-            "source": {
-              "type": "m",
-              "expression": [
-                "let",
-                "    Source = #\"SQL/192 168 3 31;DW_RAW\",",
-                "    dbo_PA_VW_STORE = Source{[Schema=\"dbo\",Item=\"PA_VW_STORE\"]}[Data],",
-                "    #\"Renamed Columns\" = Table.RenameColumns(dbo_PA_VW_STORE,{{\"PLANT_CODE\", \"Plant Code\"}, {\"STORE_ID\", \"PA StoreID\"}})",
-                "in",
-                "    #\"Renamed Columns\""
-              ]
-            }
           }
         ]
       },
@@ -10583,6 +10236,7 @@
       },
       {
         "name": "CVR by Store by Date",
+        "isHidden": true,
         "columns": [
           {
             "name": "DATE_WID",
@@ -11075,12 +10729,6 @@
             "sourceColumn": "Floor"
           },
           {
-            "name": "STORE_ID",
-            "dataType": "int64",
-            "isHidden": true,
-            "sourceColumn": "STORE_ID"
-          },
-          {
             "name": "Brands",
             "dataType": "string",
             "sourceColumn": "Brands"
@@ -11094,10 +10742,12 @@
               "type": "m",
               "expression": [
                 "let",
-                "    Source = #\"SQL/192 168 3 31;DW_RAW\",",
-                "    dbo_PA_AREA = Source{[Schema=\"dbo\",Item=\"PA_AREA\"]}[Data],",
-                "    #\"Removed Columns\" = Table.RemoveColumns(dbo_PA_AREA,{\"FILE_NAME\", \"CREATION_DATE\"}),",
-                "    #\"Renamed Columns\" = Table.RenameColumns(#\"Removed Columns\",{{\"AREA_NAME\", \"Floor\"}})",
+                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
+                "    SELECT [AREA_ID]",
+                "      ,[AREA_NAME]",
+                "      ,[Brands]",
+                "  FROM [DW_RAW].[dbo].[PA_AREA]\"),",
+                "    #\"Renamed Columns\" = Table.RenameColumns(Source ,{{\"AREA_NAME\", \"Floor\"}})",
                 "in",
                 "    #\"Renamed Columns\""
               ]
@@ -11762,7 +11412,9 @@
               "type": "m",
               "expression": [
                 "let",
-                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;DW_RAW\",\"SELECT * from PA_gender\")",
+                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;DW_RAW\",\"SELECT [ids]",
+                "      ,[Gender]",
+                "  FROM [DW_RAW].[dbo].[PA_GENDER]\")",
                 "in",
                 "\tSource"
               ]
@@ -11793,7 +11445,9 @@
               "type": "m",
               "expression": [
                 "let",
-                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;DW_RAW\",\"SELECT * from W_PA_HOUR\")",
+                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;DW_RAW\",\"SELECT [Hrs]",
+                "      ,[Hours]",
+                "  FROM [DW_RAW].[dbo].[W_PA_HOUR]\")",
                 "in",
                 "    Source"
               ]
@@ -16317,17 +15971,16 @@
             "name": "POS #Customer",
             "expression": [
               " ",
-              "VAR Non_VL= CALCULATE(DISTINCTCOUNT( 'Fact - All Sales Invoice Line'[Customer WID] ),",
+              "VAR Non_VL= CALCULATE(DISTINCTCOUNT( 'Fact - All Sales Invoice Line'[SYS_CUST_PAR_WID] ),",
               "FILTER('Fact - All Sales Invoice Line',  'Fact - All Sales Invoice Line'[TRAFFIC] = 1 && 'Fact - All Sales Invoice Line'[Channel Code] in {\"10\", \"20\"} ),",
-              "FILTER('Dim - Customer', NOT 'Dim - Customer'[Customer Card] in {\"One-time\"}))",
+              "FILTER('Dim - Customer', 'Dim - Customer'[VL_Flag] = 0))",
               "",
               "VAR VL = CALCULATE(",
               "\tCOUNTROWS(",
               "\tGROUPBY('Fact - All Sales Invoice Line', 'Fact - All Sales Invoice Line'[Customer WID], ",
-              "\t\t'Fact - All Sales Invoice Line'[INVOICED_ON_DT_WID],",
               "\t\t'Fact - All Sales Invoice Line'[Invoice Number])),",
               "FILTER('Fact - All Sales Invoice Line',   'Fact - All Sales Invoice Line'[TRAFFIC] = 1  && 'Fact - All Sales Invoice Line'[Channel Code] in {\"10\", \"20\"}  ),",
-              "FILTER('Dim - Customer', 'Dim - Customer'[Customer Card] in {\"One-time\"})",
+              "FILTER('Dim - Customer',  'Dim - Customer'[VL_Flag] = 1)",
               ")",
               "",
               "",
@@ -16352,21 +16005,15 @@
             "name": "POS #Tranx",
             "expression": [
               "  ",
-              "VAR Non_VL= CALCULATE(",
-              "\tCOUNTROWS(",
-              "\t\tGROUPBY('Fact - ALL Sales Invoice Line', ",
-              "\t\t'Fact - All Sales Invoice Line'[PLANT_WID], ",
-              "\t\t'Fact - All Sales Invoice Line'[Customer WID],",
-              "\t\t'Fact - All Sales Invoice Line'[INVOICED_ON_DT_WID])),",
-              "\tFILTER('Fact - All Sales Invoice Line', 'Fact - All Sales Invoice Line'[TRAFFIC] = 1  && 'Fact - All Sales Invoice Line'[Channel Code] in {\"10\", \"20\"} && 'Fact - All Sales Invoice Line'[INVOICED_ON_DT_WID] >=20200101  ),",
-              "\tFILTER('Dim - Customer', NOT 'Dim - Customer'[Customer Card] in {\"One-time\"}))",
+              "VAR Non_VL= CALCULATE([# All Cust Transaction (PC)],",
+              "\tFILTER('Fact - All Sales Invoice Line', 'Fact - All Sales Invoice Line'[TRAFFIC] = 1  && 'Fact - All Sales Invoice Line'[Channel Code] in {\"10\", \"20\"} && 'Fact - All Sales Invoice Line'[INVOICED_ON_DT_WID] >=20200101),",
+              "\tFILTER('Dim - Customer', 'Dim - Customer'[VL_Flag] = 0))",
               "",
               "VAR VL =  CALCULATE(",
               "\tCOUNTROWS(",
               "\t\tGROUPBY('Fact - ALL Sales Invoice Line', ",
               "\t\t'Fact - All Sales Invoice Line'[PLANT_WID], ",
               "\t\t'Fact - All Sales Invoice Line'[Customer WID],",
-              "\t\t'Fact - All Sales Invoice Line'[INVOICED_ON_DT_WID],",
               "\t\t'Fact - All Sales Invoice Line'[Invoice Number])),",
               "\tFILTER('Fact - All Sales Invoice Line', 'Fact - All Sales Invoice Line'[TRAFFIC] = 1  && 'Fact - All Sales Invoice Line'[Channel Code] in {\"10\", \"20\"} && 'Fact - All Sales Invoice Line'[INVOICED_ON_DT_WID] >=20200101  ),",
               "\tFILTER('Dim - Customer', 'Dim - Customer'[Customer Card] in {\"One-time\"}))",
@@ -16463,7 +16110,7 @@
               "var Compare = CALCULATE(",
               "\t [CMR #Interactive], ",
               "\t ALL ( 'Dim - Time' ), ",
-              "\t USERELATIONSHIP( 'Dim - Time'[Date], 'Dim - Time Compare'[Prev. Date] ) ",
+              "\t USERELATIONSHIP( 'Dim - Time'[ROW_WID], 'Dim - Time Compare'[ROW_WID] ) ",
               ") --* [Normalization Factor] ",
               "",
               "RETURN IF (AND([CMR #Interactive]>0, Compare >0 ), DIVIDE([CMR #Interactive] , Compare, 0) -1,BLANK())"
@@ -16479,7 +16126,7 @@
               "CALCULATE(",
               "\t [CMR #Visitors], ",
               "\t ALL ( 'Dim - Time' ), ",
-              "\t USERELATIONSHIP( 'Dim - Time'[Date], 'Dim - Time Compare'[Prev. Date] ) ",
+              "\t USERELATIONSHIP( 'Dim - Time'[ROW_WID], 'Dim - Time Compare'[ROW_WID] ) ",
               ") --* [Normalization Factor]",
               "",
               "",
@@ -16501,7 +16148,7 @@
               "var Compare = CALCULATE(",
               "\t [CMR CR], ",
               "\t ALL ( 'Dim - Time' ), ",
-              "\t USERELATIONSHIP( 'Dim - Time'[Date], 'Dim - Time Compare'[Prev. Date] ) ",
+              "\t USERELATIONSHIP( 'Dim - Time'[ROW_WID], 'Dim - Time Compare'[ROW_WID] ) ",
               ") --* [Normalization Factor] ",
               "",
               "RETURN IF (and([CMR CR]>0, Compare >0), DIVIDE([CMR CR] , Compare, 0) -1,BLANK())"
@@ -16516,7 +16163,7 @@
               "var Compare = CALCULATE(",
               "\t [CMR .Net Amt], ",
               "\t ALL ( 'Dim - Time' ), ",
-              "\t USERELATIONSHIP( 'Dim - Time'[Date], 'Dim - Time Compare'[Prev. Date] ) ",
+              "\t USERELATIONSHIP( 'Dim - Time'[ROW_WID], 'Dim - Time Compare'[ROW_WID] ) ",
               ") --* [Normalization Factor] ",
               "",
               "RETURN IF (AND([CMR .Net Amt]>0, Compare >0 ), DIVIDE([CMR .Net Amt] , Compare, 0) -1,BLANK())"
@@ -16531,7 +16178,7 @@
               "var Compare = CALCULATE(",
               "\t [CMR .Ticket size], ",
               "\t ALL ( 'Dim - Time' ), ",
-              "\t USERELATIONSHIP( 'Dim - Time'[Date], 'Dim - Time Compare'[Prev. Date] ) ",
+              "\t USERELATIONSHIP( 'Dim - Time'[ROW_WID], 'Dim - Time Compare'[ROW_WID] ) ",
               ") --* [Normalization Factor] ",
               "",
               "RETURN IF (AND([CMR .Ticket size]>0, Compare >0 ), DIVIDE([CMR .Ticket size] , Compare, 0) -1,BLANK())"
@@ -16546,7 +16193,7 @@
               "var Compare = CALCULATE(",
               "\t [CMR Basket size], ",
               "\t ALL ( 'Dim - Time' ), ",
-              "\t USERELATIONSHIP( 'Dim - Time'[Date], 'Dim - Time Compare'[Prev. Date] ) ",
+              "\t USERELATIONSHIP( 'Dim - Time'[ROW_WID], 'Dim - Time Compare'[ROW_WID] ) ",
               ") --* [Normalization Factor] ",
               "",
               "RETURN IF ( And([CMR Basket size] >0, Compare >0 ) , DIVIDE([CMR Basket size] , Compare, 0) -1,BLANK())",
@@ -16562,7 +16209,7 @@
               "var Compare = CALCULATE(",
               "\t [CMR Interact. Rate], ",
               "\t ALL ( 'Dim - Time' ), ",
-              "\t USERELATIONSHIP( 'Dim - Time'[Date], 'Dim - Time Compare'[Prev. Date] ) ",
+              "\t USERELATIONSHIP( 'Dim - Time'[ROW_WID], 'Dim - Time Compare'[ROW_WID] ) ",
               ") --* [Normalization Factor] ",
               "",
               "RETURN IF (and([CMR Interact. Rate] >0, Compare >0 ), DIVIDE([CMR Interact. Rate] , Compare, 0) -1,BLANK())",
@@ -16578,7 +16225,7 @@
               "var Compare = CALCULATE(",
               "\t [POS #Customer], ",
               "\t ALL ( 'Dim - Time' ), ",
-              "\t USERELATIONSHIP( 'Dim - Time'[Date], 'Dim - Time Compare'[Prev. Date] ) ",
+              "\t USERELATIONSHIP( 'Dim - Time'[ROW_WID], 'Dim - Time Compare'[ROW_WID] ) ",
               ") --* [Normalization Factor] ",
               "",
               "RETURN IF (AND([POS #Customer] >0, Compare >0 ), DIVIDE([POS #Customer] , Compare, 0) -1,BLANK())",
@@ -16639,7 +16286,7 @@
               " CALCULATE(",
               "\t [Palexy Plant], ",
               "\t ALL ( 'Dim - Time' ), ",
-              "\t USERELATIONSHIP( 'Dim - Time'[Date], 'Dim - Time Compare'[Prev. Date] ) ",
+              "\t USERELATIONSHIP( 'Dim - Time'[ROW_WID], 'Dim - Time Compare'[ROW_WID] ) ",
               ")"
             ],
             "formatString": "#,0.00"
@@ -20787,16 +20434,6 @@
         "toColumn": "Hrs"
       },
       {
-        "name": "d3ee0236-fa02-40df-99cf-e0c4395dead4",
-        "fromCardinality": "one",
-        "fromTable": "Dim - Time Compare",
-        "fromColumn": "Prev. Date",
-        "toTable": "Dim - Time",
-        "toColumn": "Date",
-        "isActive": false,
-        "crossFilteringBehavior": "bothDirections"
-      },
-      {
         "name": "7f4db808-6c50-4b37-81e4-5d7c3db51897",
         "fromTable": "Fact - Camera InStore",
         "fromColumn": "SectionID",
@@ -21485,6 +21122,14 @@
         "fromColumn": "GL_ACCOUNT_WID",
         "toTable": "Dim - GL Account VN",
         "toColumn": "ROW_WID"
+      },
+      {
+        "name": "569bc276-b91c-4ffb-ad39-f200714214fd",
+        "fromTable": "Dim - Time Compare",
+        "fromColumn": "ROW_WID",
+        "toTable": "Dim - Time",
+        "toColumn": "ROW_WID",
+        "isActive": false
       }
     ],
     "perspectives": [
@@ -24331,26 +23976,6 @@
               },
               {
                 "name": "action_type"
-              }
-            ],
-            "measures": [
-              {
-                "name": "# Visitors"
-              },
-              {
-                "name": "# Ttl Store Visitors"
-              },
-              {
-                "name": "% CR"
-              },
-              {
-                "name": "# Visitor (CK)"
-              },
-              {
-                "name": "% Visitor (CK)"
-              },
-              {
-                "name": "%CR (CK)"
               }
             ]
           },
