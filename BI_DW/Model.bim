@@ -4460,7 +4460,7 @@
           },
           {
             "type": "calculated",
-            "name": "Filters",
+            "name": "Filters Cancel",
             "dataType": "int64",
             "isDataTypeInferred": true,
             "expression": [
@@ -4511,6 +4511,8 @@
           {
             "name": "Time",
             "dataType": "dateTime",
+            "isHidden": true,
+            "isNullable": false,
             "sourceColumn": "Time",
             "formatString": "HH:mm",
             "annotations": [
@@ -5150,7 +5152,7 @@
             "description": "Tổng số lượng hủy",
             "expression": [
               " CALCULATE(sum('Fact - Actual Production'[Actual QTY]),",
-              "Filter('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"IN\" && 'Fact - Actual Production'[STK Keeper Code] = \"9998\" && 'Fact - Actual Production'[Filters] = 1)",
+              "Filter('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"IN\" && 'Fact - Actual Production'[STK Keeper Code] = \"9998\" && 'Fact - Actual Production'[Filters Cancel] = 1)",
               ")",
               "/*",
               "Filter('Dim - Product', not left( 'Dim - Product'[Product Code], 11) in {\"00000000003\"}), ",
@@ -18998,7 +19000,7 @@
           {
             "name": "%Human Resource",
             "expression": " sum('Dim - Production Labor Planned'[Actual Resource])/sum('Dim - Production Labor Planned'[Planned Resource])",
-            "formatString": "0.00%;-0.00%;0.00%"
+            "formatString": "#,0%;-#,0%;#,0%"
           }
         ]
       },
