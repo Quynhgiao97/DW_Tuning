@@ -4526,6 +4526,13 @@
               "",
               "\t"
             ]
+          },
+          {
+            "type": "calculated",
+            "name": "Order Num Type",
+            "dataType": "string",
+            "isDataTypeInferred": true,
+            "expression": " left('Fact - Actual Production'[Order Number],4)"
           }
         ],
         "partitions": [
@@ -5023,25 +5030,12 @@
         ],
         "measures": [
           {
-            "name": "QC %Cancel .Q10",
-            "expression": [
-              "",
-              " VAR GI = CALCULATE(SUM('Fact - Actual Production'[Q10]) * -1, 'Fact - Actual Production'[TYPES] = \"OUT\")",
-              " VAR Cancel = CALCULATE(sum('Fact - Actual Production'[Q10]),",
-              "\tFILTER('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"IN\"  && 'Fact - Actual Production'[STK Keeper Code] = \"9998\"))",
-              "\t",
-              "RETURN  DIVIDE(Cancel, GI,BLANK())"
-            ],
-            "formatString": "0.0%;-0.0%;0.0%"
-          },
-          {
             "name": ".Qty GI Finish Goods",
             "expression": [
               " CALCULATE(",
               "    CALCULATE(Sum('Fact - Actual Production'[Actual QTY]),",
               "\tFilter('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"IN\"),",
               "\tFILTER('Fact - Actual Production', 'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\", \"1102\", \"1104\", \"1105\",\"1106\"}))",
-              "--,FILTER(ALL('Dim - Actual Production'), 'Dim - Actual Production'[STD Keeper Group] IN {\"KVSX1\", \"KVSX2\", \"KVSX3\", \"NM LONG HẬU\"})",
               ")",
               ""
             ],
@@ -5099,15 +5093,6 @@
             "formatString": "0.00%;-0.00%;0.00%"
           },
           {
-            "name": "QC Cancel .Q10",
-            "expression": [
-              " CALCULATE(sum('Fact - Actual Production'[Q10]),",
-              "\tFILTER('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"IN\"  && 'Fact - Actual Production'[STK Keeper Code] = \"9998\"))",
-              ""
-            ],
-            "formatString": "#,0.00"
-          },
-          {
             "name": ".Qty GI Finish_F1018",
             "expression": [
               " CALCULATE(Sum('Fact - Actual Production'[Actual QTY]),",
@@ -5140,26 +5125,12 @@
             "formatString": "0.00%;-0.00%;0.00%"
           },
           {
-            "name": "All Finish Goods",
-            "expression": [
-              " CALCULATE([.Qty GI Finish Goods],",
-              "FILTER(ALL('Dim - Actual Production'), 'Dim - Actual Production'[STD Keeper Group] IN {\"KVSX1\", \"KVSX2\", \"KVSX3\", \"NM LONG HẬU\"})",
-              ")"
-            ]
-          },
-          {
             "name": "QC Cancel .Qty",
             "description": "Tổng số lượng hủy",
             "expression": [
               " CALCULATE(sum('Fact - Actual Production'[Actual QTY]),",
-              "Filter('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"IN\" && 'Fact - Actual Production'[STK Keeper Code] = \"9998\" && 'Fact - Actual Production'[Filters Cancel] = 1)",
-              ")",
-              "/*",
-              "Filter('Dim - Product', not left( 'Dim - Product'[Product Code], 11) in {\"00000000003\"}), ",
-              "Filter('Dim - Product', not left( 'Dim - Product'[Product Code], 2) in {\"G1\",\"S1\", \"T1\"}), ",
-              "FILTER('Fact - Actual Production', not right('Fact - Actual Production'[STK Keeper Output], 1) in {\"M\"}),",
-              "Filter('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"IN\" && 'Fact - Actual Production'[STK Keeper Code] = \"9998\"))",
-              "*/"
+              "Filter('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"IN\" && 'Fact - Actual Production'[Filters Cancel] = 1)",
+              ")"
             ],
             "formatString": "#,0"
           },
@@ -5181,12 +5152,7 @@
               "var _currdate = max('Dim - Time'[Date])",
               "Return",
               "CALCULATE(SUM('Fact - Actual Production'[Q10]), ",
-              "FILTER(ALL('Dim - Time'[Date]), ISONORAFTER('Dim - Time'[Date], _currdate, Desc)),",
-              "FILTER('Dim - Product', ",
-              "    left('Dim - Product'[Product Code],1) IN {\"G\",\"P\"} || ",
-              "    left('Dim - Product'[Product Code],12) in {\"000000000030\", \"000000000031\", \"000000000033\" } ||",
-              "    LEFT('Dim - Product'[Product Code],2) in {\"DY\",\"DW\"} )",
-              "",
+              "FILTER(ALL('Dim - Time'[Date]), 'Dim - Time'[Date] <= _currdate)",
               ")"
             ]
           },
@@ -5251,7 +5217,7 @@
             ]
           },
           {
-            "name": "AVG .Net Qty (Monthly) CK",
+            "name": "AVG .Net Qty (Monthly) (LY)",
             "expression": [
               "",
               "    VAR CK_SDate = DATEADD(FIRSTDATE( 'Dim - Time'[Date]),-1,YEAR)",
@@ -5274,7 +5240,7 @@
             ]
           },
           {
-            "name": "AVG .Net Qty (Monthly) KT",
+            "name": "AVG .Net Qty (Monthly) (LM)",
             "expression": [
               "",
               "    VAR CK_SDate = DATEADD(FIRSTDATE( 'Dim - Time'[Date]),-1,MONTH)",
@@ -5297,7 +5263,7 @@
             ]
           },
           {
-            "name": "AVG .Q10 (Monthly) KT",
+            "name": "AVG .Q10 (Monthly) (LM)",
             "expression": [
               "",
               "    VAR CK_SDate = DATEADD(FIRSTDATE( 'Dim - Time'[Date]),-1,MONTH)",
@@ -5320,7 +5286,7 @@
             ]
           },
           {
-            "name": "%AVG .Q10 (Monthly) CK",
+            "name": "%AVG .Q10 (Monthly) (LY)",
             "expression": [
               "",
               "    VAR CK_SDate = DATEADD(FIRSTDATE( 'Dim - Time'[Date]),-1,YEAR)",
@@ -5344,7 +5310,7 @@
             "formatString": "0.00%;-0.00%;0.00%"
           },
           {
-            "name": ".Net Qty (Daily) KT",
+            "name": ".Net Qty (Daily) (LM)",
             "expression": [
               "",
               "",
@@ -5353,7 +5319,7 @@
             ]
           },
           {
-            "name": ".Net Qty (Daily) CK",
+            "name": ".Net Qty (Daily) (LY)",
             "expression": [
               "",
               "",
@@ -5362,7 +5328,7 @@
             ]
           },
           {
-            "name": ".Q10 (Daily) KT",
+            "name": ".Q10 (Daily) (LM)",
             "expression": [
               "",
               "",
@@ -5371,7 +5337,7 @@
             ]
           },
           {
-            "name": ".Q10 (Daily) CK",
+            "name": ".Q10 (Daily) (LY)",
             "expression": [
               "",
               "",
@@ -5402,25 +5368,25 @@
             ]
           },
           {
-            "name": "TurnOver .Q10 (Daily) (CK)",
+            "name": "TurnOver .Q10 (Daily) (LY)",
             "expression": [
               "",
               "",
               "VAR GI = CALCULATE(Sum('Fact - Actual Production'[Q10])*-1, DATEADD('Dim - Time'[Date],-1,YEAR),",
               "\t'Fact - Actual Production'[TYPES] = \"Out\")",
               "",
-              "RETURN DIVIDE(GI, [.Q10 (Daily) CK])"
+              "RETURN DIVIDE(GI, [.Q10 (Daily) (LY)])"
             ]
           },
           {
-            "name": "TurnOver .Q10 (Daily) (KT)",
+            "name": "TurnOver .Q10 (Daily) (LM)",
             "expression": [
               "",
               "",
               "VAR GI = CALCULATE(Sum('Fact - Actual Production'[Q10])*-1, DATEADD('Dim - Time'[Date],-1,MONTH),",
               "\t'Fact - Actual Production'[TYPES] = \"Out\")",
               "",
-              "RETURN DIVIDE(GI, [.Q10 (Daily) KT])"
+              "RETURN DIVIDE(GI, [.Q10 (Daily) (LM)])"
             ]
           },
           {
@@ -5549,10 +5515,6 @@
             "expression": [
               " ",
               "VAR GI = CALCULATE(Sum('Fact - Actual Production'[Q10])*-1,",
-              "    FiLTER('Dim - Product', ",
-              "        LEFT('Dim - Product'[Product Code],1) in {\"G\",\"P\"} || ",
-              "        LEFT('Dim - Product'[Product Code],12) in {\"000000000033\",\"000000000031\",\"000000000030\"} ||",
-              "        LEFT('Dim - Product'[Product Code],2) in {\"DY\",\"DW\"} ),",
               "    Filter('Fact - Actual Production','Fact - Actual Production'[TYPES] = \"Out\"))",
               "",
               "RETURN DIVIDE(GI, [.Inventory Q10])"
@@ -5582,12 +5544,8 @@
               "var _currdate = max('Dim - Time'[Date])",
               "Return",
               "CALCULATE(SUM('Fact - Actual Production'[Q10]),",
-              "\tFILTER(aLL('Dim - Time'[Date]), 'Dim - Time'[Date] <= _currdate),",
-              "\tFiLTER('Dim - Product', ",
-              "\t\tLEFT('Dim - Product'[Product Code],1) in {\"G\",\"P\"} || ",
-              "\t\tLEFT('Dim - Product'[Product Code],12) in {\"000000000031\",\"000000000030\",\"000000000033\"} ||",
-              "\t\tLEFT('Dim - Product'[Product Code],2) in {\"DY\",\"DW\"} ),",
-              "\tFiLTER('Fact - Actual Production','Fact - Actual Production'[TYPES]=\"IN\")",
+              "        FILTER(aLL('Dim - Time'[Date]), 'Dim - Time'[Date] <= _currdate),",
+              "        FiLTER('Fact - Actual Production','Fact - Actual Production'[TYPES]=\"IN\")",
               ")"
             ]
           },
@@ -5598,12 +5556,8 @@
               "var _currdate = max('Dim - Time'[Date])",
               "Return",
               "abs(CALCULATE(SUM('Fact - Actual Production'[Q10]),",
-              "\tFILTER(aLL('Dim - Time'[Date]), 'Dim - Time'[Date] <= _currdate),",
-              "\tFiLTER('Dim - Product', ",
-              "\t\tLEFT('Dim - Product'[Product Code],1) in {\"G\",\"P\"} || ",
-              "\t\tLEFT('Dim - Product'[Product Code],12) in {\"000000000031\",\"000000000030\",\"000000000033\"} ||\t",
-              "\t\tLEFT('Dim - Product'[Product Code],2) in {\"DY\",\"DW\"} ),",
-              "\tFiLTER('Fact - Actual Production','Fact - Actual Production'[TYPES]=\"OUT\"))",
+              "        FILTER(aLL('Dim - Time'[Date]), 'Dim - Time'[Date] <= _currdate),",
+              "        FILTER('Fact - Actual Production','Fact - Actual Production'[TYPES]=\"OUT\"))",
               ")"
             ]
           },
