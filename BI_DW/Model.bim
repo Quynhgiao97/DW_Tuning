@@ -22,7 +22,9 @@
         },
         "credential": {
           "AuthenticationKind": "UsernamePassword",
-          "Username": "Biread",
+          "kind": "SQL",
+          "path": "192.168.2.19;PNJ_ROLAP",
+          "Username": "biread",
           "EncryptConnection": false
         }
       },
@@ -44,6 +46,8 @@
         },
         "credential": {
           "AuthenticationKind": "UsernamePassword",
+          "kind": "SQL",
+          "path": "192.168.2.19;DW_RAW",
           "Username": "biread",
           "EncryptConnection": false
         }
@@ -4483,7 +4487,6 @@
           {
             "name": "Time",
             "dataType": "dateTime",
-            "isHidden": true,
             "isNullable": false,
             "sourceColumn": "Time",
             "formatString": "HH:mm",
@@ -4529,12 +4532,25 @@
             "dataType": "string",
             "isDataTypeInferred": true,
             "expression": " left('Fact - Actual Production'[Order Number],4)"
+          },
+          {
+            "type": "calculated",
+            "name": "Filters STK Finish Goods",
+            "dataType": "int64",
+            "isDataTypeInferred": true,
+            "expression": " if('Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\",\"1102\", \"1104\", \"1105\", \"1106\"}, 1,0)",
+            "formatString": "0"
+          },
+          {
+            "name": "STOCK_KEEPER_TRANSFER_WID",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "STOCK_KEEPER_TRANSFER_WID"
           }
         ],
         "partitions": [
           {
             "name": "Partition Latest 7 Days",
-            "mode": "import",
             "source": {
               "type": "m",
               "expression": [
@@ -4558,17 +4574,18 @@
                 "      ,[LOCATION_TRANSFER_CODE]",
                 "      ,[STANDARD_TEXT_KEY]",
                 "      ,[BATCH]",
-                "      ,[STK_KEEPER_WID]",
+                "      ,[STK_KEEPER_BOOKLET_WID]",
                 "      ,[TOTAL_WEIGHT]",
                 "      ,[STK_KEEPING_GROUP]",
                 "      ,[TIME]",
                 "      ,[STOCK_KEEPER_WID]",
+                "      ,[STOCK_KEEPER_TRANSFER_WID]",
                 "      ,[COOLING_SCORE]",
                 "      ,[PRONG_SCORE]",
                 "     ,[PRODUCTION_MATERIAL_TYPE]",
                 "  FROM [PNJ_ROLAP].[dbo].[W_VW_ACTUAL_PRODUCTION_F]",
                 "  WHERE [DATE_KEY]> CAST(Convert(CHAR(8),DATEADD(DAY,- 7,GETDATE()),112) as int)\"),",
-                "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"STOCK_KEEPER_CODE\", \"STK Keeper Code\"},{\"ORDER_NUMBER\", \"Order Number\"}, {\"BASE_UOM_CODE\", \"UOM\"}, {\"ACTUAL_QTY\", \"Actual QTY\"}, {\"LOCATION_CODE\", \"Location Wid\"}, {\"DOCUMENT_NUMBER\", \"Document Number\"}, {\"STANDARD_WEIGHT_FLAG\", \"STD Weight Flag\"}, {\"STANDARD_TEXT_KEY\", \"STD Text Key\"}, {\"LOCATION_TRANSFER_CODE\", \"Output sloc\"}, {\"STOCK_KEEPER_TRANSFER_CODE\", \"STK Keeper Transfer Code\"}, {\"BATCH\", \"Batch\"}, {\"STK_KEEPER_WID\", \"Booklet_ID\"}, {\"TOTAL_WEIGHT\", \"Total Weight\"}, {\"STANDARD_WEIGHT\", \"Standard Weight\"}, {\"TIME\", \"Time\"}, {\"COOLING_SCORE\", \"Cooling Score\"}, {\"PRONG_SCORE\", \"Prong Score\"}, {\"PRODUCTION_MATERIAL_TYPE\", \"Material Type\"}})",
+                "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"STOCK_KEEPER_CODE\", \"STK Keeper Code\"},{\"ORDER_NUMBER\", \"Order Number\"}, {\"BASE_UOM_CODE\", \"UOM\"}, {\"ACTUAL_QTY\", \"Actual QTY\"}, {\"LOCATION_CODE\", \"Location Wid\"}, {\"DOCUMENT_NUMBER\", \"Document Number\"}, {\"STANDARD_WEIGHT_FLAG\", \"STD Weight Flag\"}, {\"STANDARD_TEXT_KEY\", \"STD Text Key\"}, {\"LOCATION_TRANSFER_CODE\", \"Output sloc\"}, {\"STOCK_KEEPER_TRANSFER_CODE\", \"STK Keeper Transfer Code\"}, {\"BATCH\", \"Batch\"}, {\"STK_KEEPER_BOOKLET_WID\", \"Booklet_ID\"}, {\"TOTAL_WEIGHT\", \"Total Weight\"}, {\"STANDARD_WEIGHT\", \"Standard Weight\"}, {\"TIME\", \"Time\"}, {\"COOLING_SCORE\", \"Cooling Score\"}, {\"PRONG_SCORE\", \"Prong Score\"}, {\"PRODUCTION_MATERIAL_TYPE\", \"Material Type\"}})",
                 "in",
                 "    #\"Renamed Columns\""
               ]
@@ -4597,344 +4614,18 @@
                   "      ,[LOCATION_TRANSFER_CODE]",
                   "      ,[STANDARD_TEXT_KEY]",
                   "      ,[BATCH]",
-                  "      ,[STK_KEEPER_WID]",
+                  "      ,[STK_KEEPER_BOOKLET_WID]",
                   "      ,[TOTAL_WEIGHT]",
                   "      ,[STK_KEEPING_GROUP]",
                   "      ,[TIME]",
                   "      ,[STOCK_KEEPER_WID]",
+                  "      ,[STOCK_KEEPER_TRANSFER_WID]",
                   "      ,[COOLING_SCORE]",
                   "      ,[PRONG_SCORE]",
                   "     ,[PRODUCTION_MATERIAL_TYPE]",
                   "  FROM [PNJ_ROLAP].[dbo].[W_VW_ACTUAL_PRODUCTION_F]",
                   "  WHERE [DATE_KEY]> CAST(Convert(CHAR(8),DATEADD(DAY,- 7,GETDATE()),112) as int)\"),",
-                  "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"STOCK_KEEPER_CODE\", \"STK Keeper Code\"},{\"ORDER_NUMBER\", \"Order Number\"}, {\"BASE_UOM_CODE\", \"UOM\"}, {\"ACTUAL_QTY\", \"Actual QTY\"}, {\"LOCATION_CODE\", \"Location Wid\"}, {\"DOCUMENT_NUMBER\", \"Document Number\"}, {\"STANDARD_WEIGHT_FLAG\", \"STD Weight Flag\"}, {\"STANDARD_TEXT_KEY\", \"STD Text Key\"}, {\"LOCATION_TRANSFER_CODE\", \"Output sloc\"}, {\"STOCK_KEEPER_TRANSFER_CODE\", \"STK Keeper Transfer Code\"}, {\"BATCH\", \"Batch\"}, {\"STK_KEEPER_WID\", \"Booklet_ID\"}, {\"TOTAL_WEIGHT\", \"Total Weight\"}, {\"STANDARD_WEIGHT\", \"Standard Weight\"}, {\"TIME\", \"Time\"}, {\"COOLING_SCORE\", \"Cooling Score\"}, {\"PRONG_SCORE\", \"Prong Score\"}, {\"PRODUCTION_MATERIAL_TYPE\", \"Material Type\"}})",
-                  "in",
-                  "    #\"Renamed Columns\"</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
-                ]
-              }
-            ]
-          },
-          {
-            "name": "Partition 2022",
-            "source": {
-              "type": "m",
-              "expression": [
-                "let",
-                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
-                "    SELECT [TYPES]",
-                "      ,[DATE_KEY]",
-                "      ,[PLANT_WID]",
-                "      ,[MRP_CONTROLLER_WID]",
-                "      ,[PRODUCT_WID]",
-                "      ,[ORDER_NUMBER]",
-                "      ,[BASE_UOM_CODE]",
-                "      ,[ACTUAL_QTY]",
-                "      ,[STOCK_KEEPER_CODE]",
-                "      ,[LOCATION_CODE]",
-                "      ,[DOCUMENT_NUMBER]",
-                "      ,[Q10]",
-                "      ,[STANDARD_WEIGHT]",
-                "      ,[STANDARD_WEIGHT_FLAG]",
-                "      ,[STOCK_KEEPER_TRANSFER_CODE]",
-                "      ,[LOCATION_TRANSFER_CODE]",
-                "      ,[STANDARD_TEXT_KEY]",
-                "      ,[BATCH]",
-                "      ,[STK_KEEPER_WID]",
-                "      ,[TOTAL_WEIGHT]",
-                "      ,[STK_KEEPING_GROUP]",
-                "      ,[TIME]",
-                "      ,[STOCK_KEEPER_WID]",
-                "      ,[COOLING_SCORE]",
-                "      ,[PRONG_SCORE]",
-                "      ,[PRODUCTION_MATERIAL_TYPE]",
-                "  FROM [PNJ_ROLAP].[dbo].[W_VW_ACTUAL_PRODUCTION_F]",
-                "  WHERE [DATE_KEY] BETWEEN 20220101 AND CAST(Convert(CHAR(8),DATEADD(DAY,- 101,GETDATE()),112) as int)\"),",
-                "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"STOCK_KEEPER_CODE\", \"STK Keeper Code\"},{\"ORDER_NUMBER\", \"Order Number\"}, {\"BASE_UOM_CODE\", \"UOM\"}, {\"ACTUAL_QTY\", \"Actual QTY\"}, {\"LOCATION_CODE\", \"Location Wid\"}, {\"DOCUMENT_NUMBER\", \"Document Number\"}, {\"STANDARD_WEIGHT_FLAG\", \"STD Weight Flag\"}, {\"STANDARD_TEXT_KEY\", \"STD Text Key\"}, {\"LOCATION_TRANSFER_CODE\", \"Output sloc\"}, {\"STOCK_KEEPER_TRANSFER_CODE\", \"STK Keeper Transfer Code\"}, {\"BATCH\", \"Batch\"}, {\"STK_KEEPER_WID\", \"Booklet_ID\"}, {\"TOTAL_WEIGHT\", \"Total Weight\"}, {\"STANDARD_WEIGHT\", \"Standard Weight\"}, {\"TIME\", \"Time\"}, {\"COOLING_SCORE\", \"Cooling Score\"}, {\"PRONG_SCORE\", \"Prong Score\"}, {\"PRODUCTION_MATERIAL_TYPE\", \"Material Type\"}})",
-                "in",
-                "    #\"Renamed Columns\""
-              ]
-            },
-            "annotations": [
-              {
-                "name": "QueryEditorSerialization",
-                "value": [
-                  "<?xml version=\"1.0\" encoding=\"UTF-16\"?><Gemini xmlns=\"QueryEditorSerialization\"><AnnotationContent><![CDATA[<RSQueryCommandText>let",
-                  "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
-                  "    SELECT [TYPES]",
-                  "      ,[DATE_KEY]",
-                  "      ,[PLANT_WID]",
-                  "      ,[MRP_CONTROLLER_WID]",
-                  "      ,[PRODUCT_WID]",
-                  "      ,[ORDER_NUMBER]",
-                  "      ,[BASE_UOM_CODE]",
-                  "      ,[ACTUAL_QTY]",
-                  "      ,[STOCK_KEEPER_CODE]",
-                  "      ,[LOCATION_CODE]",
-                  "      ,[DOCUMENT_NUMBER]",
-                  "      ,[Q10]",
-                  "      ,[STANDARD_WEIGHT]",
-                  "      ,[STANDARD_WEIGHT_FLAG]",
-                  "      ,[STOCK_KEEPER_TRANSFER_CODE]",
-                  "      ,[LOCATION_TRANSFER_CODE]",
-                  "      ,[STANDARD_TEXT_KEY]",
-                  "      ,[BATCH]",
-                  "      ,[STK_KEEPER_WID]",
-                  "      ,[TOTAL_WEIGHT]",
-                  "      ,[STK_KEEPING_GROUP]",
-                  "      ,[TIME]",
-                  "      ,[STOCK_KEEPER_WID]",
-                  "      ,[COOLING_SCORE]",
-                  "      ,[PRONG_SCORE]",
-                  "      ,[PRODUCTION_MATERIAL_TYPE]",
-                  "  FROM [PNJ_ROLAP].[dbo].[W_VW_ACTUAL_PRODUCTION_F]",
-                  "  WHERE [DATE_KEY] BETWEEN 20220101 AND CAST(Convert(CHAR(8),DATEADD(DAY,- 101,GETDATE()),112) as int)\"),",
-                  "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"STOCK_KEEPER_CODE\", \"STK Keeper Code\"},{\"ORDER_NUMBER\", \"Order Number\"}, {\"BASE_UOM_CODE\", \"UOM\"}, {\"ACTUAL_QTY\", \"Actual QTY\"}, {\"LOCATION_CODE\", \"Location Wid\"}, {\"DOCUMENT_NUMBER\", \"Document Number\"}, {\"STANDARD_WEIGHT_FLAG\", \"STD Weight Flag\"}, {\"STANDARD_TEXT_KEY\", \"STD Text Key\"}, {\"LOCATION_TRANSFER_CODE\", \"Output sloc\"}, {\"STOCK_KEEPER_TRANSFER_CODE\", \"STK Keeper Transfer Code\"}, {\"BATCH\", \"Batch\"}, {\"STK_KEEPER_WID\", \"Booklet_ID\"}, {\"TOTAL_WEIGHT\", \"Total Weight\"}, {\"STANDARD_WEIGHT\", \"Standard Weight\"}, {\"TIME\", \"Time\"}, {\"COOLING_SCORE\", \"Cooling Score\"}, {\"PRONG_SCORE\", \"Prong Score\"}, {\"PRODUCTION_MATERIAL_TYPE\", \"Material Type\"}})",
-                  "in",
-                  "    #\"Renamed Columns\"</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
-                ]
-              }
-            ]
-          },
-          {
-            "name": "Partition 2021",
-            "mode": "import",
-            "source": {
-              "type": "m",
-              "expression": [
-                "let",
-                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
-                "    SELECT [TYPES]",
-                "      ,[DATE_KEY]",
-                "      ,[PLANT_WID]",
-                "      ,[MRP_CONTROLLER_WID]",
-                "      ,[PRODUCT_WID]",
-                "      ,[ORDER_NUMBER]",
-                "      ,[BASE_UOM_CODE]",
-                "      ,[ACTUAL_QTY]",
-                "      ,[STOCK_KEEPER_CODE]",
-                "      ,[LOCATION_CODE]",
-                "      ,[DOCUMENT_NUMBER]",
-                "      ,[Q10]",
-                "      ,[STANDARD_WEIGHT]",
-                "      ,[STANDARD_WEIGHT_FLAG]",
-                "      ,[STOCK_KEEPER_TRANSFER_CODE]",
-                "      ,[LOCATION_TRANSFER_CODE]",
-                "      ,[STANDARD_TEXT_KEY]",
-                "      ,[BATCH]",
-                "      ,[STK_KEEPER_WID]",
-                "      ,[TOTAL_WEIGHT]",
-                "      ,[STK_KEEPING_GROUP]",
-                "      ,[TIME]",
-                "      ,[STOCK_KEEPER_WID]",
-                "      ,[COOLING_SCORE]",
-                "      ,[PRONG_SCORE]",
-                "     ,[PRODUCTION_MATERIAL_TYPE]",
-                "  FROM [PNJ_ROLAP].[dbo].[W_VW_ACTUAL_PRODUCTION_F]",
-                "  WHERE  [DATE_KEY] BETWEEN 20210101 AND 20211231\"),",
-                "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"STOCK_KEEPER_CODE\", \"STK Keeper Code\"},{\"ORDER_NUMBER\", \"Order Number\"}, {\"BASE_UOM_CODE\", \"UOM\"}, {\"ACTUAL_QTY\", \"Actual QTY\"}, {\"LOCATION_CODE\", \"Location Wid\"}, {\"DOCUMENT_NUMBER\", \"Document Number\"}, {\"STANDARD_WEIGHT_FLAG\", \"STD Weight Flag\"}, {\"STANDARD_TEXT_KEY\", \"STD Text Key\"}, {\"LOCATION_TRANSFER_CODE\", \"Output sloc\"}, {\"STOCK_KEEPER_TRANSFER_CODE\", \"STK Keeper Transfer Code\"}, {\"BATCH\", \"Batch\"}, {\"STK_KEEPER_WID\", \"Booklet_ID\"}, {\"TOTAL_WEIGHT\", \"Total Weight\"}, {\"STANDARD_WEIGHT\", \"Standard Weight\"}, {\"TIME\", \"Time\"}, {\"COOLING_SCORE\", \"Cooling Score\"}, {\"PRONG_SCORE\", \"Prong Score\"}, {\"PRODUCTION_MATERIAL_TYPE\", \"Material Type\"}})",
-                "in",
-                "    #\"Renamed Columns\""
-              ]
-            },
-            "annotations": [
-              {
-                "name": "QueryEditorSerialization",
-                "value": [
-                  "<?xml version=\"1.0\" encoding=\"UTF-16\"?><Gemini xmlns=\"QueryEditorSerialization\"><AnnotationContent><![CDATA[<RSQueryCommandText>let",
-                  "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
-                  "    SELECT [TYPES]",
-                  "      ,[DATE_KEY]",
-                  "      ,[PLANT_WID]",
-                  "      ,[MRP_CONTROLLER_WID]",
-                  "      ,[PRODUCT_WID]",
-                  "      ,[ORDER_NUMBER]",
-                  "      ,[BASE_UOM_CODE]",
-                  "      ,[ACTUAL_QTY]",
-                  "      ,[STOCK_KEEPER_CODE]",
-                  "      ,[LOCATION_CODE]",
-                  "      ,[DOCUMENT_NUMBER]",
-                  "      ,[Q10]",
-                  "      ,[STANDARD_WEIGHT]",
-                  "      ,[STANDARD_WEIGHT_FLAG]",
-                  "      ,[STOCK_KEEPER_TRANSFER_CODE]",
-                  "      ,[LOCATION_TRANSFER_CODE]",
-                  "      ,[STANDARD_TEXT_KEY]",
-                  "      ,[BATCH]",
-                  "      ,[STK_KEEPER_WID]",
-                  "      ,[TOTAL_WEIGHT]",
-                  "      ,[STK_KEEPING_GROUP]",
-                  "      ,[TIME]",
-                  "      ,[STOCK_KEEPER_WID]",
-                  "      ,[COOLING_SCORE]",
-                  "      ,[PRONG_SCORE]",
-                  "     ,[PRODUCTION_MATERIAL_TYPE]",
-                  "  FROM [PNJ_ROLAP].[dbo].[W_VW_ACTUAL_PRODUCTION_F]",
-                  "  WHERE  [DATE_KEY] BETWEEN 20210101 AND 20211231\"),",
-                  "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"STOCK_KEEPER_CODE\", \"STK Keeper Code\"},{\"ORDER_NUMBER\", \"Order Number\"}, {\"BASE_UOM_CODE\", \"UOM\"}, {\"ACTUAL_QTY\", \"Actual QTY\"}, {\"LOCATION_CODE\", \"Location Wid\"}, {\"DOCUMENT_NUMBER\", \"Document Number\"}, {\"STANDARD_WEIGHT_FLAG\", \"STD Weight Flag\"}, {\"STANDARD_TEXT_KEY\", \"STD Text Key\"}, {\"LOCATION_TRANSFER_CODE\", \"Output sloc\"}, {\"STOCK_KEEPER_TRANSFER_CODE\", \"STK Keeper Transfer Code\"}, {\"BATCH\", \"Batch\"}, {\"STK_KEEPER_WID\", \"Booklet_ID\"}, {\"TOTAL_WEIGHT\", \"Total Weight\"}, {\"STANDARD_WEIGHT\", \"Standard Weight\"}, {\"TIME\", \"Time\"}, {\"COOLING_SCORE\", \"Cooling Score\"}, {\"PRONG_SCORE\", \"Prong Score\"}, {\"PRODUCTION_MATERIAL_TYPE\", \"Material Type\"}})",
-                  "in",
-                  "    #\"Renamed Columns\"</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
-                ]
-              }
-            ]
-          },
-          {
-            "name": "Partition 2020",
-            "mode": "import",
-            "source": {
-              "type": "m",
-              "expression": [
-                "let",
-                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
-                "    SELECT [TYPES]",
-                "      ,[DATE_KEY]",
-                "      ,[PLANT_WID]",
-                "      ,[MRP_CONTROLLER_WID]",
-                "      ,[PRODUCT_WID]",
-                "      ,[ORDER_NUMBER]",
-                "      ,[BASE_UOM_CODE]",
-                "      ,[ACTUAL_QTY]",
-                "      ,[STOCK_KEEPER_CODE]",
-                "      ,[LOCATION_CODE]",
-                "      ,[DOCUMENT_NUMBER]",
-                "      ,[Q10]",
-                "      ,[STANDARD_WEIGHT]",
-                "      ,[STANDARD_WEIGHT_FLAG]",
-                "      ,[STOCK_KEEPER_TRANSFER_CODE]",
-                "      ,[LOCATION_TRANSFER_CODE]",
-                "      ,[STANDARD_TEXT_KEY]",
-                "      ,[BATCH]",
-                "      ,[STK_KEEPER_WID]",
-                "      ,[TOTAL_WEIGHT]",
-                "      ,[STK_KEEPING_GROUP]",
-                "      ,[TIME]",
-                "      ,[STOCK_KEEPER_WID]",
-                "      ,[COOLING_SCORE]",
-                "      ,[PRONG_SCORE]",
-                "     ,[PRODUCTION_MATERIAL_TYPE]",
-                "  FROM [PNJ_ROLAP].[dbo].[W_VW_ACTUAL_PRODUCTION_F]",
-                "  WHERE [DATE_KEY] BETWEEN 20200101 AND 20201231\"),",
-                "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"STOCK_KEEPER_CODE\", \"STK Keeper Code\"},{\"ORDER_NUMBER\", \"Order Number\"}, {\"BASE_UOM_CODE\", \"UOM\"}, {\"ACTUAL_QTY\", \"Actual QTY\"}, {\"LOCATION_CODE\", \"Location Wid\"}, {\"DOCUMENT_NUMBER\", \"Document Number\"}, {\"STANDARD_WEIGHT_FLAG\", \"STD Weight Flag\"}, {\"STANDARD_TEXT_KEY\", \"STD Text Key\"}, {\"LOCATION_TRANSFER_CODE\", \"Output sloc\"}, {\"STOCK_KEEPER_TRANSFER_CODE\", \"STK Keeper Transfer Code\"}, {\"BATCH\", \"Batch\"}, {\"STK_KEEPER_WID\", \"Booklet_ID\"}, {\"TOTAL_WEIGHT\", \"Total Weight\"}, {\"STANDARD_WEIGHT\", \"Standard Weight\"}, {\"TIME\", \"Time\"}, {\"COOLING_SCORE\", \"Cooling Score\"}, {\"PRONG_SCORE\", \"Prong Score\"}, {\"PRODUCTION_MATERIAL_TYPE\", \"Material Type\"}})",
-                "in",
-                "    #\"Renamed Columns\""
-              ]
-            },
-            "annotations": [
-              {
-                "name": "QueryEditorSerialization",
-                "value": [
-                  "<?xml version=\"1.0\" encoding=\"UTF-16\"?><Gemini xmlns=\"QueryEditorSerialization\"><AnnotationContent><![CDATA[<RSQueryCommandText>let",
-                  "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
-                  "    SELECT [TYPES]",
-                  "      ,[DATE_KEY]",
-                  "      ,[PLANT_WID]",
-                  "      ,[MRP_CONTROLLER_WID]",
-                  "      ,[PRODUCT_WID]",
-                  "      ,[ORDER_NUMBER]",
-                  "      ,[BASE_UOM_CODE]",
-                  "      ,[ACTUAL_QTY]",
-                  "      ,[STOCK_KEEPER_CODE]",
-                  "      ,[LOCATION_CODE]",
-                  "      ,[DOCUMENT_NUMBER]",
-                  "      ,[Q10]",
-                  "      ,[STANDARD_WEIGHT]",
-                  "      ,[STANDARD_WEIGHT_FLAG]",
-                  "      ,[STOCK_KEEPER_TRANSFER_CODE]",
-                  "      ,[LOCATION_TRANSFER_CODE]",
-                  "      ,[STANDARD_TEXT_KEY]",
-                  "      ,[BATCH]",
-                  "      ,[STK_KEEPER_WID]",
-                  "      ,[TOTAL_WEIGHT]",
-                  "      ,[STK_KEEPING_GROUP]",
-                  "      ,[TIME]",
-                  "      ,[STOCK_KEEPER_WID]",
-                  "      ,[COOLING_SCORE]",
-                  "      ,[PRONG_SCORE]",
-                  "     ,[PRODUCTION_MATERIAL_TYPE]",
-                  "  FROM [PNJ_ROLAP].[dbo].[W_VW_ACTUAL_PRODUCTION_F]",
-                  "  WHERE [DATE_KEY] BETWEEN 20200101 AND 20201231\"),",
-                  "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"STOCK_KEEPER_CODE\", \"STK Keeper Code\"},{\"ORDER_NUMBER\", \"Order Number\"}, {\"BASE_UOM_CODE\", \"UOM\"}, {\"ACTUAL_QTY\", \"Actual QTY\"}, {\"LOCATION_CODE\", \"Location Wid\"}, {\"DOCUMENT_NUMBER\", \"Document Number\"}, {\"STANDARD_WEIGHT_FLAG\", \"STD Weight Flag\"}, {\"STANDARD_TEXT_KEY\", \"STD Text Key\"}, {\"LOCATION_TRANSFER_CODE\", \"Output sloc\"}, {\"STOCK_KEEPER_TRANSFER_CODE\", \"STK Keeper Transfer Code\"}, {\"BATCH\", \"Batch\"}, {\"STK_KEEPER_WID\", \"Booklet_ID\"}, {\"TOTAL_WEIGHT\", \"Total Weight\"}, {\"STANDARD_WEIGHT\", \"Standard Weight\"}, {\"TIME\", \"Time\"}, {\"COOLING_SCORE\", \"Cooling Score\"}, {\"PRONG_SCORE\", \"Prong Score\"}, {\"PRODUCTION_MATERIAL_TYPE\", \"Material Type\"}})",
-                  "in",
-                  "    #\"Renamed Columns\"</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
-                ]
-              }
-            ]
-          },
-          {
-            "name": "Partition Before 2019",
-            "mode": "import",
-            "source": {
-              "type": "m",
-              "expression": [
-                "let",
-                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
-                "    SELECT [TYPES]",
-                "      ,[DATE_KEY]",
-                "      ,[PLANT_WID]",
-                "      ,[MRP_CONTROLLER_WID]",
-                "      ,[PRODUCT_WID]",
-                "      ,[ORDER_NUMBER]",
-                "      ,[BASE_UOM_CODE]",
-                "      ,[ACTUAL_QTY]",
-                "      ,[STOCK_KEEPER_CODE]",
-                "      ,[LOCATION_CODE]",
-                "      ,[DOCUMENT_NUMBER]",
-                "      ,[Q10]",
-                "      ,[STANDARD_WEIGHT]",
-                "      ,[STANDARD_WEIGHT_FLAG]",
-                "      ,[STOCK_KEEPER_TRANSFER_CODE]",
-                "      ,[LOCATION_TRANSFER_CODE]",
-                "      ,[STANDARD_TEXT_KEY]",
-                "      ,[BATCH]",
-                "      ,[STK_KEEPER_WID]",
-                "      ,[TOTAL_WEIGHT]",
-                "      ,[STK_KEEPING_GROUP]",
-                "      ,[TIME]",
-                "      ,[STOCK_KEEPER_WID]",
-                "      ,[COOLING_SCORE]",
-                "      ,[PRONG_SCORE]",
-                "     ,[PRODUCTION_MATERIAL_TYPE]",
-                "  FROM [PNJ_ROLAP].[dbo].[W_VW_ACTUAL_PRODUCTION_F]",
-                "  WHERE [DATE_KEY] < 20200101\"),",
-                "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"STOCK_KEEPER_CODE\", \"STK Keeper Code\"},{\"ORDER_NUMBER\", \"Order Number\"}, {\"BASE_UOM_CODE\", \"UOM\"}, {\"ACTUAL_QTY\", \"Actual QTY\"}, {\"LOCATION_CODE\", \"Location Wid\"}, {\"DOCUMENT_NUMBER\", \"Document Number\"}, {\"STANDARD_WEIGHT_FLAG\", \"STD Weight Flag\"}, {\"STANDARD_TEXT_KEY\", \"STD Text Key\"}, {\"LOCATION_TRANSFER_CODE\", \"Output sloc\"}, {\"STOCK_KEEPER_TRANSFER_CODE\", \"STK Keeper Transfer Code\"}, {\"BATCH\", \"Batch\"}, {\"STK_KEEPER_WID\", \"Booklet_ID\"}, {\"TOTAL_WEIGHT\", \"Total Weight\"}, {\"STANDARD_WEIGHT\", \"Standard Weight\"}, {\"TIME\", \"Time\"}, {\"COOLING_SCORE\", \"Cooling Score\"}, {\"PRONG_SCORE\", \"Prong Score\"}, {\"PRODUCTION_MATERIAL_TYPE\", \"Material Type\"}})",
-                "in",
-                "    #\"Renamed Columns\""
-              ]
-            },
-            "annotations": [
-              {
-                "name": "QueryEditorSerialization",
-                "value": [
-                  "<?xml version=\"1.0\" encoding=\"UTF-16\"?><Gemini xmlns=\"QueryEditorSerialization\"><AnnotationContent><![CDATA[<RSQueryCommandText>let",
-                  "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
-                  "    SELECT [TYPES]",
-                  "      ,[DATE_KEY]",
-                  "      ,[PLANT_WID]",
-                  "      ,[MRP_CONTROLLER_WID]",
-                  "      ,[PRODUCT_WID]",
-                  "      ,[ORDER_NUMBER]",
-                  "      ,[BASE_UOM_CODE]",
-                  "      ,[ACTUAL_QTY]",
-                  "      ,[STOCK_KEEPER_CODE]",
-                  "      ,[LOCATION_CODE]",
-                  "      ,[DOCUMENT_NUMBER]",
-                  "      ,[Q10]",
-                  "      ,[STANDARD_WEIGHT]",
-                  "      ,[STANDARD_WEIGHT_FLAG]",
-                  "      ,[STOCK_KEEPER_TRANSFER_CODE]",
-                  "      ,[LOCATION_TRANSFER_CODE]",
-                  "      ,[STANDARD_TEXT_KEY]",
-                  "      ,[BATCH]",
-                  "      ,[STK_KEEPER_WID]",
-                  "      ,[TOTAL_WEIGHT]",
-                  "      ,[STK_KEEPING_GROUP]",
-                  "      ,[TIME]",
-                  "      ,[STOCK_KEEPER_WID]",
-                  "      ,[COOLING_SCORE]",
-                  "      ,[PRONG_SCORE]",
-                  "     ,[PRODUCTION_MATERIAL_TYPE]",
-                  "  FROM [PNJ_ROLAP].[dbo].[W_VW_ACTUAL_PRODUCTION_F]",
-                  "  WHERE [DATE_KEY] < 20200101\"),",
-                  "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"STOCK_KEEPER_CODE\", \"STK Keeper Code\"},{\"ORDER_NUMBER\", \"Order Number\"}, {\"BASE_UOM_CODE\", \"UOM\"}, {\"ACTUAL_QTY\", \"Actual QTY\"}, {\"LOCATION_CODE\", \"Location Wid\"}, {\"DOCUMENT_NUMBER\", \"Document Number\"}, {\"STANDARD_WEIGHT_FLAG\", \"STD Weight Flag\"}, {\"STANDARD_TEXT_KEY\", \"STD Text Key\"}, {\"LOCATION_TRANSFER_CODE\", \"Output sloc\"}, {\"STOCK_KEEPER_TRANSFER_CODE\", \"STK Keeper Transfer Code\"}, {\"BATCH\", \"Batch\"}, {\"STK_KEEPER_WID\", \"Booklet_ID\"}, {\"TOTAL_WEIGHT\", \"Total Weight\"}, {\"STANDARD_WEIGHT\", \"Standard Weight\"}, {\"TIME\", \"Time\"}, {\"COOLING_SCORE\", \"Cooling Score\"}, {\"PRONG_SCORE\", \"Prong Score\"}, {\"PRODUCTION_MATERIAL_TYPE\", \"Material Type\"}})",
+                  "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"STOCK_KEEPER_CODE\", \"STK Keeper Code\"},{\"ORDER_NUMBER\", \"Order Number\"}, {\"BASE_UOM_CODE\", \"UOM\"}, {\"ACTUAL_QTY\", \"Actual QTY\"}, {\"LOCATION_CODE\", \"Location Wid\"}, {\"DOCUMENT_NUMBER\", \"Document Number\"}, {\"STANDARD_WEIGHT_FLAG\", \"STD Weight Flag\"}, {\"STANDARD_TEXT_KEY\", \"STD Text Key\"}, {\"LOCATION_TRANSFER_CODE\", \"Output sloc\"}, {\"STOCK_KEEPER_TRANSFER_CODE\", \"STK Keeper Transfer Code\"}, {\"BATCH\", \"Batch\"}, {\"STK_KEEPER_BOOKLET_WID\", \"Booklet_ID\"}, {\"TOTAL_WEIGHT\", \"Total Weight\"}, {\"STANDARD_WEIGHT\", \"Standard Weight\"}, {\"TIME\", \"Time\"}, {\"COOLING_SCORE\", \"Cooling Score\"}, {\"PRONG_SCORE\", \"Prong Score\"}, {\"PRODUCTION_MATERIAL_TYPE\", \"Material Type\"}})",
                   "in",
                   "    #\"Renamed Columns\"</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
                 ]
@@ -4967,17 +4658,18 @@
                 "      ,[LOCATION_TRANSFER_CODE]",
                 "      ,[STANDARD_TEXT_KEY]",
                 "      ,[BATCH]",
-                "      ,[STK_KEEPER_WID]",
+                "      ,[STK_KEEPER_BOOKLET_WID]",
                 "      ,[TOTAL_WEIGHT]",
                 "      ,[STK_KEEPING_GROUP]",
                 "      ,[TIME]",
                 "      ,[STOCK_KEEPER_WID]",
+                "      ,[STOCK_KEEPER_TRANSFER_WID]",
                 "      ,[COOLING_SCORE]",
                 "      ,[PRONG_SCORE]",
-                "      ,[PRODUCTION_MATERIAL_TYPE]",
+                "     ,[PRODUCTION_MATERIAL_TYPE]",
                 "  FROM [PNJ_ROLAP].[dbo].[W_VW_ACTUAL_PRODUCTION_F]",
                 "  WHERE [DATE_KEY] BETWEEN CAST(Convert(CHAR(8),DATEADD(DAY,- 101,GETDATE()),112) as int) AND CAST(Convert(CHAR(8),DATEADD(DAY,- 7,GETDATE()),112) as int)\"),",
-                "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"STOCK_KEEPER_CODE\", \"STK Keeper Code\"},{\"ORDER_NUMBER\", \"Order Number\"}, {\"BASE_UOM_CODE\", \"UOM\"}, {\"ACTUAL_QTY\", \"Actual QTY\"}, {\"LOCATION_CODE\", \"Location Wid\"}, {\"DOCUMENT_NUMBER\", \"Document Number\"}, {\"STANDARD_WEIGHT_FLAG\", \"STD Weight Flag\"}, {\"STANDARD_TEXT_KEY\", \"STD Text Key\"}, {\"LOCATION_TRANSFER_CODE\", \"Output sloc\"}, {\"STOCK_KEEPER_TRANSFER_CODE\", \"STK Keeper Transfer Code\"}, {\"BATCH\", \"Batch\"}, {\"STK_KEEPER_WID\", \"Booklet_ID\"}, {\"TOTAL_WEIGHT\", \"Total Weight\"}, {\"STANDARD_WEIGHT\", \"Standard Weight\"}, {\"TIME\", \"Time\"}, {\"COOLING_SCORE\", \"Cooling Score\"}, {\"PRONG_SCORE\", \"Prong Score\"}, {\"PRODUCTION_MATERIAL_TYPE\", \"Material Type\"}})",
+                "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"STOCK_KEEPER_CODE\", \"STK Keeper Code\"},{\"ORDER_NUMBER\", \"Order Number\"}, {\"BASE_UOM_CODE\", \"UOM\"}, {\"ACTUAL_QTY\", \"Actual QTY\"}, {\"LOCATION_CODE\", \"Location Wid\"}, {\"DOCUMENT_NUMBER\", \"Document Number\"}, {\"STANDARD_WEIGHT_FLAG\", \"STD Weight Flag\"}, {\"STANDARD_TEXT_KEY\", \"STD Text Key\"}, {\"LOCATION_TRANSFER_CODE\", \"Output sloc\"}, {\"STOCK_KEEPER_TRANSFER_CODE\", \"STK Keeper Transfer Code\"}, {\"BATCH\", \"Batch\"}, {\"STK_KEEPER_BOOKLET_WID\", \"Booklet_ID\"}, {\"TOTAL_WEIGHT\", \"Total Weight\"}, {\"STANDARD_WEIGHT\", \"Standard Weight\"}, {\"TIME\", \"Time\"}, {\"COOLING_SCORE\", \"Cooling Score\"}, {\"PRONG_SCORE\", \"Prong Score\"}, {\"PRODUCTION_MATERIAL_TYPE\", \"Material Type\"}})",
                 "in",
                 "    #\"Renamed Columns\""
               ]
@@ -5006,17 +4698,354 @@
                   "      ,[LOCATION_TRANSFER_CODE]",
                   "      ,[STANDARD_TEXT_KEY]",
                   "      ,[BATCH]",
-                  "      ,[STK_KEEPER_WID]",
+                  "      ,[STK_KEEPER_BOOKLET_WID]",
                   "      ,[TOTAL_WEIGHT]",
                   "      ,[STK_KEEPING_GROUP]",
                   "      ,[TIME]",
                   "      ,[STOCK_KEEPER_WID]",
+                  "      ,[STOCK_KEEPER_TRANSFER_WID]",
                   "      ,[COOLING_SCORE]",
                   "      ,[PRONG_SCORE]",
-                  "      ,[PRODUCTION_MATERIAL_TYPE]",
+                  "     ,[PRODUCTION_MATERIAL_TYPE]",
                   "  FROM [PNJ_ROLAP].[dbo].[W_VW_ACTUAL_PRODUCTION_F]",
                   "  WHERE [DATE_KEY] BETWEEN CAST(Convert(CHAR(8),DATEADD(DAY,- 101,GETDATE()),112) as int) AND CAST(Convert(CHAR(8),DATEADD(DAY,- 7,GETDATE()),112) as int)\"),",
-                  "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"STOCK_KEEPER_CODE\", \"STK Keeper Code\"},{\"ORDER_NUMBER\", \"Order Number\"}, {\"BASE_UOM_CODE\", \"UOM\"}, {\"ACTUAL_QTY\", \"Actual QTY\"}, {\"LOCATION_CODE\", \"Location Wid\"}, {\"DOCUMENT_NUMBER\", \"Document Number\"}, {\"STANDARD_WEIGHT_FLAG\", \"STD Weight Flag\"}, {\"STANDARD_TEXT_KEY\", \"STD Text Key\"}, {\"LOCATION_TRANSFER_CODE\", \"Output sloc\"}, {\"STOCK_KEEPER_TRANSFER_CODE\", \"STK Keeper Transfer Code\"}, {\"BATCH\", \"Batch\"}, {\"STK_KEEPER_WID\", \"Booklet_ID\"}, {\"TOTAL_WEIGHT\", \"Total Weight\"}, {\"STANDARD_WEIGHT\", \"Standard Weight\"}, {\"TIME\", \"Time\"}, {\"COOLING_SCORE\", \"Cooling Score\"}, {\"PRONG_SCORE\", \"Prong Score\"}, {\"PRODUCTION_MATERIAL_TYPE\", \"Material Type\"}})",
+                  "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"STOCK_KEEPER_CODE\", \"STK Keeper Code\"},{\"ORDER_NUMBER\", \"Order Number\"}, {\"BASE_UOM_CODE\", \"UOM\"}, {\"ACTUAL_QTY\", \"Actual QTY\"}, {\"LOCATION_CODE\", \"Location Wid\"}, {\"DOCUMENT_NUMBER\", \"Document Number\"}, {\"STANDARD_WEIGHT_FLAG\", \"STD Weight Flag\"}, {\"STANDARD_TEXT_KEY\", \"STD Text Key\"}, {\"LOCATION_TRANSFER_CODE\", \"Output sloc\"}, {\"STOCK_KEEPER_TRANSFER_CODE\", \"STK Keeper Transfer Code\"}, {\"BATCH\", \"Batch\"}, {\"STK_KEEPER_BOOKLET_WID\", \"Booklet_ID\"}, {\"TOTAL_WEIGHT\", \"Total Weight\"}, {\"STANDARD_WEIGHT\", \"Standard Weight\"}, {\"TIME\", \"Time\"}, {\"COOLING_SCORE\", \"Cooling Score\"}, {\"PRONG_SCORE\", \"Prong Score\"}, {\"PRODUCTION_MATERIAL_TYPE\", \"Material Type\"}})",
+                  "in",
+                  "    #\"Renamed Columns\"</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Partition 2022",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
+                "    SELECT [TYPES]",
+                "      ,[DATE_KEY]",
+                "      ,[PLANT_WID]",
+                "      ,[MRP_CONTROLLER_WID]",
+                "      ,[PRODUCT_WID]",
+                "      ,[ORDER_NUMBER]",
+                "      ,[BASE_UOM_CODE]",
+                "      ,[ACTUAL_QTY]",
+                "      ,[STOCK_KEEPER_CODE]",
+                "      ,[LOCATION_CODE]",
+                "      ,[DOCUMENT_NUMBER]",
+                "      ,[Q10]",
+                "      ,[STANDARD_WEIGHT]",
+                "      ,[STANDARD_WEIGHT_FLAG]",
+                "      ,[STOCK_KEEPER_TRANSFER_CODE]",
+                "      ,[LOCATION_TRANSFER_CODE]",
+                "      ,[STANDARD_TEXT_KEY]",
+                "      ,[BATCH]",
+                "      ,[STK_KEEPER_BOOKLET_WID]",
+                "      ,[TOTAL_WEIGHT]",
+                "      ,[STK_KEEPING_GROUP]",
+                "      ,[TIME]",
+                "      ,[STOCK_KEEPER_WID]",
+                "      ,[STOCK_KEEPER_TRANSFER_WID]",
+                "      ,[COOLING_SCORE]",
+                "      ,[PRONG_SCORE]",
+                "     ,[PRODUCTION_MATERIAL_TYPE]",
+                "  FROM [PNJ_ROLAP].[dbo].[W_VW_ACTUAL_PRODUCTION_F]",
+                "  WHERE [DATE_KEY] BETWEEN 20220101 AND CAST(Convert(CHAR(8),DATEADD(DAY,- 101,GETDATE()),112) as int)\"),",
+                "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"STOCK_KEEPER_CODE\", \"STK Keeper Code\"},{\"ORDER_NUMBER\", \"Order Number\"}, {\"BASE_UOM_CODE\", \"UOM\"}, {\"ACTUAL_QTY\", \"Actual QTY\"}, {\"LOCATION_CODE\", \"Location Wid\"}, {\"DOCUMENT_NUMBER\", \"Document Number\"}, {\"STANDARD_WEIGHT_FLAG\", \"STD Weight Flag\"}, {\"STANDARD_TEXT_KEY\", \"STD Text Key\"}, {\"LOCATION_TRANSFER_CODE\", \"Output sloc\"}, {\"STOCK_KEEPER_TRANSFER_CODE\", \"STK Keeper Transfer Code\"}, {\"BATCH\", \"Batch\"}, {\"STK_KEEPER_BOOKLET_WID\", \"Booklet_ID\"}, {\"TOTAL_WEIGHT\", \"Total Weight\"}, {\"STANDARD_WEIGHT\", \"Standard Weight\"}, {\"TIME\", \"Time\"}, {\"COOLING_SCORE\", \"Cooling Score\"}, {\"PRONG_SCORE\", \"Prong Score\"}, {\"PRODUCTION_MATERIAL_TYPE\", \"Material Type\"}})",
+                "in",
+                "    #\"Renamed Columns\""
+              ]
+            },
+            "annotations": [
+              {
+                "name": "QueryEditorSerialization",
+                "value": [
+                  "<?xml version=\"1.0\" encoding=\"UTF-16\"?><Gemini xmlns=\"QueryEditorSerialization\"><AnnotationContent><![CDATA[<RSQueryCommandText>let",
+                  "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
+                  "    SELECT [TYPES]",
+                  "      ,[DATE_KEY]",
+                  "      ,[PLANT_WID]",
+                  "      ,[MRP_CONTROLLER_WID]",
+                  "      ,[PRODUCT_WID]",
+                  "      ,[ORDER_NUMBER]",
+                  "      ,[BASE_UOM_CODE]",
+                  "      ,[ACTUAL_QTY]",
+                  "      ,[STOCK_KEEPER_CODE]",
+                  "      ,[LOCATION_CODE]",
+                  "      ,[DOCUMENT_NUMBER]",
+                  "      ,[Q10]",
+                  "      ,[STANDARD_WEIGHT]",
+                  "      ,[STANDARD_WEIGHT_FLAG]",
+                  "      ,[STOCK_KEEPER_TRANSFER_CODE]",
+                  "      ,[LOCATION_TRANSFER_CODE]",
+                  "      ,[STANDARD_TEXT_KEY]",
+                  "      ,[BATCH]",
+                  "      ,[STK_KEEPER_BOOKLET_WID]",
+                  "      ,[TOTAL_WEIGHT]",
+                  "      ,[STK_KEEPING_GROUP]",
+                  "      ,[TIME]",
+                  "      ,[STOCK_KEEPER_WID]",
+                  "      ,[STOCK_KEEPER_TRANSFER_WID]",
+                  "      ,[COOLING_SCORE]",
+                  "      ,[PRONG_SCORE]",
+                  "     ,[PRODUCTION_MATERIAL_TYPE]",
+                  "  FROM [PNJ_ROLAP].[dbo].[W_VW_ACTUAL_PRODUCTION_F]",
+                  "  WHERE [DATE_KEY] BETWEEN 20220101 AND CAST(Convert(CHAR(8),DATEADD(DAY,- 101,GETDATE()),112) as int)\"),",
+                  "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"STOCK_KEEPER_CODE\", \"STK Keeper Code\"},{\"ORDER_NUMBER\", \"Order Number\"}, {\"BASE_UOM_CODE\", \"UOM\"}, {\"ACTUAL_QTY\", \"Actual QTY\"}, {\"LOCATION_CODE\", \"Location Wid\"}, {\"DOCUMENT_NUMBER\", \"Document Number\"}, {\"STANDARD_WEIGHT_FLAG\", \"STD Weight Flag\"}, {\"STANDARD_TEXT_KEY\", \"STD Text Key\"}, {\"LOCATION_TRANSFER_CODE\", \"Output sloc\"}, {\"STOCK_KEEPER_TRANSFER_CODE\", \"STK Keeper Transfer Code\"}, {\"BATCH\", \"Batch\"}, {\"STK_KEEPER_BOOKLET_WID\", \"Booklet_ID\"}, {\"TOTAL_WEIGHT\", \"Total Weight\"}, {\"STANDARD_WEIGHT\", \"Standard Weight\"}, {\"TIME\", \"Time\"}, {\"COOLING_SCORE\", \"Cooling Score\"}, {\"PRONG_SCORE\", \"Prong Score\"}, {\"PRODUCTION_MATERIAL_TYPE\", \"Material Type\"}})",
+                  "in",
+                  "    #\"Renamed Columns\"</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Partition 2021",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
+                "    SELECT [TYPES]",
+                "      ,[DATE_KEY]",
+                "      ,[PLANT_WID]",
+                "      ,[MRP_CONTROLLER_WID]",
+                "      ,[PRODUCT_WID]",
+                "      ,[ORDER_NUMBER]",
+                "      ,[BASE_UOM_CODE]",
+                "      ,[ACTUAL_QTY]",
+                "      ,[STOCK_KEEPER_CODE]",
+                "      ,[LOCATION_CODE]",
+                "      ,[DOCUMENT_NUMBER]",
+                "      ,[Q10]",
+                "      ,[STANDARD_WEIGHT]",
+                "      ,[STANDARD_WEIGHT_FLAG]",
+                "      ,[STOCK_KEEPER_TRANSFER_CODE]",
+                "      ,[LOCATION_TRANSFER_CODE]",
+                "      ,[STANDARD_TEXT_KEY]",
+                "      ,[BATCH]",
+                "      ,[STK_KEEPER_BOOKLET_WID]",
+                "      ,[TOTAL_WEIGHT]",
+                "      ,[STK_KEEPING_GROUP]",
+                "      ,[TIME]",
+                "      ,[STOCK_KEEPER_WID]",
+                "      ,[STOCK_KEEPER_TRANSFER_WID]",
+                "      ,[COOLING_SCORE]",
+                "      ,[PRONG_SCORE]",
+                "     ,[PRODUCTION_MATERIAL_TYPE]",
+                "  FROM [PNJ_ROLAP].[dbo].[W_VW_ACTUAL_PRODUCTION_F]",
+                "  WHERE  [DATE_KEY] BETWEEN 20210101 AND 20211231\"),",
+                "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"STOCK_KEEPER_CODE\", \"STK Keeper Code\"},{\"ORDER_NUMBER\", \"Order Number\"}, {\"BASE_UOM_CODE\", \"UOM\"}, {\"ACTUAL_QTY\", \"Actual QTY\"}, {\"LOCATION_CODE\", \"Location Wid\"}, {\"DOCUMENT_NUMBER\", \"Document Number\"}, {\"STANDARD_WEIGHT_FLAG\", \"STD Weight Flag\"}, {\"STANDARD_TEXT_KEY\", \"STD Text Key\"}, {\"LOCATION_TRANSFER_CODE\", \"Output sloc\"}, {\"STOCK_KEEPER_TRANSFER_CODE\", \"STK Keeper Transfer Code\"}, {\"BATCH\", \"Batch\"}, {\"STK_KEEPER_BOOKLET_WID\", \"Booklet_ID\"}, {\"TOTAL_WEIGHT\", \"Total Weight\"}, {\"STANDARD_WEIGHT\", \"Standard Weight\"}, {\"TIME\", \"Time\"}, {\"COOLING_SCORE\", \"Cooling Score\"}, {\"PRONG_SCORE\", \"Prong Score\"}, {\"PRODUCTION_MATERIAL_TYPE\", \"Material Type\"}})",
+                "in",
+                "    #\"Renamed Columns\""
+              ]
+            },
+            "annotations": [
+              {
+                "name": "QueryEditorSerialization",
+                "value": [
+                  "<?xml version=\"1.0\" encoding=\"UTF-16\"?><Gemini xmlns=\"QueryEditorSerialization\"><AnnotationContent><![CDATA[<RSQueryCommandText>let",
+                  "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
+                  "    SELECT [TYPES]",
+                  "      ,[DATE_KEY]",
+                  "      ,[PLANT_WID]",
+                  "      ,[MRP_CONTROLLER_WID]",
+                  "      ,[PRODUCT_WID]",
+                  "      ,[ORDER_NUMBER]",
+                  "      ,[BASE_UOM_CODE]",
+                  "      ,[ACTUAL_QTY]",
+                  "      ,[STOCK_KEEPER_CODE]",
+                  "      ,[LOCATION_CODE]",
+                  "      ,[DOCUMENT_NUMBER]",
+                  "      ,[Q10]",
+                  "      ,[STANDARD_WEIGHT]",
+                  "      ,[STANDARD_WEIGHT_FLAG]",
+                  "      ,[STOCK_KEEPER_TRANSFER_CODE]",
+                  "      ,[LOCATION_TRANSFER_CODE]",
+                  "      ,[STANDARD_TEXT_KEY]",
+                  "      ,[BATCH]",
+                  "      ,[STK_KEEPER_BOOKLET_WID]",
+                  "      ,[TOTAL_WEIGHT]",
+                  "      ,[STK_KEEPING_GROUP]",
+                  "      ,[TIME]",
+                  "      ,[STOCK_KEEPER_WID]",
+                  "      ,[STOCK_KEEPER_TRANSFER_WID]",
+                  "      ,[COOLING_SCORE]",
+                  "      ,[PRONG_SCORE]",
+                  "     ,[PRODUCTION_MATERIAL_TYPE]",
+                  "  FROM [PNJ_ROLAP].[dbo].[W_VW_ACTUAL_PRODUCTION_F]",
+                  "  WHERE  [DATE_KEY] BETWEEN 20210101 AND 20211231\"),",
+                  "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"STOCK_KEEPER_CODE\", \"STK Keeper Code\"},{\"ORDER_NUMBER\", \"Order Number\"}, {\"BASE_UOM_CODE\", \"UOM\"}, {\"ACTUAL_QTY\", \"Actual QTY\"}, {\"LOCATION_CODE\", \"Location Wid\"}, {\"DOCUMENT_NUMBER\", \"Document Number\"}, {\"STANDARD_WEIGHT_FLAG\", \"STD Weight Flag\"}, {\"STANDARD_TEXT_KEY\", \"STD Text Key\"}, {\"LOCATION_TRANSFER_CODE\", \"Output sloc\"}, {\"STOCK_KEEPER_TRANSFER_CODE\", \"STK Keeper Transfer Code\"}, {\"BATCH\", \"Batch\"}, {\"STK_KEEPER_BOOKLET_WID\", \"Booklet_ID\"}, {\"TOTAL_WEIGHT\", \"Total Weight\"}, {\"STANDARD_WEIGHT\", \"Standard Weight\"}, {\"TIME\", \"Time\"}, {\"COOLING_SCORE\", \"Cooling Score\"}, {\"PRONG_SCORE\", \"Prong Score\"}, {\"PRODUCTION_MATERIAL_TYPE\", \"Material Type\"}})",
+                  "in",
+                  "    #\"Renamed Columns\"</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Partition 2020",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
+                "    SELECT [TYPES]",
+                "      ,[DATE_KEY]",
+                "      ,[PLANT_WID]",
+                "      ,[MRP_CONTROLLER_WID]",
+                "      ,[PRODUCT_WID]",
+                "      ,[ORDER_NUMBER]",
+                "      ,[BASE_UOM_CODE]",
+                "      ,[ACTUAL_QTY]",
+                "      ,[STOCK_KEEPER_CODE]",
+                "      ,[LOCATION_CODE]",
+                "      ,[DOCUMENT_NUMBER]",
+                "      ,[Q10]",
+                "      ,[STANDARD_WEIGHT]",
+                "      ,[STANDARD_WEIGHT_FLAG]",
+                "      ,[STOCK_KEEPER_TRANSFER_CODE]",
+                "      ,[LOCATION_TRANSFER_CODE]",
+                "      ,[STANDARD_TEXT_KEY]",
+                "      ,[BATCH]",
+                "      ,[STK_KEEPER_BOOKLET_WID]",
+                "      ,[TOTAL_WEIGHT]",
+                "      ,[STK_KEEPING_GROUP]",
+                "      ,[TIME]",
+                "      ,[STOCK_KEEPER_WID]",
+                "      ,[STOCK_KEEPER_TRANSFER_WID]",
+                "      ,[COOLING_SCORE]",
+                "      ,[PRONG_SCORE]",
+                "     ,[PRODUCTION_MATERIAL_TYPE]",
+                "  FROM [PNJ_ROLAP].[dbo].[W_VW_ACTUAL_PRODUCTION_F]",
+                "  WHERE [DATE_KEY] BETWEEN 20200101 AND 20201231\"),",
+                "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"STOCK_KEEPER_CODE\", \"STK Keeper Code\"},{\"ORDER_NUMBER\", \"Order Number\"}, {\"BASE_UOM_CODE\", \"UOM\"}, {\"ACTUAL_QTY\", \"Actual QTY\"}, {\"LOCATION_CODE\", \"Location Wid\"}, {\"DOCUMENT_NUMBER\", \"Document Number\"}, {\"STANDARD_WEIGHT_FLAG\", \"STD Weight Flag\"}, {\"STANDARD_TEXT_KEY\", \"STD Text Key\"}, {\"LOCATION_TRANSFER_CODE\", \"Output sloc\"}, {\"STOCK_KEEPER_TRANSFER_CODE\", \"STK Keeper Transfer Code\"}, {\"BATCH\", \"Batch\"}, {\"STK_KEEPER_BOOKLET_WID\", \"Booklet_ID\"}, {\"TOTAL_WEIGHT\", \"Total Weight\"}, {\"STANDARD_WEIGHT\", \"Standard Weight\"}, {\"TIME\", \"Time\"}, {\"COOLING_SCORE\", \"Cooling Score\"}, {\"PRONG_SCORE\", \"Prong Score\"}, {\"PRODUCTION_MATERIAL_TYPE\", \"Material Type\"}})",
+                "in",
+                "    #\"Renamed Columns\""
+              ]
+            },
+            "annotations": [
+              {
+                "name": "QueryEditorSerialization",
+                "value": [
+                  "<?xml version=\"1.0\" encoding=\"UTF-16\"?><Gemini xmlns=\"QueryEditorSerialization\"><AnnotationContent><![CDATA[<RSQueryCommandText>let",
+                  "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
+                  "    SELECT [TYPES]",
+                  "      ,[DATE_KEY]",
+                  "      ,[PLANT_WID]",
+                  "      ,[MRP_CONTROLLER_WID]",
+                  "      ,[PRODUCT_WID]",
+                  "      ,[ORDER_NUMBER]",
+                  "      ,[BASE_UOM_CODE]",
+                  "      ,[ACTUAL_QTY]",
+                  "      ,[STOCK_KEEPER_CODE]",
+                  "      ,[LOCATION_CODE]",
+                  "      ,[DOCUMENT_NUMBER]",
+                  "      ,[Q10]",
+                  "      ,[STANDARD_WEIGHT]",
+                  "      ,[STANDARD_WEIGHT_FLAG]",
+                  "      ,[STOCK_KEEPER_TRANSFER_CODE]",
+                  "      ,[LOCATION_TRANSFER_CODE]",
+                  "      ,[STANDARD_TEXT_KEY]",
+                  "      ,[BATCH]",
+                  "      ,[STK_KEEPER_BOOKLET_WID]",
+                  "      ,[TOTAL_WEIGHT]",
+                  "      ,[STK_KEEPING_GROUP]",
+                  "      ,[TIME]",
+                  "      ,[STOCK_KEEPER_WID]",
+                  "      ,[STOCK_KEEPER_TRANSFER_WID]",
+                  "      ,[COOLING_SCORE]",
+                  "      ,[PRONG_SCORE]",
+                  "     ,[PRODUCTION_MATERIAL_TYPE]",
+                  "  FROM [PNJ_ROLAP].[dbo].[W_VW_ACTUAL_PRODUCTION_F]",
+                  "  WHERE [DATE_KEY] BETWEEN 20200101 AND 20201231\"),",
+                  "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"STOCK_KEEPER_CODE\", \"STK Keeper Code\"},{\"ORDER_NUMBER\", \"Order Number\"}, {\"BASE_UOM_CODE\", \"UOM\"}, {\"ACTUAL_QTY\", \"Actual QTY\"}, {\"LOCATION_CODE\", \"Location Wid\"}, {\"DOCUMENT_NUMBER\", \"Document Number\"}, {\"STANDARD_WEIGHT_FLAG\", \"STD Weight Flag\"}, {\"STANDARD_TEXT_KEY\", \"STD Text Key\"}, {\"LOCATION_TRANSFER_CODE\", \"Output sloc\"}, {\"STOCK_KEEPER_TRANSFER_CODE\", \"STK Keeper Transfer Code\"}, {\"BATCH\", \"Batch\"}, {\"STK_KEEPER_BOOKLET_WID\", \"Booklet_ID\"}, {\"TOTAL_WEIGHT\", \"Total Weight\"}, {\"STANDARD_WEIGHT\", \"Standard Weight\"}, {\"TIME\", \"Time\"}, {\"COOLING_SCORE\", \"Cooling Score\"}, {\"PRONG_SCORE\", \"Prong Score\"}, {\"PRODUCTION_MATERIAL_TYPE\", \"Material Type\"}})",
+                  "in",
+                  "    #\"Renamed Columns\"</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Partition Before 2019",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
+                "    SELECT [TYPES]",
+                "      ,[DATE_KEY]",
+                "      ,[PLANT_WID]",
+                "      ,[MRP_CONTROLLER_WID]",
+                "      ,[PRODUCT_WID]",
+                "      ,[ORDER_NUMBER]",
+                "      ,[BASE_UOM_CODE]",
+                "      ,[ACTUAL_QTY]",
+                "      ,[STOCK_KEEPER_CODE]",
+                "      ,[LOCATION_CODE]",
+                "      ,[DOCUMENT_NUMBER]",
+                "      ,[Q10]",
+                "      ,[STANDARD_WEIGHT]",
+                "      ,[STANDARD_WEIGHT_FLAG]",
+                "      ,[STOCK_KEEPER_TRANSFER_CODE]",
+                "      ,[LOCATION_TRANSFER_CODE]",
+                "      ,[STANDARD_TEXT_KEY]",
+                "      ,[BATCH]",
+                "      ,[STK_KEEPER_BOOKLET_WID]",
+                "      ,[TOTAL_WEIGHT]",
+                "      ,[STK_KEEPING_GROUP]",
+                "      ,[TIME]",
+                "      ,[STOCK_KEEPER_WID]",
+                "      ,[STOCK_KEEPER_TRANSFER_WID]",
+                "      ,[COOLING_SCORE]",
+                "      ,[PRONG_SCORE]",
+                "     ,[PRODUCTION_MATERIAL_TYPE]",
+                "  FROM [PNJ_ROLAP].[dbo].[W_VW_ACTUAL_PRODUCTION_F]",
+                "  WHERE [DATE_KEY] < 20200101\"),",
+                "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"STOCK_KEEPER_CODE\", \"STK Keeper Code\"},{\"ORDER_NUMBER\", \"Order Number\"}, {\"BASE_UOM_CODE\", \"UOM\"}, {\"ACTUAL_QTY\", \"Actual QTY\"}, {\"LOCATION_CODE\", \"Location Wid\"}, {\"DOCUMENT_NUMBER\", \"Document Number\"}, {\"STANDARD_WEIGHT_FLAG\", \"STD Weight Flag\"}, {\"STANDARD_TEXT_KEY\", \"STD Text Key\"}, {\"LOCATION_TRANSFER_CODE\", \"Output sloc\"}, {\"STOCK_KEEPER_TRANSFER_CODE\", \"STK Keeper Transfer Code\"}, {\"BATCH\", \"Batch\"}, {\"STK_KEEPER_BOOKLET_WID\", \"Booklet_ID\"}, {\"TOTAL_WEIGHT\", \"Total Weight\"}, {\"STANDARD_WEIGHT\", \"Standard Weight\"}, {\"TIME\", \"Time\"}, {\"COOLING_SCORE\", \"Cooling Score\"}, {\"PRONG_SCORE\", \"Prong Score\"}, {\"PRODUCTION_MATERIAL_TYPE\", \"Material Type\"}})",
+                "in",
+                "    #\"Renamed Columns\""
+              ]
+            },
+            "annotations": [
+              {
+                "name": "QueryEditorSerialization",
+                "value": [
+                  "<?xml version=\"1.0\" encoding=\"UTF-16\"?><Gemini xmlns=\"QueryEditorSerialization\"><AnnotationContent><![CDATA[<RSQueryCommandText>let",
+                  "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
+                  "    SELECT [TYPES]",
+                  "      ,[DATE_KEY]",
+                  "      ,[PLANT_WID]",
+                  "      ,[MRP_CONTROLLER_WID]",
+                  "      ,[PRODUCT_WID]",
+                  "      ,[ORDER_NUMBER]",
+                  "      ,[BASE_UOM_CODE]",
+                  "      ,[ACTUAL_QTY]",
+                  "      ,[STOCK_KEEPER_CODE]",
+                  "      ,[LOCATION_CODE]",
+                  "      ,[DOCUMENT_NUMBER]",
+                  "      ,[Q10]",
+                  "      ,[STANDARD_WEIGHT]",
+                  "      ,[STANDARD_WEIGHT_FLAG]",
+                  "      ,[STOCK_KEEPER_TRANSFER_CODE]",
+                  "      ,[LOCATION_TRANSFER_CODE]",
+                  "      ,[STANDARD_TEXT_KEY]",
+                  "      ,[BATCH]",
+                  "      ,[STK_KEEPER_BOOKLET_WID]",
+                  "      ,[TOTAL_WEIGHT]",
+                  "      ,[STK_KEEPING_GROUP]",
+                  "      ,[TIME]",
+                  "      ,[STOCK_KEEPER_WID]",
+                  "      ,[STOCK_KEEPER_TRANSFER_WID]",
+                  "      ,[COOLING_SCORE]",
+                  "      ,[PRONG_SCORE]",
+                  "     ,[PRODUCTION_MATERIAL_TYPE]",
+                  "  FROM [PNJ_ROLAP].[dbo].[W_VW_ACTUAL_PRODUCTION_F]",
+                  "  WHERE [DATE_KEY] < 20200101\"),",
+                  "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"STOCK_KEEPER_CODE\", \"STK Keeper Code\"},{\"ORDER_NUMBER\", \"Order Number\"}, {\"BASE_UOM_CODE\", \"UOM\"}, {\"ACTUAL_QTY\", \"Actual QTY\"}, {\"LOCATION_CODE\", \"Location Wid\"}, {\"DOCUMENT_NUMBER\", \"Document Number\"}, {\"STANDARD_WEIGHT_FLAG\", \"STD Weight Flag\"}, {\"STANDARD_TEXT_KEY\", \"STD Text Key\"}, {\"LOCATION_TRANSFER_CODE\", \"Output sloc\"}, {\"STOCK_KEEPER_TRANSFER_CODE\", \"STK Keeper Transfer Code\"}, {\"BATCH\", \"Batch\"}, {\"STK_KEEPER_BOOKLET_WID\", \"Booklet_ID\"}, {\"TOTAL_WEIGHT\", \"Total Weight\"}, {\"STANDARD_WEIGHT\", \"Standard Weight\"}, {\"TIME\", \"Time\"}, {\"COOLING_SCORE\", \"Cooling Score\"}, {\"PRONG_SCORE\", \"Prong Score\"}, {\"PRODUCTION_MATERIAL_TYPE\", \"Material Type\"}})",
                   "in",
                   "    #\"Renamed Columns\"</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
                 ]
@@ -5031,7 +5060,7 @@
               " CALCULATE(",
               "    CALCULATE(Sum('Fact - Actual Production'[Actual QTY]),",
               "\tFilter('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"IN\"),",
-              "\tFILTER('Fact - Actual Production', 'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\", \"1102\", \"1104\", \"1105\",\"1106\"}))",
+              "\tFILTER('Fact - Actual Production', 'Fact - Actual Production'[Filters STK Finish Goods] = 1))",
               ")",
               ""
             ],
@@ -5052,14 +5081,14 @@
               " ",
               " VAR GR = CALCULATE(sum('Fact - Actual Production'[Actual QTY]),",
               "Filter('Dim - Product', 'Dim - Product'[Product Group LV2] in {\"PS\", \"PT\", \"PG\", \"PP\"}),",
-              "Filter('Fact - Actual Production', 'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\",\"1102\", \"1104\", \"1105\", \"1106\"}),",
+              "Filter('Fact - Actual Production', 'Fact - Actual Production'[Filters STK Finish Goods] = 1),",
               "Filter('Fact - Actual Production', 'Fact - Actual Production'[STD Weight Flag] in {\"Failed\", \"Passed\"}),",
               "Filter('Fact - Actual Production', 'Fact - Actual Production'[Types] in {\"IN\"})",
               ")",
               "",
               "VAR Failed = CALCULATE(sum('Fact - Actual Production'[Actual QTY]),",
               "Filter('Dim - Product', 'Dim - Product'[Product Group LV2] in {\"PS\", \"PT\", \"PG\", \"PP\"}),",
-              "Filter('Fact - Actual Production', 'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\",\"1102\", \"1104\", \"1105\", \"1106\"}),",
+              "Filter('Fact - Actual Production', 'Fact - Actual Production'[Filters STK Finish Goods] = 1),",
               "Filter('Fact - Actual Production', 'Fact - Actual Production'[STD Weight Flag] = \"Failed\"),",
               "Filter('Fact - Actual Production', 'Fact - Actual Production'[Types] in {\"IN\"})",
               ")",
@@ -5072,14 +5101,14 @@
             "expression": [
               "  VAR GR = CALCULATE(sum('Fact - Actual Production'[Actual QTY]),",
               "Filter('Dim - Product', 'Dim - Product'[Product Group LV2] in {\"PS\", \"PT\", \"PG\", \"PP\"}),",
-              "Filter('Fact - Actual Production', 'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\",\"1102\", \"1104\", \"1105\", \"1106\"}),",
+              "Filter('Fact - Actual Production', 'Fact - Actual Production'[Filters STK Finish Goods] = 1),",
               "Filter('Fact - Actual Production', 'Fact - Actual Production'[STD Weight Flag] in {\"Failed\", \"Passed\"}),",
               "Filter('Fact - Actual Production', 'Fact - Actual Production'[Types] in {\"IN\"})",
               ")",
               "",
               "VAR Passed = CALCULATE(sum('Fact - Actual Production'[Actual QTY]),",
               "Filter('Dim - Product', 'Dim - Product'[Product Group LV2] in {\"PS\", \"PT\", \"PG\", \"PP\"}),",
-              "Filter('Fact - Actual Production', 'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\",\"1102\", \"1104\", \"1105\", \"1106\"}),",
+              "Filter('Fact - Actual Production', 'Fact - Actual Production'[Filters STK Finish Goods] = 1),",
               "Filter('Fact - Actual Production', 'Fact - Actual Production'[STD Weight Flag] = \"Passed\"),",
               "Filter('Fact - Actual Production', 'Fact - Actual Production'[Types] in {\"IN\"})",
               ")",
@@ -5093,7 +5122,7 @@
             "expression": [
               " CALCULATE(Sum('Fact - Actual Production'[Actual QTY]),",
               "Filter('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"IN\"),",
-              "FILTER('Fact - Actual Production', 'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\", \"1102\", \"1104\", \"1105\",\"1106\"} ||",
+              "FILTER('Fact - Actual Production', 'Fact - Actual Production'[Filters STK Finish Goods] = 1 ||",
               "'Fact - Actual Production'[STK Keeper Transfer Code] = \"F1018\"))",
               ""
             ],
@@ -5103,7 +5132,7 @@
             "name": "Total Weight Avg.",
             "expression": [
               " CALCULATE(sum('Fact - Actual Production'[Total Weight])/[.Qty GI Finish Goods],",
-              "FILTER('Fact - Actual Production', 'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\", \"1102\", \"1104\", \"1105\", \"1106\"})",
+              "FILTER('Fact - Actual Production', 'Fact - Actual Production'[Filters STK Finish Goods] = 1)",
               ")"
             ]
           },
@@ -5273,7 +5302,7 @@
             "expression": [
               " CALCULATE(sum('Fact - Actual Production'[Q10]) / sum('Fact - Actual Production'[Actual QTY]),",
               "Filter('Dim - Product', 'Dim - Product'[Product Group LV2] in {\"PS\", \"PT\", \"PG\", \"PP\"}),",
-              "Filter('Fact - Actual Production', 'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\",\"1102\", \"1104\", \"1105\", \"1106\"}),",
+              "Filter('Fact - Actual Production', 'Fact - Actual Production'[Filters STK Finish Goods] = 1),",
               "Filter('Fact - Actual Production', 'Fact - Actual Production'[STD Weight Flag] in {\"Failed\", \"Passed\"}),",
               "Filter('Fact - Actual Production', 'Fact - Actual Production'[Types] in {\"IN\"})",
               ")",
@@ -5296,7 +5325,7 @@
               "    filter ('Dim - Production Labor', [Productivity Type] = \"DIEM\")",
               "    )",
               "+ Calculate(",
-              "    IFERROR('Fact - Actual Production'[.Qty Output - Finished]/sum('Dim - Production Labor Planned'[Actual Resource]), BLANK()),",
+              "    IFERROR('Fact - Actual Production'[.Qty Output - Finished]/sum('Fact - Production Labor Planned'[Actual Resource]), BLANK()),",
               "    filter ('Dim - Production Labor', [Productivity Type] = \"SL\")",
               "    )"
             ],
@@ -5309,7 +5338,8 @@
               "CALCULATE(",
               "    SUM('Fact - Actual Production'[Actual QTY])*(-1),",
               "    FILTER ('Fact - Actual Production','Fact - Actual Production'[TYPES] = \"OUT\"),",
-              "    FILTER ('Dim - STK Keeper Finished Goods', 'Dim - STK Keeper Finished Goods'[Final Stage] = \"1\")) + 0"
+              "    FILTER('Dim - Production Labor STK IN', 'Dim - Production Labor STK IN'[Stock Keeper Type] = \"IN\")",
+              "    ) + 0"
             ]
           },
           {
@@ -5317,8 +5347,9 @@
             "expression": [
               " CALCULATE(",
               "    SUM('Fact - Actual Production'[Actual QTY])*(-1),",
-              "    FILTER ('Fact - Actual Production','Fact - Actual Production'[TYPES] = \"OUT\")",
-              "    ) - 'Fact - Actual Production'[.Qty Output - Finished]"
+              "    FILTER ('Fact - Actual Production','Fact - Actual Production'[TYPES] = \"OUT\"),",
+              "    FILTER('Dim - Production Labor STK IN', 'Dim - Production Labor STK IN'[Stock Keeper Type] = \"OUT\")",
+              "    ) + 0"
             ]
           },
           {
@@ -5347,12 +5378,12 @@
           },
           {
             "name": "%Completed Productivity",
-            "expression": " IFERROR('Fact - Actual Production'[.Actual Productivity]/'Dim - Production Labor Planned'[.Planned Productivity],\"\")",
+            "expression": " IFERROR('Fact - Actual Production'[.Actual Productivity]/'Fact - Production Labor Planned'[.Planned Productivity],\"\")",
             "formatString": "0.00%;-0.00%;0.00%"
           },
           {
             "name": "%Completed Qty",
-            "expression": " 'Fact - Actual Production'[.Actual Qty Out (TTD)]/sum('Dim - Production Labor Planned'[Planned Qty])",
+            "expression": " 'Fact - Actual Production'[.Actual Qty Out (TTD)]/sum('Fact - Production Labor Planned'[Planned Qty])",
             "formatString": "0.00%;-0.00%;0.00%"
           },
           {
@@ -5408,13 +5439,13 @@
           },
           {
             "name": "%TurnOver .Q10",
-            "expression": " 'Fact - Actual Production'[TurnOver .Q10]/sum('Dim - Production Labor Planned'[Planned TurnOver Q10])"
+            "expression": " 'Fact - Actual Production'[TurnOver .Q10]/sum('Fact - Production Labor Planned'[Planned TurnOver Q10])"
           },
           {
             "name": "%AVG TurnOver Q10",
             "expression": [
               "",
-              "'Fact - Actual Production'[AVG TurnOver .Q10]/sum('Dim - Production Labor Planned'[Planned TurnOver Q10])"
+              "'Fact - Actual Production'[AVG TurnOver .Q10]/sum('Fact - Production Labor Planned'[Planned TurnOver Q10])"
             ]
           },
           {
@@ -11012,11 +11043,6 @@
             "name": "Cancel Flag",
             "dataType": "boolean",
             "sourceColumn": "Cancel Flag"
-          },
-          {
-            "name": "SO_CREATED_DT",
-            "dataType": "int64",
-            "sourceColumn": "SO_CREATED_DT"
           }
         ],
         "partitions": [
@@ -11045,7 +11071,7 @@
                 "      ,[SALES_ORDER_TYPE]",
                 "--      ,[REQUIREMENT_DT]",
                 "      ,ACTUAL_DEL_DT",
-                "      ,SO_CREATED_DT",
+                "--      ,SO_CREATED_DT",
                 "      ,PPA_CREATED_DT",
                 "      ,CANCEL_PRODUCTION_ORDER_FLG",
                 "",
@@ -11121,9 +11147,9 @@
                 "      ,[SALES_ORDER_TYPE]",
                 "--      ,[REQUIREMENT_DT]",
                 "      ,ACTUAL_DEL_DT",
-                "      ,SO_CREATED_DT",
+                "--      ,SO_CREATED_DT",
                 "      ,PPA_CREATED_DT",
-                ",CANCEL_PRODUCTION_ORDER_FLG",
+                "      ,CANCEL_PRODUCTION_ORDER_FLG",
                 "",
                 "",
                 "FROM [PNJ_ROLAP].[dbo].[W_VW_PRODUCTION_PLAN_ORDER_F]",
@@ -11157,9 +11183,9 @@
                   "      ,[SALES_ORDER_TYPE]",
                   "--      ,[REQUIREMENT_DT]",
                   "      ,ACTUAL_DEL_DT",
-                  "      ,SO_CREATED_DT",
+                  "--      ,SO_CREATED_DT",
                   "      ,PPA_CREATED_DT",
-                  ",CANCEL_PRODUCTION_ORDER_FLG",
+                  "      ,CANCEL_PRODUCTION_ORDER_FLG",
                   "",
                   "",
                   "FROM [PNJ_ROLAP].[dbo].[W_VW_PRODUCTION_PLAN_ORDER_F]",
@@ -11197,7 +11223,7 @@
                 "      ,[SALES_ORDER_TYPE]",
                 "--      ,[REQUIREMENT_DT]",
                 "      ,ACTUAL_DEL_DT",
-                "      ,SO_CREATED_DT",
+                "--      ,SO_CREATED_DT",
                 "      ,PPA_CREATED_DT",
                 "      ,CANCEL_PRODUCTION_ORDER_FLG",
                 "",
@@ -11233,7 +11259,7 @@
                   "      ,[SALES_ORDER_TYPE]",
                   "--      ,[REQUIREMENT_DT]",
                   "      ,ACTUAL_DEL_DT",
-                  "      ,SO_CREATED_DT",
+                  "--      ,SO_CREATED_DT",
                   "      ,PPA_CREATED_DT",
                   "      ,CANCEL_PRODUCTION_ORDER_FLG",
                   "",
@@ -11273,7 +11299,7 @@
                 "      ,[SALES_ORDER_TYPE]",
                 "--      ,[REQUIREMENT_DT]",
                 "      ,ACTUAL_DEL_DT",
-                "      ,SO_CREATED_DT",
+                "--      ,SO_CREATED_DT",
                 "      ,PPA_CREATED_DT",
                 "      ,CANCEL_PRODUCTION_ORDER_FLG",
                 "",
@@ -11309,7 +11335,7 @@
                   "      ,[SALES_ORDER_TYPE]",
                   "--      ,[REQUIREMENT_DT]",
                   "      ,ACTUAL_DEL_DT",
-                  "      ,SO_CREATED_DT",
+                  "--      ,SO_CREATED_DT",
                   "      ,PPA_CREATED_DT",
                   "      ,CANCEL_PRODUCTION_ORDER_FLG",
                   "",
@@ -13557,38 +13583,6 @@
         ]
       },
       {
-        "name": "Dim - Booklet",
-        "columns": [
-          {
-            "name": "STK Keeper Code",
-            "dataType": "string",
-            "sourceColumn": "STK Keeper Code"
-          },
-          {
-            "name": "STK Keeper Group",
-            "dataType": "string",
-            "sourceColumn": "STK Keeper Group"
-          }
-        ],
-        "partitions": [
-          {
-            "name": "Partition",
-            "dataView": "full",
-            "source": {
-              "type": "m",
-              "expression": [
-                "let",
-                "    Source = #\"SQL/192 168 3 31;PNJ_ROLAP\",",
-                "    dbo_W_VW_BOOKLET_D = Source{[Schema=\"dbo\",Item=\"W_VW_BOOKLET_D\"]}[Data],",
-                "    #\"Renamed Columns\" = Table.RenameColumns(dbo_W_VW_BOOKLET_D,{{\"STK_KEEPING_CODE\", \"STK Keeper Code\"}, {\"STK_KEEPING_GROUP\", \"STK Keeper Group\"}})",
-                "in",
-                "    #\"Renamed Columns\""
-              ]
-            }
-          }
-        ]
-      },
-      {
         "name": "Fact - PO SO Schedule Line",
         "columns": [
           {
@@ -15071,8 +15065,8 @@
             "name": "GR .Net Qty (F. Goods)",
             "expression": [
               " CALCULATE(Sum( 'Fact - Actual Production'[Actual QTY]),",
-              "FILTER('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"In\" &&",
-              "'Fact - Actual Production'[STK Keeper Code] in {\"1100\", \"1101\", \"1102\", \"1104\", \"1105\", \"1106\"}))\t",
+              "FILTER('Fact - Actual Production', 'Fact - Actual Production'[TYPES] = \"IN\" &&",
+              "'Fact - Actual Production'[Filters STK Finish Goods] = 1))\t",
               ""
             ],
             "formatString": "#,0"
@@ -18534,17 +18528,53 @@
         ]
       },
       {
-        "name": "Dim - STK Keeper Finished Goods",
+        "name": "Dim - Production Labor STK IN",
         "columns": [
           {
-            "name": "STK Keeper Code",
-            "dataType": "string",
-            "sourceColumn": "STK Keeper Code"
+            "name": "ROW_WID",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "ROW_WID"
           },
           {
-            "name": "Final Stage",
+            "name": "Area Code",
             "dataType": "string",
-            "sourceColumn": "Final Stage"
+            "sourceColumn": "Area Code"
+          },
+          {
+            "name": "Team Code",
+            "dataType": "string",
+            "sourceColumn": "Team Code"
+          },
+          {
+            "name": "Team Name",
+            "dataType": "string",
+            "sourceColumn": "Team Name"
+          },
+          {
+            "name": "Stock Keeper Code",
+            "dataType": "string",
+            "sourceColumn": "Stock Keeper Code"
+          },
+          {
+            "name": "Effect From DT",
+            "dataType": "int64",
+            "sourceColumn": "Effect From DT"
+          },
+          {
+            "name": "Effect To DT",
+            "dataType": "int64",
+            "sourceColumn": "Effect To DT"
+          },
+          {
+            "name": "Delivery Type",
+            "dataType": "string",
+            "sourceColumn": "Delivery Type"
+          },
+          {
+            "name": "Stock Keeper Type",
+            "dataType": "string",
+            "sourceColumn": "Stock Keeper Type"
           }
         ],
         "partitions": [
@@ -18556,12 +18586,16 @@
               "expression": [
                 "let",
                 "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
-                "    SELECT ",
-                "      [STOCK_KEEPER_CODE]",
-                "      ,[FINAL_STAGE]",
-                "    FROM [PNJ_ROLAP].[dbo].[W_VW_PRODUCTION_LABOR_D]",
-                "    WHERE [FINAL_STAGE] = 1 \"),",
-                "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"STOCK_KEEPER_CODE\", \"STK Keeper Code\"}, {\"FINAL_STAGE\", \"Final Stage\"}})",
+                "    SELECT [ROW_WID]",
+                "      ,[AREA_CODE]",
+                "      ,[TEAM_CODE]",
+                "      ,[TEAM_NAME]",
+                "      ,[STOCK_KEEPER_CODE]",
+                "      ,[STOCK_KEEPER_TYPE]",
+                "      ,[EFFECT_FROM_DT_WID]",
+                "      ,[EFFECT_TO_DT_WID]",
+                "  FROM [PNJ_ROLAP].[dbo].[W_VW_PRODUCTION_LABOR_D]\"),",
+                "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"STOCK_KEEPER_CODE\", \"Stock Keeper Code\"}, {\"AREA_CODE\", \"Area Code\"}, {\"TEAM_CODE\", \"Team Code\"}, {\"TEAM_NAME\", \"Team Name\"}, {\"EFFECT_FROM_DT_WID\", \"Effect From DT\"}, {\"EFFECT_TO_DT_WID\", \"Effect To DT\"}, {\"STOCK_KEEPER_TYPE\", \"Stock Keeper Type\"}})",
                 "in",
                 "    #\"Renamed Columns\""
               ]
@@ -18570,409 +18604,7 @@
         ]
       },
       {
-        "name": "Fact - PO Schedule Line Z01",
-        "columns": [
-          {
-            "name": "Types",
-            "dataType": "string",
-            "sourceColumn": "Types"
-          },
-          {
-            "name": "PURCH_ORDER_NUM",
-            "dataType": "string",
-            "sourceColumn": "PURCH_ORDER_NUM"
-          },
-          {
-            "name": "PURCH_ORDER_ITEM",
-            "dataType": "string",
-            "sourceColumn": "PURCH_ORDER_ITEM"
-          },
-          {
-            "name": "PURCH_ORDER_TYPE",
-            "dataType": "string",
-            "sourceColumn": "PURCH_ORDER_TYPE"
-          },
-          {
-            "name": "SPLR_ACCT_NUM",
-            "dataType": "string",
-            "sourceColumn": "SPLR_ACCT_NUM"
-          },
-          {
-            "name": "ORDERED_ON_DT",
-            "dataType": "int64",
-            "sourceColumn": "ORDERED_ON_DT"
-          },
-          {
-            "name": "ORDER_QTY",
-            "dataType": "double",
-            "sourceColumn": "ORDER_QTY"
-          },
-          {
-            "name": "ALLOCATED_ORDER_QTY",
-            "dataType": "double",
-            "sourceColumn": "ALLOCATED_ORDER_QTY"
-          },
-          {
-            "name": "CONFIRMED_QTY",
-            "dataType": "int64",
-            "sourceColumn": "CONFIRMED_QTY"
-          },
-          {
-            "name": "TARGET_QTY",
-            "dataType": "double",
-            "sourceColumn": "TARGET_QTY"
-          },
-          {
-            "name": "UOM_CODE",
-            "dataType": "string",
-            "sourceColumn": "UOM_CODE"
-          },
-          {
-            "name": "COMPANY_WID",
-            "dataType": "int64",
-            "sourceColumn": "COMPANY_WID"
-          },
-          {
-            "name": "PLANT_WID",
-            "dataType": "int64",
-            "sourceColumn": "PLANT_WID"
-          },
-          {
-            "name": "STORAGE_LOC",
-            "dataType": "string",
-            "sourceColumn": "STORAGE_LOC"
-          },
-          {
-            "name": "PRODUCT_WID",
-            "dataType": "int64",
-            "sourceColumn": "PRODUCT_WID"
-          },
-          {
-            "name": "SUPPLIER_WID",
-            "dataType": "int64",
-            "sourceColumn": "SUPPLIER_WID"
-          },
-          {
-            "name": "CUSTOMER_WID",
-            "dataType": "int64",
-            "sourceColumn": "CUSTOMER_WID"
-          },
-          {
-            "name": "PURCH_GROUP_WID",
-            "dataType": "int64",
-            "sourceColumn": "PURCH_GROUP_WID"
-          },
-          {
-            "name": "STORAGE_LOC_WID",
-            "dataType": "int64",
-            "sourceColumn": "STORAGE_LOC_WID"
-          },
-          {
-            "name": "PURCH_ORDER_STATUS",
-            "dataType": "string",
-            "sourceColumn": "PURCH_ORDER_STATUS"
-          },
-          {
-            "name": "PURCH_ORDER_GRP",
-            "dataType": "string",
-            "sourceColumn": "PURCH_ORDER_GRP"
-          },
-          {
-            "name": "Q10_QTY",
-            "dataType": "double",
-            "sourceColumn": "Q10_QTY"
-          },
-          {
-            "name": "REQ_DELIVERY_DT",
-            "dataType": "int64",
-            "sourceColumn": "REQ_DELIVERY_DT"
-          },
-          {
-            "name": "DELIVERY_DT",
-            "dataType": "int64",
-            "sourceColumn": "DELIVERY_DT"
-          },
-          {
-            "name": "SCHEDULE_QTY",
-            "dataType": "int64",
-            "sourceColumn": "SCHEDULE_QTY"
-          },
-          {
-            "name": "RELEASE_STATE",
-            "dataType": "string",
-            "sourceColumn": "RELEASE_STATE"
-          },
-          {
-            "name": "GR_GI_DT",
-            "dataType": "int64",
-            "sourceColumn": "GR_GI_DT"
-          },
-          {
-            "name": "GR_GI_QTY",
-            "dataType": "double",
-            "sourceColumn": "GR_GI_QTY"
-          },
-          {
-            "name": "SCHEDULE_LINE_NUM",
-            "dataType": "int64",
-            "sourceColumn": "SCHEDULE_LINE_NUM"
-          },
-          {
-            "name": "NET_AMT",
-            "dataType": "double",
-            "sourceColumn": "NET_AMT"
-          }
-        ],
-        "partitions": [
-          {
-            "name": "Partition",
-            "dataView": "full",
-            "source": {
-              "type": "m",
-              "expression": [
-                "let",
-                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
-                "    SELECT [Types]",
-                "      ,[PURCH_ORDER_NUM]",
-                "      ,[PURCH_ORDER_ITEM]",
-                "      ,[PURCH_ORDER_TYPE]",
-                "      ,[SPLR_ACCT_NUM]",
-                "      ,[ORDERED_ON_DT]",
-                "      ,[ORDER_QTY]",
-                "      ,[ALLOCATED_ORDER_QTY]",
-                "      ,[CONFIRMED_QTY]",
-                "      ,[TARGET_QTY]",
-                "      ,[UOM_CODE]",
-                "      ,[COMPANY_WID]",
-                "      ,[PLANT_WID]",
-                "      ,[STORAGE_LOC]",
-                "      ,[PRODUCT_WID]",
-                "      ,[SUPPLIER_WID]",
-                "      ,[CUSTOMER_WID]",
-                "      ,[PURCH_GROUP_WID]",
-                "      ,[STORAGE_LOC_WID]",
-                "      ,[PURCH_ORDER_STATUS]",
-                "      ,[PURCH_ORDER_GRP]",
-                "      ,[Q10_QTY]",
-                "      ,[REQ_DELIVERY_DT]",
-                "      ,[DELIVERY_DT]",
-                "      ,[SCHEDULE_QTY]",
-                "      ,[RELEASE_STATE]",
-                "      ,[GR_GI_DT]",
-                "      ,[GR_GI_QTY]",
-                "      ,[SCHEDULE_LINE_NUM]",
-                "      ,[NET_AMT]",
-                "  FROM [PNJ_ROLAP].[dbo].[W_VW_PO_SCHEDULE_LINE_Z01_F]\")",
-                "in",
-                "    Source"
-              ]
-            }
-          }
-        ]
-      },
-      {
-        "name": "Fact - PO Schedule Line Z06",
-        "columns": [
-          {
-            "name": "Types",
-            "dataType": "string",
-            "sourceColumn": "Types"
-          },
-          {
-            "name": "PURCH_ORDER_NUM",
-            "dataType": "string",
-            "sourceColumn": "PURCH_ORDER_NUM"
-          },
-          {
-            "name": "PURCH_ORDER_ITEM",
-            "dataType": "string",
-            "sourceColumn": "PURCH_ORDER_ITEM"
-          },
-          {
-            "name": "PURCH_ORDER_TYPE",
-            "dataType": "string",
-            "sourceColumn": "PURCH_ORDER_TYPE"
-          },
-          {
-            "name": "SPLR_ACCT_NUM",
-            "dataType": "string",
-            "sourceColumn": "SPLR_ACCT_NUM"
-          },
-          {
-            "name": "ORDERED_ON_DT",
-            "dataType": "int64",
-            "sourceColumn": "ORDERED_ON_DT"
-          },
-          {
-            "name": "ORDER_QTY",
-            "dataType": "double",
-            "sourceColumn": "ORDER_QTY"
-          },
-          {
-            "name": "ALLOCATED_ORDER_QTY",
-            "dataType": "double",
-            "sourceColumn": "ALLOCATED_ORDER_QTY"
-          },
-          {
-            "name": "CONFIRMED_QTY",
-            "dataType": "int64",
-            "sourceColumn": "CONFIRMED_QTY"
-          },
-          {
-            "name": "TARGET_QTY",
-            "dataType": "double",
-            "sourceColumn": "TARGET_QTY"
-          },
-          {
-            "name": "UOM_CODE",
-            "dataType": "string",
-            "sourceColumn": "UOM_CODE"
-          },
-          {
-            "name": "COMPANY_WID",
-            "dataType": "int64",
-            "sourceColumn": "COMPANY_WID"
-          },
-          {
-            "name": "PLANT_WID",
-            "dataType": "int64",
-            "sourceColumn": "PLANT_WID"
-          },
-          {
-            "name": "STORAGE_LOC",
-            "dataType": "string",
-            "sourceColumn": "STORAGE_LOC"
-          },
-          {
-            "name": "PRODUCT_WID",
-            "dataType": "int64",
-            "sourceColumn": "PRODUCT_WID"
-          },
-          {
-            "name": "SUPPLIER_WID",
-            "dataType": "int64",
-            "sourceColumn": "SUPPLIER_WID"
-          },
-          {
-            "name": "CUSTOMER_WID",
-            "dataType": "int64",
-            "sourceColumn": "CUSTOMER_WID"
-          },
-          {
-            "name": "PURCH_GROUP_WID",
-            "dataType": "int64",
-            "sourceColumn": "PURCH_GROUP_WID"
-          },
-          {
-            "name": "STORAGE_LOC_WID",
-            "dataType": "int64",
-            "sourceColumn": "STORAGE_LOC_WID"
-          },
-          {
-            "name": "PURCH_ORDER_STATUS",
-            "dataType": "string",
-            "sourceColumn": "PURCH_ORDER_STATUS"
-          },
-          {
-            "name": "PURCH_ORDER_GRP",
-            "dataType": "string",
-            "sourceColumn": "PURCH_ORDER_GRP"
-          },
-          {
-            "name": "Q10_QTY",
-            "dataType": "double",
-            "sourceColumn": "Q10_QTY"
-          },
-          {
-            "name": "REQ_DELIVERY_DT",
-            "dataType": "int64",
-            "sourceColumn": "REQ_DELIVERY_DT"
-          },
-          {
-            "name": "DELIVERY_DT",
-            "dataType": "int64",
-            "sourceColumn": "DELIVERY_DT"
-          },
-          {
-            "name": "SCHEDULE_QTY",
-            "dataType": "int64",
-            "sourceColumn": "SCHEDULE_QTY"
-          },
-          {
-            "name": "RELEASE_STATE",
-            "dataType": "string",
-            "sourceColumn": "RELEASE_STATE"
-          },
-          {
-            "name": "GR_GI_DT",
-            "dataType": "int64",
-            "sourceColumn": "GR_GI_DT"
-          },
-          {
-            "name": "GR_GI_QTY",
-            "dataType": "double",
-            "sourceColumn": "GR_GI_QTY"
-          },
-          {
-            "name": "SCHEDULE_LINE_NUM",
-            "dataType": "int64",
-            "sourceColumn": "SCHEDULE_LINE_NUM"
-          },
-          {
-            "name": "NET_AMT",
-            "dataType": "double",
-            "sourceColumn": "NET_AMT"
-          }
-        ],
-        "partitions": [
-          {
-            "name": "Partition",
-            "dataView": "full",
-            "source": {
-              "type": "m",
-              "expression": [
-                "let",
-                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
-                "    SELECT [Types]",
-                "      ,[PURCH_ORDER_NUM]",
-                "      ,[PURCH_ORDER_ITEM]",
-                "      ,[PURCH_ORDER_TYPE]",
-                "      ,[SPLR_ACCT_NUM]",
-                "      ,[ORDERED_ON_DT]",
-                "      ,[ORDER_QTY]",
-                "      ,[ALLOCATED_ORDER_QTY]",
-                "      ,[CONFIRMED_QTY]",
-                "      ,[TARGET_QTY]",
-                "      ,[UOM_CODE]",
-                "      ,[COMPANY_WID]",
-                "      ,[PLANT_WID]",
-                "      ,[STORAGE_LOC]",
-                "      ,[PRODUCT_WID]",
-                "      ,[SUPPLIER_WID]",
-                "      ,[CUSTOMER_WID]",
-                "      ,[PURCH_GROUP_WID]",
-                "      ,[STORAGE_LOC_WID]",
-                "      ,[PURCH_ORDER_STATUS]",
-                "      ,[PURCH_ORDER_GRP]",
-                "      ,[Q10_QTY]",
-                "      ,[REQ_DELIVERY_DT]",
-                "      ,[DELIVERY_DT]",
-                "      ,[SCHEDULE_QTY]",
-                "      ,[RELEASE_STATE]",
-                "      ,[GR_GI_DT]",
-                "      ,[GR_GI_QTY]",
-                "      ,[SCHEDULE_LINE_NUM]",
-                "      ,[NET_AMT]",
-                "  FROM [PNJ_ROLAP].[dbo].[W_VW_PO_SCHEDULE_LINE_Z06_F]\")",
-                "in",
-                "    Source"
-              ]
-            }
-          }
-        ]
-      },
-      {
-        "name": "Dim - Production Labor Planned",
+        "name": "Fact - Production Labor Planned",
         "columns": [
           {
             "name": "Date Key",
@@ -19057,13 +18689,13 @@
             "name": ".Planned Productivity",
             "expression": [
               " ",
-              "Calculate(sumx('Dim - Production Labor Planned', 'Dim - Production Labor Planned'[Planned Resource] * 'Dim - Production Labor Planned'[Working Day Standard]), Filter ('Dim - Production Labor', [Productivity Type] = \"DIEM\"))",
-              "+ Calculate(sum('Dim - Production Labor Planned'[Planned Productivity]), Filter ('Dim - Production Labor', [Productivity Type] = \"SL\"))"
+              "Calculate(sumx('Fact - Production Labor Planned', 'Fact - Production Labor Planned'[Planned Resource] * 'Fact - Production Labor Planned'[Working Day Standard]), Filter ('Dim - Production Labor', [Productivity Type] = \"DIEM\"))",
+              "+ Calculate(sum('Fact - Production Labor Planned'[Planned Productivity]), Filter ('Dim - Production Labor', [Productivity Type] = \"SL\"))"
             ]
           },
           {
             "name": "%Human Resource",
-            "expression": " sum('Dim - Production Labor Planned'[Actual Resource])/sum('Dim - Production Labor Planned'[Planned Resource])",
+            "expression": " sum('Fact - Production Labor Planned'[Actual Resource])/sum('Fact - Production Labor Planned'[Planned Resource])",
             "formatString": "#,0%;-#,0%;#,0%"
           }
         ]
@@ -19106,6 +18738,16 @@
             "dataType": "int64",
             "isHidden": true,
             "sourceColumn": "ROW_WID"
+          },
+          {
+            "name": "Effect From DT",
+            "dataType": "int64",
+            "sourceColumn": "Effect From DT"
+          },
+          {
+            "name": "Effect To DT",
+            "dataType": "int64",
+            "sourceColumn": "Effect To DT"
           }
         ],
         "partitions": [
@@ -19121,12 +18763,16 @@
                 "      ,[TEAM_CODE]",
                 "      ,[TEAM_NAME]",
                 "      ,[STOCK_KEEPER_CODE]",
+                "      --,[STOCK_KEEPER_TYPE]",
                 "      ,[PRODUCTIVITY_TYPE]",
                 "      ,[SCORE_TYPE]",
+                "      --,[DELIVERY_TYPE]",
+                "      ,[EFFECT_FROM_DT_WID]",
+                "      ,[EFFECT_TO_DT_WID]",
                 "      ,[ROW_WID]",
                 "    FROM [PNJ_ROLAP].[dbo].[W_VW_PRODUCTION_LABOR_D]",
-                "    WHERE [FINAL_STAGE] IS NULL \"),",
-                "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"AREA_CODE\", \"Area Code\"}, {\"TEAM_CODE\", \"Team Code\"}, {\"TEAM_NAME\", \"Team Name\"}, {\"STOCK_KEEPER_CODE\", \"STK Keeper Code\"}, {\"PRODUCTIVITY_TYPE\", \"Productivity Type\"}, {\"SCORE_TYPE\", \"Score Type\"}})",
+                "    WHERE [STOCK_KEEPER_TYPE] = 'OUT'\"),",
+                "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"AREA_CODE\", \"Area Code\"}, {\"TEAM_CODE\", \"Team Code\"}, {\"TEAM_NAME\", \"Team Name\"}, {\"STOCK_KEEPER_CODE\", \"STK Keeper Code\"}, {\"PRODUCTIVITY_TYPE\", \"Productivity Type\"}, {\"SCORE_TYPE\", \"Score Type\"}, {\"EFFECT_FROM_DT_WID\", \"Effect From DT\"}, {\"EFFECT_TO_DT_WID\", \"Effect To DT\"}})",
                 "in",
                 "    #\"Renamed Columns\""
               ]
@@ -19972,6 +19618,408 @@
             }
           }
         ]
+      },
+      {
+        "name": "Fact - PO Schedule Line Z01",
+        "columns": [
+          {
+            "name": "Types",
+            "dataType": "string",
+            "sourceColumn": "Types"
+          },
+          {
+            "name": "PURCH_ORDER_NUM",
+            "dataType": "string",
+            "sourceColumn": "PURCH_ORDER_NUM"
+          },
+          {
+            "name": "PURCH_ORDER_ITEM",
+            "dataType": "string",
+            "sourceColumn": "PURCH_ORDER_ITEM"
+          },
+          {
+            "name": "PURCH_ORDER_TYPE",
+            "dataType": "string",
+            "sourceColumn": "PURCH_ORDER_TYPE"
+          },
+          {
+            "name": "SPLR_ACCT_NUM",
+            "dataType": "string",
+            "sourceColumn": "SPLR_ACCT_NUM"
+          },
+          {
+            "name": "ORDERED_ON_DT",
+            "dataType": "int64",
+            "sourceColumn": "ORDERED_ON_DT"
+          },
+          {
+            "name": "ORDER_QTY",
+            "dataType": "double",
+            "sourceColumn": "ORDER_QTY"
+          },
+          {
+            "name": "ALLOCATED_ORDER_QTY",
+            "dataType": "double",
+            "sourceColumn": "ALLOCATED_ORDER_QTY"
+          },
+          {
+            "name": "CONFIRMED_QTY",
+            "dataType": "int64",
+            "sourceColumn": "CONFIRMED_QTY"
+          },
+          {
+            "name": "TARGET_QTY",
+            "dataType": "double",
+            "sourceColumn": "TARGET_QTY"
+          },
+          {
+            "name": "UOM_CODE",
+            "dataType": "string",
+            "sourceColumn": "UOM_CODE"
+          },
+          {
+            "name": "COMPANY_WID",
+            "dataType": "int64",
+            "sourceColumn": "COMPANY_WID"
+          },
+          {
+            "name": "PLANT_WID",
+            "dataType": "int64",
+            "sourceColumn": "PLANT_WID"
+          },
+          {
+            "name": "STORAGE_LOC",
+            "dataType": "string",
+            "sourceColumn": "STORAGE_LOC"
+          },
+          {
+            "name": "PRODUCT_WID",
+            "dataType": "int64",
+            "sourceColumn": "PRODUCT_WID"
+          },
+          {
+            "name": "SUPPLIER_WID",
+            "dataType": "int64",
+            "sourceColumn": "SUPPLIER_WID"
+          },
+          {
+            "name": "CUSTOMER_WID",
+            "dataType": "int64",
+            "sourceColumn": "CUSTOMER_WID"
+          },
+          {
+            "name": "PURCH_GROUP_WID",
+            "dataType": "int64",
+            "sourceColumn": "PURCH_GROUP_WID"
+          },
+          {
+            "name": "STORAGE_LOC_WID",
+            "dataType": "int64",
+            "sourceColumn": "STORAGE_LOC_WID"
+          },
+          {
+            "name": "PURCH_ORDER_STATUS",
+            "dataType": "string",
+            "sourceColumn": "PURCH_ORDER_STATUS"
+          },
+          {
+            "name": "PURCH_ORDER_GRP",
+            "dataType": "string",
+            "sourceColumn": "PURCH_ORDER_GRP"
+          },
+          {
+            "name": "Q10_QTY",
+            "dataType": "double",
+            "sourceColumn": "Q10_QTY"
+          },
+          {
+            "name": "REQ_DELIVERY_DT",
+            "dataType": "int64",
+            "sourceColumn": "REQ_DELIVERY_DT"
+          },
+          {
+            "name": "DELIVERY_DT",
+            "dataType": "int64",
+            "sourceColumn": "DELIVERY_DT"
+          },
+          {
+            "name": "SCHEDULE_QTY",
+            "dataType": "int64",
+            "sourceColumn": "SCHEDULE_QTY"
+          },
+          {
+            "name": "RELEASE_STATE",
+            "dataType": "string",
+            "sourceColumn": "RELEASE_STATE"
+          },
+          {
+            "name": "GR_GI_DT",
+            "dataType": "int64",
+            "sourceColumn": "GR_GI_DT"
+          },
+          {
+            "name": "GR_GI_QTY",
+            "dataType": "double",
+            "sourceColumn": "GR_GI_QTY"
+          },
+          {
+            "name": "SCHEDULE_LINE_NUM",
+            "dataType": "int64",
+            "sourceColumn": "SCHEDULE_LINE_NUM"
+          },
+          {
+            "name": "NET_AMT",
+            "dataType": "double",
+            "sourceColumn": "NET_AMT"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "dataView": "full",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
+                "    SELECT [Types]",
+                "      ,[PURCH_ORDER_NUM]",
+                "      ,[PURCH_ORDER_ITEM]",
+                "      ,[PURCH_ORDER_TYPE]",
+                "      ,[SPLR_ACCT_NUM]",
+                "      ,[ORDERED_ON_DT]",
+                "      ,[ORDER_QTY]",
+                "      ,[ALLOCATED_ORDER_QTY]",
+                "      ,[CONFIRMED_QTY]",
+                "      ,[TARGET_QTY]",
+                "      ,[UOM_CODE]",
+                "      ,[COMPANY_WID]",
+                "      ,[PLANT_WID]",
+                "      ,[STORAGE_LOC]",
+                "      ,[PRODUCT_WID]",
+                "      ,[SUPPLIER_WID]",
+                "      ,[CUSTOMER_WID]",
+                "      ,[PURCH_GROUP_WID]",
+                "      ,[STORAGE_LOC_WID]",
+                "      ,[PURCH_ORDER_STATUS]",
+                "      ,[PURCH_ORDER_GRP]",
+                "      ,[Q10_QTY]",
+                "      ,[REQ_DELIVERY_DT]",
+                "      ,[DELIVERY_DT]",
+                "      ,[SCHEDULE_QTY]",
+                "      ,[RELEASE_STATE]",
+                "      ,[GR_GI_DT]",
+                "      ,[GR_GI_QTY]",
+                "      ,[SCHEDULE_LINE_NUM]",
+                "      ,[NET_AMT]",
+                "  FROM [PNJ_ROLAP].[dbo].[W_VW_PO_SCHEDULE_LINE_Z01_F]\")",
+                "in",
+                "    Source"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "Fact - PO Schedule Line Z06",
+        "columns": [
+          {
+            "name": "Types",
+            "dataType": "string",
+            "sourceColumn": "Types"
+          },
+          {
+            "name": "PURCH_ORDER_NUM",
+            "dataType": "string",
+            "sourceColumn": "PURCH_ORDER_NUM"
+          },
+          {
+            "name": "PURCH_ORDER_ITEM",
+            "dataType": "string",
+            "sourceColumn": "PURCH_ORDER_ITEM"
+          },
+          {
+            "name": "PURCH_ORDER_TYPE",
+            "dataType": "string",
+            "sourceColumn": "PURCH_ORDER_TYPE"
+          },
+          {
+            "name": "SPLR_ACCT_NUM",
+            "dataType": "string",
+            "sourceColumn": "SPLR_ACCT_NUM"
+          },
+          {
+            "name": "ORDERED_ON_DT",
+            "dataType": "int64",
+            "sourceColumn": "ORDERED_ON_DT"
+          },
+          {
+            "name": "ORDER_QTY",
+            "dataType": "double",
+            "sourceColumn": "ORDER_QTY"
+          },
+          {
+            "name": "ALLOCATED_ORDER_QTY",
+            "dataType": "double",
+            "sourceColumn": "ALLOCATED_ORDER_QTY"
+          },
+          {
+            "name": "CONFIRMED_QTY",
+            "dataType": "int64",
+            "sourceColumn": "CONFIRMED_QTY"
+          },
+          {
+            "name": "TARGET_QTY",
+            "dataType": "double",
+            "sourceColumn": "TARGET_QTY"
+          },
+          {
+            "name": "UOM_CODE",
+            "dataType": "string",
+            "sourceColumn": "UOM_CODE"
+          },
+          {
+            "name": "COMPANY_WID",
+            "dataType": "int64",
+            "sourceColumn": "COMPANY_WID"
+          },
+          {
+            "name": "PLANT_WID",
+            "dataType": "int64",
+            "sourceColumn": "PLANT_WID"
+          },
+          {
+            "name": "STORAGE_LOC",
+            "dataType": "string",
+            "sourceColumn": "STORAGE_LOC"
+          },
+          {
+            "name": "PRODUCT_WID",
+            "dataType": "int64",
+            "sourceColumn": "PRODUCT_WID"
+          },
+          {
+            "name": "SUPPLIER_WID",
+            "dataType": "int64",
+            "sourceColumn": "SUPPLIER_WID"
+          },
+          {
+            "name": "CUSTOMER_WID",
+            "dataType": "int64",
+            "sourceColumn": "CUSTOMER_WID"
+          },
+          {
+            "name": "PURCH_GROUP_WID",
+            "dataType": "int64",
+            "sourceColumn": "PURCH_GROUP_WID"
+          },
+          {
+            "name": "STORAGE_LOC_WID",
+            "dataType": "int64",
+            "sourceColumn": "STORAGE_LOC_WID"
+          },
+          {
+            "name": "PURCH_ORDER_STATUS",
+            "dataType": "string",
+            "sourceColumn": "PURCH_ORDER_STATUS"
+          },
+          {
+            "name": "PURCH_ORDER_GRP",
+            "dataType": "string",
+            "sourceColumn": "PURCH_ORDER_GRP"
+          },
+          {
+            "name": "Q10_QTY",
+            "dataType": "double",
+            "sourceColumn": "Q10_QTY"
+          },
+          {
+            "name": "REQ_DELIVERY_DT",
+            "dataType": "int64",
+            "sourceColumn": "REQ_DELIVERY_DT"
+          },
+          {
+            "name": "DELIVERY_DT",
+            "dataType": "int64",
+            "sourceColumn": "DELIVERY_DT"
+          },
+          {
+            "name": "SCHEDULE_QTY",
+            "dataType": "int64",
+            "sourceColumn": "SCHEDULE_QTY"
+          },
+          {
+            "name": "RELEASE_STATE",
+            "dataType": "string",
+            "sourceColumn": "RELEASE_STATE"
+          },
+          {
+            "name": "GR_GI_DT",
+            "dataType": "int64",
+            "sourceColumn": "GR_GI_DT"
+          },
+          {
+            "name": "GR_GI_QTY",
+            "dataType": "double",
+            "sourceColumn": "GR_GI_QTY"
+          },
+          {
+            "name": "SCHEDULE_LINE_NUM",
+            "dataType": "int64",
+            "sourceColumn": "SCHEDULE_LINE_NUM"
+          },
+          {
+            "name": "NET_AMT",
+            "dataType": "double",
+            "sourceColumn": "NET_AMT"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "dataView": "full",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
+                "    SELECT [Types]",
+                "      ,[PURCH_ORDER_NUM]",
+                "      ,[PURCH_ORDER_ITEM]",
+                "      ,[PURCH_ORDER_TYPE]",
+                "      ,[SPLR_ACCT_NUM]",
+                "      ,[ORDERED_ON_DT]",
+                "      ,[ORDER_QTY]",
+                "      ,[ALLOCATED_ORDER_QTY]",
+                "      ,[CONFIRMED_QTY]",
+                "      ,[TARGET_QTY]",
+                "      ,[UOM_CODE]",
+                "      ,[COMPANY_WID]",
+                "      ,[PLANT_WID]",
+                "      ,[STORAGE_LOC]",
+                "      ,[PRODUCT_WID]",
+                "      ,[SUPPLIER_WID]",
+                "      ,[CUSTOMER_WID]",
+                "      ,[PURCH_GROUP_WID]",
+                "      ,[STORAGE_LOC_WID]",
+                "      ,[PURCH_ORDER_STATUS]",
+                "      ,[PURCH_ORDER_GRP]",
+                "      ,[Q10_QTY]",
+                "      ,[REQ_DELIVERY_DT]",
+                "      ,[DELIVERY_DT]",
+                "      ,[SCHEDULE_QTY]",
+                "      ,[RELEASE_STATE]",
+                "      ,[GR_GI_DT]",
+                "      ,[GR_GI_QTY]",
+                "      ,[SCHEDULE_LINE_NUM]",
+                "      ,[NET_AMT]",
+                "  FROM [PNJ_ROLAP].[dbo].[W_VW_PO_SCHEDULE_LINE_Z06_F]\")",
+                "in",
+                "    Source"
+              ]
+            }
+          }
+        ]
       }
     ],
     "relationships": [
@@ -20684,20 +20732,6 @@
         "toColumn": "SO Type"
       },
       {
-        "name": "87af954b-b0b1-4453-9d7c-499a6088d1df",
-        "fromTable": "Fact - Booklet Quota",
-        "fromColumn": "STK Keeper Code",
-        "toTable": "Dim - Booklet",
-        "toColumn": "STK Keeper Code"
-      },
-      {
-        "name": "27704fbb-70b2-4cbf-9ffb-309d1446163d",
-        "fromTable": "Fact - Actual Production",
-        "fromColumn": "STK Keeper Code",
-        "toTable": "Dim - Booklet",
-        "toColumn": "STK Keeper Code"
-      },
-      {
         "name": "1d616da5-d213-48f0-93f3-3eda5ead5510",
         "fromTable": "Fact - PO SO Schedule Line",
         "fromColumn": "PRODUCT_WID",
@@ -20779,13 +20813,6 @@
         "fromTable": "Fact - Plating",
         "fromColumn": "DATE_KEY",
         "toTable": "Dim - Time",
-        "toColumn": "ROW_WID"
-      },
-      {
-        "name": "b7af54b1-8834-4322-8438-c0a92def3c29",
-        "fromTable": "Fact - Actual Production",
-        "fromColumn": "Booklet_ID",
-        "toTable": "Dim - Actual Production",
         "toColumn": "ROW_WID"
       },
       {
@@ -21022,99 +21049,15 @@
         "toColumn": "ROW_WID"
       },
       {
-        "name": "de6226c1-02c8-4583-83ec-a2544f25be1e",
-        "fromTable": "Fact - Actual Production",
-        "fromColumn": "STK Keeper Transfer Code",
-        "toTable": "Dim - STK Keeper Finished Goods",
-        "toColumn": "STK Keeper Code"
-      },
-      {
-        "name": "e52379fd-61d4-4528-87f7-f7459210022f",
-        "fromTable": "Fact - PO Schedule Line Z01",
-        "fromColumn": "CUSTOMER_WID",
-        "toTable": "Dim - Customer",
-        "toColumn": "ROW_WID"
-      },
-      {
-        "name": "f53cdce0-ee35-484e-a334-af7e46f40600",
-        "fromTable": "Fact - PO Schedule Line Z01",
-        "fromColumn": "PRODUCT_WID",
-        "toTable": "Dim - Product",
-        "toColumn": "ROW_WID"
-      },
-      {
-        "name": "5ee8bfb0-75b5-42a3-b1a9-54f58507dcef",
-        "fromTable": "Fact - PO Schedule Line Z01",
-        "fromColumn": "PLANT_WID",
-        "toTable": "Dim - Plant",
-        "toColumn": "ROW_WID"
-      },
-      {
-        "name": "caae7af1-d6f1-4218-872d-8688010a04ed",
-        "fromTable": "Fact - PO Schedule Line Z01",
-        "fromColumn": "DELIVERY_DT",
-        "toTable": "Dim - Time",
-        "toColumn": "ROW_WID"
-      },
-      {
-        "name": "374d09b3-193c-4c36-bc57-dc471751f986",
-        "fromTable": "Fact - PO Schedule Line Z01",
-        "fromColumn": "SUPPLIER_WID",
-        "toTable": "Dim - Vendor",
-        "toColumn": "ROW_WID"
-      },
-      {
-        "name": "20c430dc-224d-42ae-80e6-7d21e3b3c956",
-        "fromTable": "Fact - PO Schedule Line Z06",
-        "fromColumn": "CUSTOMER_WID",
-        "toTable": "Dim - Customer",
-        "toColumn": "ROW_WID"
-      },
-      {
-        "name": "f0b9f059-a108-4332-ab70-90b94ed9d373",
-        "fromTable": "Fact - PO Schedule Line Z06",
-        "fromColumn": "DELIVERY_DT",
-        "toTable": "Dim - Time",
-        "toColumn": "ROW_WID"
-      },
-      {
-        "name": "a9bb6fdd-175b-4e5b-9c3b-9fa9a5a5c223",
-        "fromTable": "Fact - PO Schedule Line Z06",
-        "fromColumn": "PLANT_WID",
-        "toTable": "Dim - Plant",
-        "toColumn": "ROW_WID"
-      },
-      {
-        "name": "7925ee88-80cf-424a-94c7-dce935105815",
-        "fromTable": "Fact - PO Schedule Line Z06",
-        "fromColumn": "PRODUCT_WID",
-        "toTable": "Dim - Product",
-        "toColumn": "ROW_WID"
-      },
-      {
-        "name": "2a9cd799-dac3-47b0-aab2-51164057d821",
-        "fromTable": "Fact - PO Schedule Line Z06",
-        "fromColumn": "SUPPLIER_WID",
-        "toTable": "Dim - Vendor",
-        "toColumn": "ROW_WID"
-      },
-      {
         "name": "669665c1-3b82-4a77-8d1b-3ad5b3e2c614",
-        "fromTable": "Dim - Production Labor Planned",
+        "fromTable": "Fact - Production Labor Planned",
         "fromColumn": "Date Key",
         "toTable": "Dim - Time",
         "toColumn": "ROW_WID"
       },
       {
-        "name": "60c5eb0c-9ee0-4f93-8a42-c12837241952",
-        "fromTable": "Fact - Actual Production",
-        "fromColumn": "STOCK_KEEPER_WID",
-        "toTable": "Dim - Production Labor",
-        "toColumn": "ROW_WID"
-      },
-      {
         "name": "c1219833-97cd-4bef-9722-5393b1e19ea7",
-        "fromTable": "Dim - Production Labor Planned",
+        "fromTable": "Fact - Production Labor Planned",
         "fromColumn": "STOCK_KEEPER_WID",
         "toTable": "Dim - Production Labor",
         "toColumn": "ROW_WID"
