@@ -4493,7 +4493,7 @@
             "annotations": [
               {
                 "name": "Format",
-                "value": "<Format Format=\"DateTimeCustom\"><DateTimes><DateTime LCID=\"1066\" Group=\"ShortTime\" FormatString=\"HH:mm\" /></DateTimes></Format>"
+                "value": "<Format Format=\"DateTimeCustom\"><DateTimes><DateTime LCID=\"1033\" Group=\"ShortTime\" FormatString=\"HH:mm\" /></DateTimes></Format>"
               }
             ]
           },
@@ -7948,6 +7948,118 @@
                 "      ,[PRODUCT_SECTION_WID]",
                 "      ,[RECORDING_TIME]",
                 "      ,[Layer]",
+                "  FROM [DW_RAW].[dbo].[W_PA_ICA_BASELINE_F_BK1] with (nolock) where (action_type <> 'do_transaction' or action_type is null) and DATE_WID >=20220101 \"",
+                "   ),",
+                "    #\"Changed Type\" = Table.TransformColumnTypes(Source,{{\"AGE_RANGE\", Int64.Type}})",
+                "in",
+                "   #\"Changed Type\""
+              ]
+            },
+            "annotations": [
+              {
+                "name": "QueryEditorSerialization",
+                "value": [
+                  "<?xml version=\"1.0\" encoding=\"UTF-16\"?><Gemini xmlns=\"QueryEditorSerialization\"><AnnotationContent><![CDATA[<RSQueryCommandText>let",
+                  "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;DW_RAW\",",
+                  "    \" SELECT [ROW_WID]",
+                  "      ,[DATE_WID]",
+                  "      ,[AREA_ID]",
+                  "      ,[PERSON_WID]",
+                  "      ,[AGE_RANGE]",
+                  "      ,[STORE_ID]",
+                  "      ,[SECTION_ID] SectionID",
+                  "      ,[PLANT_WID]",
+                  "      ,[DURATION]",
+                  "      ,[ACTION_TYPE]",
+                  "      ,[PRODUCT_SECTION_WID]",
+                  "      ,[RECORDING_TIME]",
+                  "      ,[Layer]",
+                  "  FROM [DW_RAW].[dbo].[W_PA_ICA_BASELINE_F_BK1] with (nolock) where (action_type <> 'do_transaction' or action_type is null) and DATE_WID >=20220101 \"",
+                  "   ),",
+                  "    #\"Changed Type\" = Table.TransformColumnTypes(Source,{{\"AGE_RANGE\", Int64.Type}})",
+                  "in",
+                  "   #\"Changed Type\"</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Fact - Camera InStore 2021",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;DW_RAW\",",
+                "    \" SELECT [ROW_WID]",
+                "      ,[DATE_WID]",
+                "      ,[AREA_ID]",
+                "      ,[PERSON_WID]",
+                "      ,[AGE_RANGE]",
+                "      ,[STORE_ID]",
+                "      ,[SECTION_ID] SectionID",
+                "      ,[PLANT_WID]",
+                "      ,[DURATION]",
+                "      ,[ACTION_TYPE]",
+                "      ,[PRODUCT_SECTION_WID]",
+                "      ,[RECORDING_TIME]",
+                "      ,[Layer]",
+                "  FROM [DW_RAW].[dbo].[W_PA_ICA_BASELINE_F_BK1] with (nolock) where (action_type <> 'do_transaction' or action_type is null) and DATE_WID >=20210101 \"",
+                "   ),",
+                "    #\"Changed Type\" = Table.TransformColumnTypes(Source,{{\"AGE_RANGE\", Int64.Type}})",
+                "in",
+                "   #\"Changed Type\""
+              ]
+            },
+            "annotations": [
+              {
+                "name": "QueryEditorSerialization",
+                "value": [
+                  "<?xml version=\"1.0\" encoding=\"UTF-16\"?><Gemini xmlns=\"QueryEditorSerialization\"><AnnotationContent><![CDATA[<RSQueryCommandText>let",
+                  "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;DW_RAW\",",
+                  "    \" SELECT [ROW_WID]",
+                  "      ,[DATE_WID]",
+                  "      ,[AREA_ID]",
+                  "      ,[PERSON_WID]",
+                  "      ,[AGE_RANGE]",
+                  "      ,[STORE_ID]",
+                  "      ,[SECTION_ID] SectionID",
+                  "      ,[PLANT_WID]",
+                  "      ,[DURATION]",
+                  "      ,[ACTION_TYPE]",
+                  "      ,[PRODUCT_SECTION_WID]",
+                  "      ,[RECORDING_TIME]",
+                  "      ,[Layer]",
+                  "  FROM [DW_RAW].[dbo].[W_PA_ICA_BASELINE_F_BK1] with (nolock) where (action_type <> 'do_transaction' or action_type is null) and DATE_WID >=20210101 \"",
+                  "   ),",
+                  "    #\"Changed Type\" = Table.TransformColumnTypes(Source,{{\"AGE_RANGE\", Int64.Type}})",
+                  "in",
+                  "   #\"Changed Type\"</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Fact - Camera InStore 2020",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;DW_RAW\",",
+                "    \" SELECT [ROW_WID]",
+                "      ,[DATE_WID]",
+                "      ,[AREA_ID]",
+                "      ,[PERSON_WID]",
+                "      ,[AGE_RANGE]",
+                "      ,[STORE_ID]",
+                "      ,[SECTION_ID] SectionID",
+                "      ,[PLANT_WID]",
+                "      ,[DURATION]",
+                "      ,[ACTION_TYPE]",
+                "      ,[PRODUCT_SECTION_WID]",
+                "      ,[RECORDING_TIME]",
+                "      ,[Layer]",
                 "  FROM [DW_RAW].[dbo].[W_PA_ICA_BASELINE_F_BK1] with (nolock) where (action_type <> 'do_transaction' or action_type is null) and DATE_WID >=20200101 \"",
                 "   ),",
                 "    #\"Changed Type\" = Table.TransformColumnTypes(Source,{{\"AGE_RANGE\", Int64.Type}})",
@@ -7961,20 +8073,24 @@
                 "value": [
                   "<?xml version=\"1.0\" encoding=\"UTF-16\"?><Gemini xmlns=\"QueryEditorSerialization\"><AnnotationContent><![CDATA[<RSQueryCommandText>let",
                   "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;DW_RAW\",",
-                  "    \" SELECT ",
-                  "       [DATE_WID],",
-                  "\t   [PERSON_WID],",
-                  "\t   [age_range],",
-                  "\t   [duration],",
-                  "\t   [recording_time],",
-                  "\t   [action_type],",
-                  "\t   [Plant_wid],",
-                  "\t   CONCAT_WS('_', [DATE_WID], [Plant_wid]) Store_date,",
-                  "\t   CONCAT_WS('_', [DATE_WID], [Plant_wid],[recording_time]) Store_date_Hrs",
-                  "    FROM  [DW_RAW].[dbo].[W_PA_ICA_BASELINE_F] with (nolock) \"",
-                  "   )",
+                  "    \" SELECT [ROW_WID]",
+                  "      ,[DATE_WID]",
+                  "      ,[AREA_ID]",
+                  "      ,[PERSON_WID]",
+                  "      ,[AGE_RANGE]",
+                  "      ,[STORE_ID]",
+                  "      ,[SECTION_ID] SectionID",
+                  "      ,[PLANT_WID]",
+                  "      ,[DURATION]",
+                  "      ,[ACTION_TYPE]",
+                  "      ,[PRODUCT_SECTION_WID]",
+                  "      ,[RECORDING_TIME]",
+                  "      ,[Layer]",
+                  "  FROM [DW_RAW].[dbo].[W_PA_ICA_BASELINE_F_BK1] with (nolock) where (action_type <> 'do_transaction' or action_type is null) and DATE_WID >=20200101 \"",
+                  "   ),",
+                  "    #\"Changed Type\" = Table.TransformColumnTypes(Source,{{\"AGE_RANGE\", Int64.Type}})",
                   "in",
-                  "   Source</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
+                  "   #\"Changed Type\"</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
                 ]
               }
             ]
@@ -21019,103 +21135,14 @@
         "toColumn": "ROW_WID"
       },
       {
-        "name": "569bc276-b91c-4ffb-ad39-f200714214fd",
+        "name": "61b29410-06c7-4246-b5e8-329ae2c1355e",
+        "fromCardinality": "one",
         "fromTable": "Dim - Time Compare",
         "fromColumn": "ROW_WID",
         "toTable": "Dim - Time",
         "toColumn": "ROW_WID",
-        "isActive": false
-      },
-      {
-        "name": "29bacfa0-0106-45d9-adcc-d8b1dfe494e8",
-        "fromTable": "Fact - Actual Production",
-        "fromColumn": "Booklet_ID",
-        "toTable": "Dim - Actual Production",
-        "toColumn": "ROW_WID"
-      },
-      {
-        "name": "953c16b6-615c-4ccf-83f4-f363d5d8b9e4",
-        "fromTable": "Fact - Actual Production",
-        "fromColumn": "STOCK_KEEPER_WID",
-        "toTable": "Dim - Production Labor",
-        "toColumn": "ROW_WID"
-      },
-      {
-        "name": "5f3585fe-3509-4b92-937e-af2682eabb66",
-        "fromTable": "Fact - Actual Production",
-        "fromColumn": "STOCK_KEEPER_TRANSFER_WID",
-        "toTable": "Dim - Production Labor STK IN",
-        "toColumn": "ROW_WID"
-      },
-      {
-        "name": "e52379fd-61d4-4528-87f7-f7459210022f",
-        "fromTable": "Fact - PO Schedule Line Z01",
-        "fromColumn": "CUSTOMER_WID",
-        "toTable": "Dim - Customer",
-        "toColumn": "ROW_WID"
-      },
-      {
-        "name": "f53cdce0-ee35-484e-a334-af7e46f40600",
-        "fromTable": "Fact - PO Schedule Line Z01",
-        "fromColumn": "PRODUCT_WID",
-        "toTable": "Dim - Product",
-        "toColumn": "ROW_WID"
-      },
-      {
-        "name": "5ee8bfb0-75b5-42a3-b1a9-54f58507dcef",
-        "fromTable": "Fact - PO Schedule Line Z01",
-        "fromColumn": "PLANT_WID",
-        "toTable": "Dim - Plant",
-        "toColumn": "ROW_WID"
-      },
-      {
-        "name": "caae7af1-d6f1-4218-872d-8688010a04ed",
-        "fromTable": "Fact - PO Schedule Line Z01",
-        "fromColumn": "DELIVERY_DT",
-        "toTable": "Dim - Time",
-        "toColumn": "ROW_WID"
-      },
-      {
-        "name": "374d09b3-193c-4c36-bc57-dc471751f986",
-        "fromTable": "Fact - PO Schedule Line Z01",
-        "fromColumn": "SUPPLIER_WID",
-        "toTable": "Dim - Vendor",
-        "toColumn": "ROW_WID"
-      },
-      {
-        "name": "20c430dc-224d-42ae-80e6-7d21e3b3c956",
-        "fromTable": "Fact - PO Schedule Line Z06",
-        "fromColumn": "CUSTOMER_WID",
-        "toTable": "Dim - Customer",
-        "toColumn": "ROW_WID"
-      },
-      {
-        "name": "f0b9f059-a108-4332-ab70-90b94ed9d373",
-        "fromTable": "Fact - PO Schedule Line Z06",
-        "fromColumn": "DELIVERY_DT",
-        "toTable": "Dim - Time",
-        "toColumn": "ROW_WID"
-      },
-      {
-        "name": "a9bb6fdd-175b-4e5b-9c3b-9fa9a5a5c223",
-        "fromTable": "Fact - PO Schedule Line Z06",
-        "fromColumn": "PLANT_WID",
-        "toTable": "Dim - Plant",
-        "toColumn": "ROW_WID"
-      },
-      {
-        "name": "7925ee88-80cf-424a-94c7-dce935105815",
-        "fromTable": "Fact - PO Schedule Line Z06",
-        "fromColumn": "PRODUCT_WID",
-        "toTable": "Dim - Product",
-        "toColumn": "ROW_WID"
-      },
-      {
-        "name": "2a9cd799-dac3-47b0-aab2-51164057d821",
-        "fromTable": "Fact - PO Schedule Line Z06",
-        "fromColumn": "SUPPLIER_WID",
-        "toTable": "Dim - Vendor",
-        "toColumn": "ROW_WID"
+        "isActive": false,
+        "crossFilteringBehavior": "bothDirections"
       }
     ],
     "perspectives": [
