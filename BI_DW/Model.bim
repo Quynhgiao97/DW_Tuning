@@ -11,7 +11,7 @@
         "connectionDetails": {
           "protocol": "tds",
           "address": {
-            "server": "192.168.3.31",
+            "server": "192.168.2.19",
             "database": "PNJ_ROLAP"
           },
           "authentication": null,
@@ -22,8 +22,6 @@
         },
         "credential": {
           "AuthenticationKind": "UsernamePassword",
-          "kind": "SQL",
-          "path": "192.168.2.19;PNJ_ROLAP",
           "Username": "biread",
           "EncryptConnection": false
         }
@@ -35,7 +33,7 @@
         "connectionDetails": {
           "protocol": "tds",
           "address": {
-            "server": "192.168.3.31",
+            "server": "192.168.2.19",
             "database": "DW_RAW"
           },
           "authentication": null,
@@ -46,8 +44,6 @@
         },
         "credential": {
           "AuthenticationKind": "UsernamePassword",
-          "kind": "SQL",
-          "path": "192.168.2.19;DW_RAW",
           "Username": "biread",
           "EncryptConnection": false
         }
@@ -18528,179 +18524,6 @@
         ]
       },
       {
-        "name": "Dim - Production Labor STK IN",
-        "columns": [
-          {
-            "name": "ROW_WID",
-            "dataType": "int64",
-            "isHidden": true,
-            "sourceColumn": "ROW_WID"
-          },
-          {
-            "name": "Area Code",
-            "dataType": "string",
-            "sourceColumn": "Area Code"
-          },
-          {
-            "name": "Team Code",
-            "dataType": "string",
-            "sourceColumn": "Team Code"
-          },
-          {
-            "name": "Team Name",
-            "dataType": "string",
-            "sourceColumn": "Team Name"
-          },
-          {
-            "name": "Stock Keeper Code",
-            "dataType": "string",
-            "sourceColumn": "Stock Keeper Code"
-          },
-          {
-            "name": "Effect From DT",
-            "dataType": "int64",
-            "sourceColumn": "Effect From DT"
-          },
-          {
-            "name": "Effect To DT",
-            "dataType": "int64",
-            "sourceColumn": "Effect To DT"
-          },
-          {
-            "name": "Delivery Type",
-            "dataType": "string",
-            "sourceColumn": "Delivery Type"
-          },
-          {
-            "name": "Stock Keeper Type",
-            "dataType": "string",
-            "sourceColumn": "Stock Keeper Type"
-          }
-        ],
-        "partitions": [
-          {
-            "name": "Partition",
-            "dataView": "full",
-            "source": {
-              "type": "m",
-              "expression": [
-                "let",
-                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
-                "    SELECT [ROW_WID]",
-                "      ,[AREA_CODE]",
-                "      ,[TEAM_CODE]",
-                "      ,[TEAM_NAME]",
-                "      ,[STOCK_KEEPER_CODE]",
-                "      ,[STOCK_KEEPER_TYPE]",
-                "      ,[EFFECT_FROM_DT_WID]",
-                "      ,[EFFECT_TO_DT_WID]",
-                "  FROM [PNJ_ROLAP].[dbo].[W_VW_PRODUCTION_LABOR_D]\"),",
-                "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"STOCK_KEEPER_CODE\", \"Stock Keeper Code\"}, {\"AREA_CODE\", \"Area Code\"}, {\"TEAM_CODE\", \"Team Code\"}, {\"TEAM_NAME\", \"Team Name\"}, {\"EFFECT_FROM_DT_WID\", \"Effect From DT\"}, {\"EFFECT_TO_DT_WID\", \"Effect To DT\"}, {\"STOCK_KEEPER_TYPE\", \"Stock Keeper Type\"}})",
-                "in",
-                "    #\"Renamed Columns\""
-              ]
-            }
-          }
-        ]
-      },
-      {
-        "name": "Fact - Production Labor Planned",
-        "columns": [
-          {
-            "name": "Date Key",
-            "dataType": "int64",
-            "sourceColumn": "Date Key"
-          },
-          {
-            "name": "Team Code",
-            "dataType": "string",
-            "sourceColumn": "Team Code"
-          },
-          {
-            "name": "Actual Resource",
-            "dataType": "double",
-            "sourceColumn": "Actual Resource",
-            "formatString": "#,0.00"
-          },
-          {
-            "name": "Planned Resource",
-            "dataType": "double",
-            "sourceColumn": "Planned Resource",
-            "formatString": "#,0.00"
-          },
-          {
-            "name": "Planned Qty",
-            "dataType": "double",
-            "sourceColumn": "Planned Qty",
-            "formatString": "#,0.00"
-          },
-          {
-            "name": "Planned TurnOver Q10",
-            "dataType": "double",
-            "sourceColumn": "Planned TurnOver Q10"
-          },
-          {
-            "name": "Planned Productivity",
-            "dataType": "double",
-            "sourceColumn": "Planned Productivity",
-            "formatString": "#,0.00"
-          },
-          {
-            "name": "Working Day Standard",
-            "dataType": "double",
-            "sourceColumn": "Working Day Standard"
-          },
-          {
-            "name": "STOCK_KEEPER_WID",
-            "dataType": "int64",
-            "isHidden": true,
-            "sourceColumn": "STOCK_KEEPER_WID"
-          }
-        ],
-        "partitions": [
-          {
-            "name": "Partition",
-            "dataView": "full",
-            "source": {
-              "type": "m",
-              "expression": [
-                "let",
-                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
-                "    SELECT [DATE_KEY]",
-                "      ,[TEAM_CODE]",
-                "      ,[STOCK_KEEPER_WID]",
-                "      ,[ACTUAL_RESOURCE]",
-                "      ,[PLANNED_RESOURCE]",
-                "      ,[PLANNED_QTY]",
-                "      ,[PLANNED_TURNOVER_Q10]",
-                "      ,[PLANNED_PRODUCTIVITY]",
-                "      ,[WORKING_DAY_STANDARD]",
-                "  FROM [PNJ_ROLAP].[dbo].[W_VW_PRODUCTION_LABOR_PLANNED_D]\"),",
-                "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"DATE_KEY\", \"Date Key\"}, {\"TEAM_CODE\", \"Team Code\"}, {\"ACTUAL_RESOURCE\", \"Actual Resource\"}, {\"PLANNED_RESOURCE\", \"Planned Resource\"}, {\"PLANNED_QTY\", \"Planned Qty\"}, {\"PLANNED_TURNOVER_Q10\", \"Planned TurnOver Q10\"}, {\"PLANNED_PRODUCTIVITY\", \"Planned Productivity\"}, {\"WORKING_DAY_STANDARD\", \"Working Day Standard\"}}),",
-                "    #\"Changed Type\" = Table.TransformColumnTypes(#\"Renamed Columns\",{{\"Actual Resource\", type number}, {\"Planned Resource\", type number}, {\"Planned Qty\", type number}, {\"Planned Productivity\", type number}})",
-                "in",
-                "    #\"Changed Type\""
-              ]
-            }
-          }
-        ],
-        "measures": [
-          {
-            "name": ".Planned Productivity",
-            "expression": [
-              " ",
-              "Calculate(sumx('Fact - Production Labor Planned', 'Fact - Production Labor Planned'[Planned Resource] * 'Fact - Production Labor Planned'[Working Day Standard]), Filter ('Dim - Production Labor', [Productivity Type] = \"DIEM\"))",
-              "+ Calculate(sum('Fact - Production Labor Planned'[Planned Productivity]), Filter ('Dim - Production Labor', [Productivity Type] = \"SL\"))"
-            ]
-          },
-          {
-            "name": "%Human Resource",
-            "expression": " sum('Fact - Production Labor Planned'[Actual Resource])/sum('Fact - Production Labor Planned'[Planned Resource])",
-            "formatString": "#,0%;-#,0%;#,0%"
-          }
-        ]
-      },
-      {
         "name": "Dim - Production Labor",
         "columns": [
           {
@@ -19620,157 +19443,53 @@
         ]
       },
       {
-        "name": "Fact - PO Schedule Line Z01",
+        "name": "Dim - Production Labor STK IN",
         "columns": [
           {
-            "name": "Types",
+            "name": "ROW_WID",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "ROW_WID"
+          },
+          {
+            "name": "Area Code",
             "dataType": "string",
-            "sourceColumn": "Types"
+            "sourceColumn": "Area Code"
           },
           {
-            "name": "PURCH_ORDER_NUM",
+            "name": "Team Code",
             "dataType": "string",
-            "sourceColumn": "PURCH_ORDER_NUM"
+            "sourceColumn": "Team Code"
           },
           {
-            "name": "PURCH_ORDER_ITEM",
+            "name": "Team Name",
             "dataType": "string",
-            "sourceColumn": "PURCH_ORDER_ITEM"
+            "sourceColumn": "Team Name"
           },
           {
-            "name": "PURCH_ORDER_TYPE",
+            "name": "Stock Keeper Code",
             "dataType": "string",
-            "sourceColumn": "PURCH_ORDER_TYPE"
+            "sourceColumn": "Stock Keeper Code"
           },
           {
-            "name": "SPLR_ACCT_NUM",
+            "name": "Effect From DT",
+            "dataType": "int64",
+            "sourceColumn": "Effect From DT"
+          },
+          {
+            "name": "Effect To DT",
+            "dataType": "int64",
+            "sourceColumn": "Effect To DT"
+          },
+          {
+            "name": "Delivery Type",
             "dataType": "string",
-            "sourceColumn": "SPLR_ACCT_NUM"
+            "sourceColumn": "Delivery Type"
           },
           {
-            "name": "ORDERED_ON_DT",
-            "dataType": "int64",
-            "sourceColumn": "ORDERED_ON_DT"
-          },
-          {
-            "name": "ORDER_QTY",
-            "dataType": "double",
-            "sourceColumn": "ORDER_QTY"
-          },
-          {
-            "name": "ALLOCATED_ORDER_QTY",
-            "dataType": "double",
-            "sourceColumn": "ALLOCATED_ORDER_QTY"
-          },
-          {
-            "name": "CONFIRMED_QTY",
-            "dataType": "int64",
-            "sourceColumn": "CONFIRMED_QTY"
-          },
-          {
-            "name": "TARGET_QTY",
-            "dataType": "double",
-            "sourceColumn": "TARGET_QTY"
-          },
-          {
-            "name": "UOM_CODE",
+            "name": "Stock Keeper Type",
             "dataType": "string",
-            "sourceColumn": "UOM_CODE"
-          },
-          {
-            "name": "COMPANY_WID",
-            "dataType": "int64",
-            "sourceColumn": "COMPANY_WID"
-          },
-          {
-            "name": "PLANT_WID",
-            "dataType": "int64",
-            "sourceColumn": "PLANT_WID"
-          },
-          {
-            "name": "STORAGE_LOC",
-            "dataType": "string",
-            "sourceColumn": "STORAGE_LOC"
-          },
-          {
-            "name": "PRODUCT_WID",
-            "dataType": "int64",
-            "sourceColumn": "PRODUCT_WID"
-          },
-          {
-            "name": "SUPPLIER_WID",
-            "dataType": "int64",
-            "sourceColumn": "SUPPLIER_WID"
-          },
-          {
-            "name": "CUSTOMER_WID",
-            "dataType": "int64",
-            "sourceColumn": "CUSTOMER_WID"
-          },
-          {
-            "name": "PURCH_GROUP_WID",
-            "dataType": "int64",
-            "sourceColumn": "PURCH_GROUP_WID"
-          },
-          {
-            "name": "STORAGE_LOC_WID",
-            "dataType": "int64",
-            "sourceColumn": "STORAGE_LOC_WID"
-          },
-          {
-            "name": "PURCH_ORDER_STATUS",
-            "dataType": "string",
-            "sourceColumn": "PURCH_ORDER_STATUS"
-          },
-          {
-            "name": "PURCH_ORDER_GRP",
-            "dataType": "string",
-            "sourceColumn": "PURCH_ORDER_GRP"
-          },
-          {
-            "name": "Q10_QTY",
-            "dataType": "double",
-            "sourceColumn": "Q10_QTY"
-          },
-          {
-            "name": "REQ_DELIVERY_DT",
-            "dataType": "int64",
-            "sourceColumn": "REQ_DELIVERY_DT"
-          },
-          {
-            "name": "DELIVERY_DT",
-            "dataType": "int64",
-            "sourceColumn": "DELIVERY_DT"
-          },
-          {
-            "name": "SCHEDULE_QTY",
-            "dataType": "int64",
-            "sourceColumn": "SCHEDULE_QTY"
-          },
-          {
-            "name": "RELEASE_STATE",
-            "dataType": "string",
-            "sourceColumn": "RELEASE_STATE"
-          },
-          {
-            "name": "GR_GI_DT",
-            "dataType": "int64",
-            "sourceColumn": "GR_GI_DT"
-          },
-          {
-            "name": "GR_GI_QTY",
-            "dataType": "double",
-            "sourceColumn": "GR_GI_QTY"
-          },
-          {
-            "name": "SCHEDULE_LINE_NUM",
-            "dataType": "int64",
-            "sourceColumn": "SCHEDULE_LINE_NUM"
-          },
-          {
-            "name": "NET_AMT",
-            "dataType": "double",
-            "sourceColumn": "NET_AMT"
+            "sourceColumn": "Stock Keeper Type"
           }
         ],
         "partitions": [
@@ -19782,196 +19501,75 @@
               "expression": [
                 "let",
                 "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
-                "    SELECT [Types]",
-                "      ,[PURCH_ORDER_NUM]",
-                "      ,[PURCH_ORDER_ITEM]",
-                "      ,[PURCH_ORDER_TYPE]",
-                "      ,[SPLR_ACCT_NUM]",
-                "      ,[ORDERED_ON_DT]",
-                "      ,[ORDER_QTY]",
-                "      ,[ALLOCATED_ORDER_QTY]",
-                "      ,[CONFIRMED_QTY]",
-                "      ,[TARGET_QTY]",
-                "      ,[UOM_CODE]",
-                "      ,[COMPANY_WID]",
-                "      ,[PLANT_WID]",
-                "      ,[STORAGE_LOC]",
-                "      ,[PRODUCT_WID]",
-                "      ,[SUPPLIER_WID]",
-                "      ,[CUSTOMER_WID]",
-                "      ,[PURCH_GROUP_WID]",
-                "      ,[STORAGE_LOC_WID]",
-                "      ,[PURCH_ORDER_STATUS]",
-                "      ,[PURCH_ORDER_GRP]",
-                "      ,[Q10_QTY]",
-                "      ,[REQ_DELIVERY_DT]",
-                "      ,[DELIVERY_DT]",
-                "      ,[SCHEDULE_QTY]",
-                "      ,[RELEASE_STATE]",
-                "      ,[GR_GI_DT]",
-                "      ,[GR_GI_QTY]",
-                "      ,[SCHEDULE_LINE_NUM]",
-                "      ,[NET_AMT]",
-                "  FROM [PNJ_ROLAP].[dbo].[W_VW_PO_SCHEDULE_LINE_Z01_F]\")",
+                "    SELECT [ROW_WID]",
+                "      ,[AREA_CODE]",
+                "      ,[TEAM_CODE]",
+                "      ,[TEAM_NAME]",
+                "      ,[STOCK_KEEPER_CODE]",
+                "      ,[STOCK_KEEPER_TYPE]",
+                "      ,[EFFECT_FROM_DT_WID]",
+                "      ,[EFFECT_TO_DT_WID]",
+                "  FROM [PNJ_ROLAP].[dbo].[W_VW_PRODUCTION_LABOR_D]\"),",
+                "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"STOCK_KEEPER_CODE\", \"Stock Keeper Code\"}, {\"AREA_CODE\", \"Area Code\"}, {\"TEAM_CODE\", \"Team Code\"}, {\"TEAM_NAME\", \"Team Name\"}, {\"EFFECT_FROM_DT_WID\", \"Effect From DT\"}, {\"EFFECT_TO_DT_WID\", \"Effect To DT\"}, {\"STOCK_KEEPER_TYPE\", \"Stock Keeper Type\"}})",
                 "in",
-                "    Source"
+                "    #\"Renamed Columns\""
               ]
             }
           }
         ]
       },
       {
-        "name": "Fact - PO Schedule Line Z06",
+        "name": "Fact - Production Labor Planned",
         "columns": [
           {
-            "name": "Types",
-            "dataType": "string",
-            "sourceColumn": "Types"
-          },
-          {
-            "name": "PURCH_ORDER_NUM",
-            "dataType": "string",
-            "sourceColumn": "PURCH_ORDER_NUM"
-          },
-          {
-            "name": "PURCH_ORDER_ITEM",
-            "dataType": "string",
-            "sourceColumn": "PURCH_ORDER_ITEM"
-          },
-          {
-            "name": "PURCH_ORDER_TYPE",
-            "dataType": "string",
-            "sourceColumn": "PURCH_ORDER_TYPE"
-          },
-          {
-            "name": "SPLR_ACCT_NUM",
-            "dataType": "string",
-            "sourceColumn": "SPLR_ACCT_NUM"
-          },
-          {
-            "name": "ORDERED_ON_DT",
+            "name": "Date Key",
             "dataType": "int64",
-            "sourceColumn": "ORDERED_ON_DT"
+            "sourceColumn": "Date Key"
           },
           {
-            "name": "ORDER_QTY",
+            "name": "Team Code",
+            "dataType": "string",
+            "sourceColumn": "Team Code"
+          },
+          {
+            "name": "Actual Resource",
             "dataType": "double",
-            "sourceColumn": "ORDER_QTY"
+            "sourceColumn": "Actual Resource",
+            "formatString": "#,0.00"
           },
           {
-            "name": "ALLOCATED_ORDER_QTY",
+            "name": "Planned Resource",
             "dataType": "double",
-            "sourceColumn": "ALLOCATED_ORDER_QTY"
+            "sourceColumn": "Planned Resource",
+            "formatString": "#,0.00"
           },
           {
-            "name": "CONFIRMED_QTY",
-            "dataType": "int64",
-            "sourceColumn": "CONFIRMED_QTY"
-          },
-          {
-            "name": "TARGET_QTY",
+            "name": "Planned Qty",
             "dataType": "double",
-            "sourceColumn": "TARGET_QTY"
+            "sourceColumn": "Planned Qty",
+            "formatString": "#,0.00"
           },
           {
-            "name": "UOM_CODE",
-            "dataType": "string",
-            "sourceColumn": "UOM_CODE"
-          },
-          {
-            "name": "COMPANY_WID",
-            "dataType": "int64",
-            "sourceColumn": "COMPANY_WID"
-          },
-          {
-            "name": "PLANT_WID",
-            "dataType": "int64",
-            "sourceColumn": "PLANT_WID"
-          },
-          {
-            "name": "STORAGE_LOC",
-            "dataType": "string",
-            "sourceColumn": "STORAGE_LOC"
-          },
-          {
-            "name": "PRODUCT_WID",
-            "dataType": "int64",
-            "sourceColumn": "PRODUCT_WID"
-          },
-          {
-            "name": "SUPPLIER_WID",
-            "dataType": "int64",
-            "sourceColumn": "SUPPLIER_WID"
-          },
-          {
-            "name": "CUSTOMER_WID",
-            "dataType": "int64",
-            "sourceColumn": "CUSTOMER_WID"
-          },
-          {
-            "name": "PURCH_GROUP_WID",
-            "dataType": "int64",
-            "sourceColumn": "PURCH_GROUP_WID"
-          },
-          {
-            "name": "STORAGE_LOC_WID",
-            "dataType": "int64",
-            "sourceColumn": "STORAGE_LOC_WID"
-          },
-          {
-            "name": "PURCH_ORDER_STATUS",
-            "dataType": "string",
-            "sourceColumn": "PURCH_ORDER_STATUS"
-          },
-          {
-            "name": "PURCH_ORDER_GRP",
-            "dataType": "string",
-            "sourceColumn": "PURCH_ORDER_GRP"
-          },
-          {
-            "name": "Q10_QTY",
+            "name": "Planned TurnOver Q10",
             "dataType": "double",
-            "sourceColumn": "Q10_QTY"
+            "sourceColumn": "Planned TurnOver Q10"
           },
           {
-            "name": "REQ_DELIVERY_DT",
-            "dataType": "int64",
-            "sourceColumn": "REQ_DELIVERY_DT"
-          },
-          {
-            "name": "DELIVERY_DT",
-            "dataType": "int64",
-            "sourceColumn": "DELIVERY_DT"
-          },
-          {
-            "name": "SCHEDULE_QTY",
-            "dataType": "int64",
-            "sourceColumn": "SCHEDULE_QTY"
-          },
-          {
-            "name": "RELEASE_STATE",
-            "dataType": "string",
-            "sourceColumn": "RELEASE_STATE"
-          },
-          {
-            "name": "GR_GI_DT",
-            "dataType": "int64",
-            "sourceColumn": "GR_GI_DT"
-          },
-          {
-            "name": "GR_GI_QTY",
+            "name": "Planned Productivity",
             "dataType": "double",
-            "sourceColumn": "GR_GI_QTY"
+            "sourceColumn": "Planned Productivity",
+            "formatString": "#,0.00"
           },
           {
-            "name": "SCHEDULE_LINE_NUM",
-            "dataType": "int64",
-            "sourceColumn": "SCHEDULE_LINE_NUM"
-          },
-          {
-            "name": "NET_AMT",
+            "name": "Working Day Standard",
             "dataType": "double",
-            "sourceColumn": "NET_AMT"
+            "sourceColumn": "Working Day Standard"
+          },
+          {
+            "name": "STOCK_KEEPER_WID",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "STOCK_KEEPER_WID"
           }
         ],
         "partitions": [
@@ -19983,41 +19581,37 @@
               "expression": [
                 "let",
                 "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"",
-                "    SELECT [Types]",
-                "      ,[PURCH_ORDER_NUM]",
-                "      ,[PURCH_ORDER_ITEM]",
-                "      ,[PURCH_ORDER_TYPE]",
-                "      ,[SPLR_ACCT_NUM]",
-                "      ,[ORDERED_ON_DT]",
-                "      ,[ORDER_QTY]",
-                "      ,[ALLOCATED_ORDER_QTY]",
-                "      ,[CONFIRMED_QTY]",
-                "      ,[TARGET_QTY]",
-                "      ,[UOM_CODE]",
-                "      ,[COMPANY_WID]",
-                "      ,[PLANT_WID]",
-                "      ,[STORAGE_LOC]",
-                "      ,[PRODUCT_WID]",
-                "      ,[SUPPLIER_WID]",
-                "      ,[CUSTOMER_WID]",
-                "      ,[PURCH_GROUP_WID]",
-                "      ,[STORAGE_LOC_WID]",
-                "      ,[PURCH_ORDER_STATUS]",
-                "      ,[PURCH_ORDER_GRP]",
-                "      ,[Q10_QTY]",
-                "      ,[REQ_DELIVERY_DT]",
-                "      ,[DELIVERY_DT]",
-                "      ,[SCHEDULE_QTY]",
-                "      ,[RELEASE_STATE]",
-                "      ,[GR_GI_DT]",
-                "      ,[GR_GI_QTY]",
-                "      ,[SCHEDULE_LINE_NUM]",
-                "      ,[NET_AMT]",
-                "  FROM [PNJ_ROLAP].[dbo].[W_VW_PO_SCHEDULE_LINE_Z06_F]\")",
+                "    SELECT [DATE_KEY]",
+                "      ,[TEAM_CODE]",
+                "      ,[STOCK_KEEPER_WID]",
+                "      ,[ACTUAL_RESOURCE]",
+                "      ,[PLANNED_RESOURCE]",
+                "      ,[PLANNED_QTY]",
+                "      ,[PLANNED_TURNOVER_Q10]",
+                "      ,[PLANNED_PRODUCTIVITY]",
+                "      ,[WORKING_DAY_STANDARD]",
+                "  FROM [PNJ_ROLAP].[dbo].[W_VW_PRODUCTION_LABOR_PLANNED_D]\"),",
+                "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"DATE_KEY\", \"Date Key\"}, {\"TEAM_CODE\", \"Team Code\"}, {\"ACTUAL_RESOURCE\", \"Actual Resource\"}, {\"PLANNED_RESOURCE\", \"Planned Resource\"}, {\"PLANNED_QTY\", \"Planned Qty\"}, {\"PLANNED_TURNOVER_Q10\", \"Planned TurnOver Q10\"}, {\"PLANNED_PRODUCTIVITY\", \"Planned Productivity\"}, {\"WORKING_DAY_STANDARD\", \"Working Day Standard\"}}),",
+                "    #\"Changed Type\" = Table.TransformColumnTypes(#\"Renamed Columns\",{{\"Actual Resource\", type number}, {\"Planned Resource\", type number}, {\"Planned Qty\", type number}, {\"Planned Productivity\", type number}})",
                 "in",
-                "    Source"
+                "    #\"Changed Type\""
               ]
             }
+          }
+        ],
+        "measures": [
+          {
+            "name": ".Planned Productivity",
+            "expression": [
+              " ",
+              "Calculate(sumx('Fact - Production Labor Planned', 'Fact - Production Labor Planned'[Planned Resource] * 'Fact - Production Labor Planned'[Working Day Standard]), Filter ('Dim - Production Labor', [Productivity Type] = \"DIEM\"))",
+              "+ Calculate(sum('Fact - Production Labor Planned'[Planned Productivity]), Filter ('Dim - Production Labor', [Productivity Type] = \"SL\"))"
+            ]
+          },
+          {
+            "name": "%Human Resource",
+            "expression": " sum('Fact - Production Labor Planned'[Actual Resource])/sum('Fact - Production Labor Planned'[Planned Resource])",
+            "formatString": "#,0%;-#,0%;#,0%"
           }
         ]
       }
@@ -25474,10 +25068,6 @@
             "metadataPermission": "none"
           },
           {
-            "name": "Dim - Booklet",
-            "metadataPermission": "none"
-          },
-          {
             "name": "Fact - PO SO Schedule Line",
             "metadataPermission": "none"
           },
@@ -25550,19 +25140,7 @@
             "metadataPermission": "none"
           },
           {
-            "name": "Dim - STK Keeper Finished Goods",
-            "metadataPermission": "none"
-          },
-          {
-            "name": "Fact - PO Schedule Line Z01",
-            "metadataPermission": "none"
-          },
-          {
-            "name": "Fact - PO Schedule Line Z06",
-            "metadataPermission": "none"
-          },
-          {
-            "name": "Dim - Production Labor Planned",
+            "name": "Fact - Production Labor Planned",
             "metadataPermission": "none"
           },
           {
