@@ -11,7 +11,7 @@
         "connectionDetails": {
           "protocol": "tds",
           "address": {
-            "server": "192.168.2.19",
+            "server": "192.168.3.31",
             "database": "PNJ_ROLAP"
           },
           "authentication": null,
@@ -35,7 +35,7 @@
         "connectionDetails": {
           "protocol": "tds",
           "address": {
-            "server": "192.168.2.19",
+            "server": "192.168.3.31",
             "database": "DW_RAW"
           },
           "authentication": null,
@@ -5242,135 +5242,6 @@
             ]
           },
           {
-            "name": "AVG .Net Qty (Monthly) (LY)",
-            "expression": [
-              "",
-              "    VAR CK_SDate = DATEADD(FIRSTDATE( 'Dim - Time'[Date]),-1,YEAR)",
-              "    VAR CK_EDate = DATEADD(LASTDATE ( 'Dim - Time'[Date]),-1, YEAR)",
-              "",
-              "",
-              "",
-              "RETURN ",
-              "--    CALCULATE( DIVIDE([. PNJP AP AVG Net Qty (Monthly)],",
-              "        CALCULATE(",
-              "                AVERAGEX(",
-              "                    FILTER(",
-              "                        ALLSELECTED( 'Dim - Time'[Date] ),",
-              "                            'Dim - Time'[Date] >= CK_SDate &&",
-              "                                    'Dim - Time'[Date] <= CK_EDate ",
-              "                        ),",
-              "                    [.Net Qty (Daily)])",
-              "             )",
-              "--             , 0)    )"
-            ]
-          },
-          {
-            "name": "AVG .Net Qty (Monthly) (LM)",
-            "expression": [
-              "",
-              "    VAR CK_SDate = DATEADD(FIRSTDATE( 'Dim - Time'[Date]),-1,MONTH)",
-              "    VAR CK_EDate = DATEADD(LASTDATE ( 'Dim - Time'[Date]),-1, MONTH)",
-              "",
-              "",
-              "",
-              "RETURN ",
-              "--    CALCULATE( DIVIDE([. PNJP AP AVG Net Qty (Monthly)],",
-              "        CALCULATE(",
-              "                AVERAGEX(",
-              "                    FILTER(",
-              "                        ALLSELECTED( 'Dim - Time'[Date] ),",
-              "                            'Dim - Time'[Date] >= CK_SDate &&",
-              "                                    'Dim - Time'[Date] <= CK_EDate ",
-              "                        ),",
-              "                    [.Net Qty (Daily)])",
-              "             )",
-              "             --, 0)    )"
-            ]
-          },
-          {
-            "name": "AVG .Q10 (Monthly) (LM)",
-            "expression": [
-              "",
-              "    VAR CK_SDate = DATEADD(FIRSTDATE( 'Dim - Time'[Date]),-1,MONTH)",
-              "    VAR CK_EDate = DATEADD(LASTDATE ( 'Dim - Time'[Date]),-1, MONTH)",
-              "",
-              "",
-              "",
-              "RETURN ",
-              "--    CALCULATE( DIVIDE([PNJP AP AVG #Q10 (Monthly)],",
-              "        CALCULATE(",
-              "                AVERAGEX(",
-              "                    FILTER(",
-              "                        ALLSELECTED( 'Dim - Time'[Date] ),",
-              "                            'Dim - Time'[Date] >= CK_SDate &&",
-              "                                    'Dim - Time'[Date] <= CK_EDate ",
-              "                        ),",
-              "                    [.Q10 (Daily)])",
-              "             )",
-              "--             , 0)    )"
-            ]
-          },
-          {
-            "name": "%AVG .Q10 (Monthly) (LY)",
-            "expression": [
-              "",
-              "    VAR CK_SDate = DATEADD(FIRSTDATE( 'Dim - Time'[Date]),-1,YEAR)",
-              "    VAR CK_EDate = DATEADD(LASTDATE ( 'Dim - Time'[Date]),-1, YEAR)",
-              "",
-              "",
-              "",
-              "RETURN ",
-              "    CALCULATE( DIVIDE([AVG .Q10 (Monthly)],",
-              "        CALCULATE(",
-              "                AVERAGEX(",
-              "                    FILTER(",
-              "                        ALLSELECTED( 'Dim - Time'[Date] ),",
-              "                            'Dim - Time'[Date] >= CK_SDate &&",
-              "                                    'Dim - Time'[Date] <= CK_EDate ",
-              "                        ),",
-              "                    [.Q10 (Daily)])",
-              "             ), 0)",
-              "    )"
-            ],
-            "formatString": "0.00%;-0.00%;0.00%"
-          },
-          {
-            "name": ".Net Qty (Daily) (LM)",
-            "expression": [
-              "",
-              "",
-              "CALCULATE([.Net Qty (Daily)], dateadd('Dim - Time'[Date],-1, MONTH))",
-              "--RETURN DIVIDE([PNJP AP .Net Qty (Daily)], KT,0)-1"
-            ]
-          },
-          {
-            "name": ".Net Qty (Daily) (LY)",
-            "expression": [
-              "",
-              "",
-              "CALCULATE([.Net Qty (Daily)], dateadd('Dim - Time'[Date],-1, YEAR))",
-              "--RETURN DIVIDE([. PNJP AP Net Qty (Daily)], KT,0)-1"
-            ]
-          },
-          {
-            "name": ".Q10 (Daily) (LM)",
-            "expression": [
-              "",
-              "",
-              "CALCULATE([.Q10 (Daily)] , dateadd('Dim - Time'[Date],-1, MONTH))",
-              "--RETURN DIVIDE([PNJP AP #Q10 (Daily)], KT,0)-1"
-            ]
-          },
-          {
-            "name": ".Q10 (Daily) (LY)",
-            "expression": [
-              "",
-              "",
-              "CALCULATE([.Q10 (Daily)] , dateadd('Dim - Time'[Date],-1, YEAR))",
-              "--RETURN DIVIDE([PNJP AP #Q10 (Daily)], KT,0)-1"
-            ]
-          },
-          {
             "name": "TurnOver .Q10 (Daily)",
             "expression": [
               "",
@@ -5390,28 +5261,6 @@
               "\t'Fact - Actual Production'[TYPES] = \"Out\")",
               "",
               "RETURN DIVIDE(GI, [.Net Qty (Daily)])"
-            ]
-          },
-          {
-            "name": "TurnOver .Q10 (Daily) (LY)",
-            "expression": [
-              "",
-              "",
-              "VAR GI = CALCULATE(Sum('Fact - Actual Production'[Q10])*-1, DATEADD('Dim - Time'[Date],-1,YEAR),",
-              "\t'Fact - Actual Production'[TYPES] = \"Out\")",
-              "",
-              "RETURN DIVIDE(GI, [.Q10 (Daily) (LY)])"
-            ]
-          },
-          {
-            "name": "TurnOver .Q10 (Daily) (LM)",
-            "expression": [
-              "",
-              "",
-              "VAR GI = CALCULATE(Sum('Fact - Actual Production'[Q10])*-1, DATEADD('Dim - Time'[Date],-1,MONTH),",
-              "\t'Fact - Actual Production'[TYPES] = \"Out\")",
-              "",
-              "RETURN DIVIDE(GI, [.Q10 (Daily) (LM)])"
             ]
           },
           {
@@ -5597,6 +5446,157 @@
             "expression": [
               "",
               "'Fact - Actual Production'[AVG TurnOver .Q10]/sum('Fact - Production Labor Planned'[Planned TurnOver Q10])"
+            ]
+          },
+          {
+            "name": "AVG .Net Qty (Monthly) (LY)",
+            "expression": [
+              "",
+              "    VAR CK_SDate = DATEADD(FIRSTDATE( 'Dim - Time'[Date]),-1,YEAR)",
+              "    VAR CK_EDate = DATEADD(LASTDATE ( 'Dim - Time'[Date]),-1, YEAR)",
+              "",
+              "",
+              "",
+              "RETURN ",
+              "--    CALCULATE( DIVIDE([. PNJP AP AVG Net Qty (Monthly)],",
+              "        CALCULATE(",
+              "                AVERAGEX(",
+              "                    FILTER(",
+              "                        ALLSELECTED( 'Dim - Time'[Date] ),",
+              "                            'Dim - Time'[Date] >= CK_SDate &&",
+              "                                    'Dim - Time'[Date] <= CK_EDate ",
+              "                        ),",
+              "                    [.Net Qty (Daily)])",
+              "             )",
+              "--             , 0)    )"
+            ]
+          },
+          {
+            "name": "AVG .Net Qty (Monthly) (LM)",
+            "expression": [
+              "",
+              "    VAR CK_SDate = DATEADD(FIRSTDATE( 'Dim - Time'[Date]),-1,MONTH)",
+              "    VAR CK_EDate = DATEADD(LASTDATE ( 'Dim - Time'[Date]),-1, MONTH)",
+              "",
+              "",
+              "",
+              "RETURN ",
+              "--    CALCULATE( DIVIDE([. PNJP AP AVG Net Qty (Monthly)],",
+              "        CALCULATE(",
+              "                AVERAGEX(",
+              "                    FILTER(",
+              "                        ALLSELECTED( 'Dim - Time'[Date] ),",
+              "                            'Dim - Time'[Date] >= CK_SDate &&",
+              "                                    'Dim - Time'[Date] <= CK_EDate ",
+              "                        ),",
+              "                    [.Net Qty (Daily)])",
+              "             )",
+              "             --, 0)    )"
+            ]
+          },
+          {
+            "name": "AVG .Q10 (Monthly) (LM)",
+            "expression": [
+              "",
+              "    VAR CK_SDate = DATEADD(FIRSTDATE( 'Dim - Time'[Date]),-1,MONTH)",
+              "    VAR CK_EDate = DATEADD(LASTDATE ( 'Dim - Time'[Date]),-1, MONTH)",
+              "",
+              "",
+              "",
+              "RETURN ",
+              "--    CALCULATE( DIVIDE([PNJP AP AVG #Q10 (Monthly)],",
+              "        CALCULATE(",
+              "                AVERAGEX(",
+              "                    FILTER(",
+              "                        ALLSELECTED( 'Dim - Time'[Date] ),",
+              "                            'Dim - Time'[Date] >= CK_SDate &&",
+              "                                    'Dim - Time'[Date] <= CK_EDate ",
+              "                        ),",
+              "                    [.Q10 (Daily)])",
+              "             )",
+              "--             , 0)    )"
+            ]
+          },
+          {
+            "name": "%AVG .Q10 (Monthly) (LY)",
+            "expression": [
+              "",
+              "    VAR CK_SDate = DATEADD(FIRSTDATE( 'Dim - Time'[Date]),-1,YEAR)",
+              "    VAR CK_EDate = DATEADD(LASTDATE ( 'Dim - Time'[Date]),-1, YEAR)",
+              "",
+              "",
+              "",
+              "RETURN ",
+              "    CALCULATE( DIVIDE([AVG .Q10 (Monthly)],",
+              "        CALCULATE(",
+              "                AVERAGEX(",
+              "                    FILTER(",
+              "                        ALLSELECTED( 'Dim - Time'[Date] ),",
+              "                            'Dim - Time'[Date] >= CK_SDate &&",
+              "                                    'Dim - Time'[Date] <= CK_EDate ",
+              "                        ),",
+              "                    [.Q10 (Daily)])",
+              "             ), 0)",
+              "    )"
+            ],
+            "formatString": "0.00%;-0.00%;0.00%"
+          },
+          {
+            "name": ".Net Qty (Daily) (LM)",
+            "expression": [
+              "",
+              "",
+              "CALCULATE([.Net Qty (Daily)], dateadd('Dim - Time'[Date],-1, MONTH))",
+              "--RETURN DIVIDE([PNJP AP .Net Qty (Daily)], KT,0)-1"
+            ]
+          },
+          {
+            "name": ".Net Qty (Daily) (LY)",
+            "expression": [
+              "",
+              "",
+              "CALCULATE([.Net Qty (Daily)], dateadd('Dim - Time'[Date],-1, YEAR))",
+              "--RETURN DIVIDE([. PNJP AP Net Qty (Daily)], KT,0)-1"
+            ]
+          },
+          {
+            "name": ".Q10 (Daily) (LM)",
+            "expression": [
+              "",
+              "",
+              "CALCULATE([.Q10 (Daily)] , dateadd('Dim - Time'[Date],-1, MONTH))",
+              "--RETURN DIVIDE([PNJP AP #Q10 (Daily)], KT,0)-1"
+            ]
+          },
+          {
+            "name": ".Q10 (Daily) (LY)",
+            "expression": [
+              "",
+              "",
+              "CALCULATE([.Q10 (Daily)] , dateadd('Dim - Time'[Date],-1, YEAR))",
+              "--RETURN DIVIDE([PNJP AP #Q10 (Daily)], KT,0)-1"
+            ]
+          },
+          {
+            "name": "TurnOver .Q10 (Daily) (LY)",
+            "expression": [
+              "",
+              "",
+              "VAR GI = CALCULATE(Sum('Fact - Actual Production'[Q10])*-1, DATEADD('Dim - Time'[Date],-1,YEAR),",
+              "\t'Fact - Actual Production'[TYPES] = \"Out\")",
+              "",
+              "RETURN DIVIDE(GI, [.Q10 (Daily) (LY)])"
+            ]
+          },
+          {
+            "name": "TurnOver .Q10 (Daily) (LM)",
+            "expression": [
+              "",
+              "",
+              "VAR GI = CALCULATE(Sum('Fact - Actual Production'[Q10])*-1, DATEADD('Dim - Time'[Date],-1,MONTH),",
+              "\t'Fact - Actual Production'[TYPES] = \"Out\")",
+              "",
+              "RETURN DIVIDE(GI, [.Q10 (Daily) (LM)])"
             ]
           }
         ]
@@ -7948,7 +7948,7 @@
                 "      ,[PRODUCT_SECTION_WID]",
                 "      ,[RECORDING_TIME]",
                 "      ,[Layer]",
-                "  FROM [DW_RAW].[dbo].[W_PA_ICA_BASELINE_F_BK1] with (nolock) where (action_type <> 'do_transaction' or action_type is null) and DATE_WID >=20220101 \"",
+                "  FROM [DW_RAW].[dbo].[W_PA_ICA_BASELINE_F] with (nolock) where (action_type <> 'do_transaction' or action_type is null) and DATE_WID >=20220101 \"",
                 "   ),",
                 "    #\"Changed Type\" = Table.TransformColumnTypes(Source,{{\"AGE_RANGE\", Int64.Type}})",
                 "in",
@@ -16073,12 +16073,10 @@
               "",
               "VAR VL =  CALCULATE(",
               "\tCOUNTROWS(",
-              "\t\tGROUPBY('Fact - ALL Sales Invoice Line', ",
-              "\t\t'Fact - All Sales Invoice Line'[PLANT_WID], ",
-              "\t\t'Fact - All Sales Invoice Line'[Customer WID],",
+              "\t\tGROUPBY('Fact - ALL Sales Invoice Line',  'Fact - All Sales Invoice Line'[Customer WID], ",
               "\t\t'Fact - All Sales Invoice Line'[Invoice Number])),",
-              "\tFILTER('Fact - All Sales Invoice Line', 'Fact - All Sales Invoice Line'[TRAFFIC] = 1  && 'Fact - All Sales Invoice Line'[Channel Code] in {\"10\", \"20\"} && 'Fact - All Sales Invoice Line'[INVOICED_ON_DT_WID] >=20200101  ),",
-              "\tFILTER('Dim - Customer', 'Dim - Customer'[Customer Card] in {\"One-time\"}))",
+              "\tFILTER('Fact - All Sales Invoice Line', 'Fact - All Sales Invoice Line'[TRAFFIC] = 1  && 'Fact - All Sales Invoice Line'[Channel Code] in {\"10\", \"20\"} && 'Fact - All Sales Invoice Line'[INVOICED_ON_DT_WID] >=20200101),",
+              "\tFILTER('Dim - Customer','Dim - Customer'[VL_Flag] = 1))",
               "",
               "",
               "",
@@ -21135,7 +21133,7 @@
         "toColumn": "ROW_WID"
       },
       {
-        "name": "61b29410-06c7-4246-b5e8-329ae2c1355e",
+        "name": "44603c15-a27e-4cca-8a77-721580d1d031",
         "fromCardinality": "one",
         "fromTable": "Dim - Time Compare",
         "fromColumn": "ROW_WID",
@@ -25244,6 +25242,360 @@
           {
             "name": "Fact - Inventory Quota",
             "filterExpression": "CONTAINS('Dim - Authoring', 'Dim - Authoring'[Email], USERPRINCIPALNAME(),'Dim - Authoring'[Plant Code],  'Fact - Inventory Quota'[Plant Code])"
+          }
+        ]
+      },
+      {
+        "name": "Online",
+        "modelPermission": "read",
+        "tablePermissions": [
+          {
+            "name": "Dim - Authoring",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - Program",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Marketing Plan",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - Territory",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - Storage Location",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - Vendor",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Purchase Order Line",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Customer Visit",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - Transfer Plant",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - Movement Type",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Inventory Transaction",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - Transfer Sloc",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - Product Cost",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - Inventory Product",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - Employee",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Actual Production",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Plan Revenue - PNJP",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Production Plan",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Sales Invoice Line",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Marketing Spend",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - Sale Deals",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - Camera Age",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Camera InStore",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - ATL",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "MKT_CAC",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - MKT cost",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "SC Measures",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Inventory Quota",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - SC Recommend",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - Camera Person",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - Product Lot",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - Authoring Brands",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "CVR by Store by Date",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Employee Plan",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - Camera Area",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - Gem Size - SAP",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - Gem Size - MKT",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Production Plan Order",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Production Plan Agreement",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - Camera Gender",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - Camera Hour",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - Camera Sections",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - Time Compare",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - MRP Controller",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - Time (Lunar)",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Inventory Aging",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Booklet Quota",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Capacity Segment",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - Work Center",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Q10 Quota Daily",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Planned Order Time Rule",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Resource Usage",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Production Order",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Production Deffects",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - Production Deffects",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - SO Type",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - Booklet",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - PO SO Schedule Line",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - Production Planned Order",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Gemstone Deffects",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Plating",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - Actual Production",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "MKT - Lunar",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Customer Feedback",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Capacity Planned Order",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Gemstone GR",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Deffects Quota",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Plating Liquid",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Quality Control Comments",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "CMR Measures",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Forecasting",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - Invoice ZTG",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - MoMo VNPay",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Finance",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - GotIt GiftPop",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - STK Keeper Finished Goods",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - PO Schedule Line Z01",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - PO Schedule Line Z06",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - Production Labor Planned",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - Production Labor",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Actual Production Process",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - GL Account COPA",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - Cost Center",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - Profit Center",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - Payment Term",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - GL Account VN",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - GL Account PL",
+            "metadataPermission": "none"
           }
         ]
       }
