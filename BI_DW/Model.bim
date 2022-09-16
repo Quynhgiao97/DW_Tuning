@@ -4607,15 +4607,34 @@
           },
           {
             "type": "calculated",
+            "name": "Last GR",
+            "dataType": "int64",
+            "isDataTypeInferred": true,
+            "expression": " CALCULATE(MAX('Fact - Actual Production'[DATE_KEY]),FILTER(ALLEXCEPT('Fact - Actual Production','Fact - Actual Production'[Order Number],'Fact - Actual Production'[STK Keeper Code]),'Fact - Actual Production'[TYPES] = \"IN\"))"
+          },
+          {
+            "type": "calculated",
+            "name": "Aging",
+            "dataType": "int64",
+            "isDataTypeInferred": true,
+            "expression": [
+              " ",
+              "Var Last_GR = IF(ISBLANK('Fact - Actual Production'[Last GR]), BLANK(), CONVERT(COMBINEVALUES(\"/\",LEFT('Fact - Actual Production'[Last GR],4),MID('Fact - Actual Production'[Last GR],5,2),RIGHT('Fact - Actual Production'[Last GR],2)),DATETIME))",
+              "Return ",
+              "CALCULATE(DATEDIFF(Last_GR,TODAY(),DAY))"
+            ]
+          },
+          {
+            "type": "calculated",
             "name": "Aging Group",
             "dataType": "string",
             "isDataTypeInferred": true,
             "expression": [
               " ",
-              "if(ISBLANK('Fact - Actual Production'[.Aging]), BLANK(),",
-              "if(and('Fact - Actual Production'[.Aging]>=0 ,'Fact - Actual Production'[.Aging]<=5), \"a. <=5 days\",",
-              "\tif('Fact - Actual Production'[.Aging]<=10, \"b. 5 - 10 days\",",
-              "\tif('Fact - Actual Production'[.Aging]<=270, \"c. >10 days\"))))"
+              "if(ISBLANK('Fact - Actual Production'[Aging]), BLANK(),",
+              "if(and('Fact - Actual Production'[Aging]>=0 ,'Fact - Actual Production'[Aging]<=5), \"a. <=5 days\",",
+              "\tif('Fact - Actual Production'[Aging]<=10, \"b. 5 - 10 days\",",
+              "\tif('Fact - Actual Production'[Aging]>10, \"c. >10 days\"))))"
             ]
           }
         ],
@@ -4838,7 +4857,7 @@
                 "      ,[VALUE_TRX_CURRENCY]",
                 "      ,[UNIT_COST]",
                 "  FROM [PNJ_ROLAP].[dbo].[W_VW_ACTUAL_PRODUCTION_F]",
-                "  WHERE [DATE_KEY] BETWEEN 20220101 AND CAST(Convert(CHAR(8),DATEADD(DAY,- 100,GETDATE()),112) as int)\"),",
+                "  WHERE [DATE_KEY] BETWEEN 20220101 AND CAST(Convert(CHAR(8),DATEADD(DAY,- 102,GETDATE()),112) as int)\"),",
                 "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"STOCK_KEEPER_CODE\", \"STK Keeper Code\"},{\"ORDER_NUMBER\", \"Order Number\"}, {\"BASE_UOM_CODE\", \"UOM\"}, {\"ACTUAL_QTY\", \"Actual QTY\"}, {\"LOCATION_CODE\", \"Location Wid\"}, {\"DOCUMENT_NUMBER\", \"Document Number\"}, {\"STANDARD_WEIGHT_FLAG\", \"STD Weight Flag\"}, {\"STANDARD_TEXT_KEY\", \"STD Text Key\"}, {\"LOCATION_TRANSFER_CODE\", \"Output sloc\"}, {\"STOCK_KEEPER_TRANSFER_CODE\", \"STK Keeper Transfer Code\"}, {\"BATCH\", \"Batch\"}, {\"STK_KEEPER_BOOKLET_WID\", \"Booklet_ID\"}, {\"TOTAL_WEIGHT\", \"Total Weight\"}, {\"STANDARD_WEIGHT\", \"Standard Weight\"}, {\"TIME\", \"Time\"}, {\"COOLING_SCORE\", \"Cooling Score\"}, {\"PRONG_SCORE\", \"Prong Score\"}, {\"PRODUCTION_MATERIAL_TYPE\", \"Material Type\"},{\"VALUE_TRX_CURRENCY\", \"Production Order Cost\"}, {\"UNIT_COST\", \"Unit Cost\"}, {\"PRODUCTION_ORDER_TYPE\", \"Production Order Type\"}, {\"TOTAL_PRODUCTION_QTY\", \"Production Order Qty\"}})",
                 "in",
                 "    #\"Renamed Columns\""
@@ -5704,21 +5723,6 @@
               "    FILTER('Fact - Actual Production', 'Fact - Actual Production'[Delivery Type] = \"Insite\"),",
               "    FILTER('Dim - Production Labor','Dim - Production Labor'[Productivity Type] <> blank())",
               "    )"
-            ]
-          },
-          {
-            "name": "Last Goods Receipt",
-            "expression": " CALCULATE(MAX('Dim - Time'[Date]),FILTER('Fact - Actual Production','Fact - Actual Production'[TYPES] = \"IN\"))"
-          },
-          {
-            "name": ".Aging",
-            "expression": [
-              " ",
-              "var _currdate = max('Dim - Time'[Date])",
-              "RETURN",
-              "CALCULATE(DATEDIFF('Fact - Actual Production'[Last Goods Receipt],TODAY(),DAY)",
-              "                   ,FILTER(aLL('Dim - Time'[Date]), 'Dim - Time'[Date] <= _currdate)",
-              ")"
             ]
           }
         ]
@@ -20340,20 +20344,6 @@
         "isActive": false
       },
       {
-        "name": "38507e16-edc3-4e53-af26-0de8f1177816",
-        "fromTable": "Fact - Actual Production",
-        "fromColumn": "PRODUCT_WID",
-        "toTable": "Dim - Product",
-        "toColumn": "ROW_WID"
-      },
-      {
-        "name": "adea571d-e213-49c9-90e1-1f51aa763844",
-        "fromTable": "Fact - Actual Production",
-        "fromColumn": "DATE_KEY",
-        "toTable": "Dim - Time",
-        "toColumn": "ROW_WID"
-      },
-      {
         "name": "c721aeb7-01b7-4608-b8b4-c3b397b8a81f",
         "fromTable": "Fact - Plan Revenue - PNJP",
         "fromColumn": "DATE_KEY",
@@ -21019,13 +21009,6 @@
         "toColumn": "ROW_WID"
       },
       {
-        "name": "4f3cf387-e232-4bad-bc2f-230a53f22fb5",
-        "fromTable": "Fact - Actual Production",
-        "fromColumn": "MRP_CONTROLLER_WID",
-        "toTable": "Dim - MRP Controller",
-        "toColumn": "ROW_WID"
-      },
-      {
         "name": "573c4c11-2f4b-48c8-9e08-4e46992e99ac",
         "fromTable": "Fact - Deffects Quota",
         "fromColumn": "DATE_KEY",
@@ -21274,20 +21257,6 @@
         "toColumn": "ROW_WID"
       },
       {
-        "name": "a9437a7f-101a-4c75-a40f-3acfe86ee198",
-        "fromTable": "Fact - Actual Production",
-        "fromColumn": "STOCK_KEEPER_WID",
-        "toTable": "Dim - Production Labor",
-        "toColumn": "ROW_WID"
-      },
-      {
-        "name": "c4faa875-f73f-4d8c-b460-d9699247bfe9",
-        "fromTable": "Fact - Actual Production",
-        "fromColumn": "STOCK_KEEPER_TRANSFER_WID",
-        "toTable": "Dim - Production Labor STK IN",
-        "toColumn": "ROW_WID"
-      },
-      {
         "name": "e2c9abb9-5b7e-422c-98a2-6fd88196e816",
         "fromTable": "Fact - Production Deffects",
         "fromColumn": "PRODUCTION_LABOR_WID",
@@ -21362,6 +21331,41 @@
         "fromTable": "Fact - Production Order",
         "fromColumn": "ROW_WID",
         "toTable": "Dim - Production Order",
+        "toColumn": "ROW_WID"
+      },
+      {
+        "name": "f4ed6f11-ab38-496b-87f7-eb63910b5c8c",
+        "fromTable": "Fact - Actual Production",
+        "fromColumn": "DATE_KEY",
+        "toTable": "Dim - Time",
+        "toColumn": "ROW_WID"
+      },
+      {
+        "name": "8ee7308d-6bc4-43df-9b70-81c241eab245",
+        "fromTable": "Fact - Actual Production",
+        "fromColumn": "MRP_CONTROLLER_WID",
+        "toTable": "Dim - MRP Controller",
+        "toColumn": "ROW_WID"
+      },
+      {
+        "name": "05b04b57-0ac6-4c37-8d4c-66cd432e4d5e",
+        "fromTable": "Fact - Actual Production",
+        "fromColumn": "PRODUCT_WID",
+        "toTable": "Dim - Product",
+        "toColumn": "ROW_WID"
+      },
+      {
+        "name": "71da699c-ed20-441e-88db-416cbc2387c5",
+        "fromTable": "Fact - Actual Production",
+        "fromColumn": "STOCK_KEEPER_TRANSFER_WID",
+        "toTable": "Dim - Production Labor STK IN",
+        "toColumn": "ROW_WID"
+      },
+      {
+        "name": "955e69e5-fedf-4c4f-8c63-35e87705cb17",
+        "fromTable": "Fact - Actual Production",
+        "fromColumn": "STOCK_KEEPER_WID",
+        "toTable": "Dim - Production Labor",
         "toColumn": "ROW_WID"
       }
     ],
