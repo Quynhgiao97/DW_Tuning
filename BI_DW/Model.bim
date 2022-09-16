@@ -24,7 +24,7 @@
           "AuthenticationKind": "UsernamePassword",
           "kind": "SQL",
           "path": "192.168.2.19;PNJ_ROLAP",
-          "Username": "biread",
+          "Username": "Biread",
           "EncryptConnection": false
         }
       },
@@ -48,7 +48,7 @@
           "AuthenticationKind": "UsernamePassword",
           "kind": "SQL",
           "path": "192.168.2.19;DW_RAW",
-          "Username": "biread",
+          "Username": "Biread",
           "EncryptConnection": false
         }
       }
@@ -1033,7 +1033,7 @@
             "formatString": "#,0"
           },
           {
-            "name": "..Plant (YTD)",
+            "name": "# Plant (YTD)",
             "expression": " CALCULATE('Dim - Plant'[# Plant New],FILTER(ALL('Dim - Time'[Date]),'Dim - Time'[Date]<= Max('Dim - Time'[Date])))",
             "formatString": "#,0"
           },
@@ -3608,7 +3608,7 @@
         ],
         "measures": [
           {
-            "name": ". Inven Net Qty",
+            "name": ". Inventory Net Qty",
             "expression": [
               " ",
               "var _currdate = max('Dim - Time'[Date])",
@@ -3690,7 +3690,7 @@
             "formatString": "#,0"
           },
           {
-            "name": "# Q10 (Inventory)",
+            "name": ". Q10 (Inventory)",
             "expression": [
               " var _currdate = max('Dim - Time'[Date])",
               "Return",
@@ -3855,7 +3855,7 @@
             "name": "PNJP .Invent Net Qty",
             "description": "SOH PNP theo ngày Qty",
             "expression": [
-              " CALCULATE([. Inven Net Qty] + [. Special Qty],",
+              " CALCULATE([. Inventory Net Qty] + [. Special Qty],",
               "\tFILTER( 'Dim - Movement Type', 'Dim - Movement Type'[MVMT Code] <>  \"313\")",
               "\t)",
               "",
@@ -3897,7 +3897,7 @@
             "name": "PNJP .Invent Q10",
             "description": "SOH PNP Q10",
             "expression": [
-              " CALCULATE([# Q10 (Inventory)]+[. Special Q10],",
+              " CALCULATE([. Q10 (Inventory)]+[. Special Q10],",
               "\tFILTER( 'Dim - Movement Type', 'Dim - Movement Type'[MVMT Code] <>  \"313\")",
               "\t)",
               "",
@@ -6292,7 +6292,7 @@
           {
             "name": ". MKT Net Qty (LY)",
             "expression": [
-              " CALCULATE([# All Qty],",
+              " CALCULATE([. All Qty],",
               "FILTER(",
               "ALLEXCEPT('Fact - Sales Invoice Line', 'Dim - Plant'[REGION], 'Dim - Plant'[TIER], 'Dim - Plant'[PLANT KIND], 'Fact - Sales Invoice Line'[Customer Type (Month)],'Fact - Sales Invoice Line'[Customer Type (Year)], 'Dim - Product'[RPT_Product Group 4 Name], 'Dim - Product'[RPT_Product Group 2 Name], 'Dim - Product'[RPT - Product Group 7 Name], 'Dim - Product'[Co-Operate Brand],'Dim - Customer'[Customer Card],'Dim - Plant'[Plant Code], 'Dim - Plant'[PLANT NAME], 'Dim - Plant'[Sales District Name], 'Fact - Sales Invoice Line'[Group Age], 'Dim - Customer'[GENDER], 'Fact - Sales Invoice Line'[CUST_CARD_DESC], 'Fact - Sales Invoice Line'[MKT_Customer],  'Dim - Plant'[Plant Name 1] ),",
               " 'Fact - Sales Invoice Line'[Program Category] = SELECTEDVALUE('Fact - Sales Invoice Line'[PROGRAM CATEGORY]) &&",
@@ -7389,6 +7389,368 @@
                 ]
               }
             ]
+          },
+          {
+            "name": "Fact - All Sales Invoice Line 2022",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"SELECT [INVOICED_ON_DT_WID]",
+                "      ,[INVOICE_NUM]",
+                "      ,[PRODUCT_WID]",
+                "      ,[INVOICED_QTY]",
+                "      ,[NET_AMT]",
+                "      ,[COST_AMT]",
+                "      ,[DISCOUNT_AMT]",
+                "      ,[GROSS_WEIGHT]",
+                "      ,[NET_WEIGHT]",
+                "      ,[CHANNEL_CODE]",
+                "      ,[INVOICE_TYPE]",
+                "      ,[CUSTOMER_SOLD_TO_WID]",
+                "      ,[COMPANY_WID]",
+                "      ,[PLANT_WID]",
+                "      ,[INVOICE_Q10_QTY]",
+                "      ,[LABOUR_COST]",
+                "      ,[GOLD_AMT]",
+                "      ,[Invoice_Hour]",
+                "      ,[TYPE_PLANT]",
+                "      ,[CUST_TYPE_MKT] CUST_TYPE_MONTH",
+                "      ,[CUST_TYPE_YEAR]",
+                "      ,[SALES_PERSON_WID]",
+                "      ,[DOC_CONDITION_NUM]",
+                "      ,[PAYMENT_TERM_WID]",
+                "      ,[Group_age]",
+                "      ,[PRODUCT_INVENTORY_WID]",
+                "      ,[HAOLAI_AMT]",
+                "      ,[DELIVERY_PRIORITY]",
+                "      ,[SHIPPING_CONDITION]",
+                "      ,[PROGRAM_CODE]",
+                "      ,[KOL_AMT]",
+                "      ,[PROGRAM_NAME]",
+                "      ,CUSTOMER_PAYER_WID",
+                "      ,TRAFFIC",
+                "      ,Palexy_AGEID",
+                "      ,ConditionID",
+                "      ,[SLOC_WID]",
+                "      ,[PROFIT_AMT]",
+                "      ,CUST_CARD_DESC",
+                "      ,MKT_CUSTOMER",
+                "      ,LUNAR_DT",
+                "      ,GOTIT_WID",
+                "      ,INVOICE_ZTG_WID",
+                "      ,SYS_CUST_PAR_WID",
+                "  FROM [PNJ_ROLAP].[dbo].[W_VW_SALES_INVOICE_LINE_F] ",
+                "where [INVOICED_ON_DT_WID] < CAST(Convert(CHAR(8),DATEADD(DAY,- 10,GETDATE()),112) as int) ",
+                "and [INVOICED_ON_DT_WID] >= 20220101",
+                "  \"),",
+                "         #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"INVOICE_NUM\", \"Invoice Number\"}, {\"INVOICED_QTY\", \"Qty\"}, {\"INVOICE_Q10_QTY\", \"Q10\"}, {\"NET_AMT\", \"Net Amount\"}, {\"COST_AMT\", \"Cost Amount\"}, {\"DISCOUNT_AMT\", \"Discount Amount\"}, {\"GROSS_WEIGHT\", \"Gross Weight\"}, {\"NET_WEIGHT\", \"Net Weight\"}, {\"CHANNEL_CODE\", \"Channel Code\"}, {\"INVOICE_TYPE\", \"Invoice Type\"}, {\"LABOUR_COST\", \"Labour Cost\"}, {\"TYPE_PLANT\", \"Type Plant\"}, {\"CUST_TYPE_MONTH\", \"Customer Type (Month)\"}, {\"CUST_TYPE_YEAR\", \"Customer Type (Year)\"}, {\"GOLD_AMT\", \"Gold Amount\"}, {\"CUSTOMER_SOLD_TO_WID\", \"Customer WID\"}, {\"HAOLAI_AMT\", \"Hao Lai Amount\"}, {\"Group_age\", \"Group Age\"}, {\"PROGRAM_CODE\", \"Program Code\"}, {\"CUST_CARD_DESC\", \"Customer Card\"}, {\"PROFIT_AMT\", \"Profit Amount\"}, {\"PROGRAM_NAME\", \"Program Name\"}}),",
+                "    #\"Replaced Value\" = Table.ReplaceValue(#\"Renamed Columns\",null,\"#Not assign\",Replacer.ReplaceValue,{\"Program Code\"})",
+                "in",
+                " #\"Replaced Value\""
+              ]
+            },
+            "annotations": [
+              {
+                "name": "QueryEditorSerialization",
+                "value": [
+                  "<?xml version=\"1.0\" encoding=\"UTF-16\"?><Gemini xmlns=\"QueryEditorSerialization\"><AnnotationContent><![CDATA[<RSQueryCommandText>let",
+                  "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"SELECT [INVOICED_ON_DT_WID]",
+                  "      ,[INVOICE_NUM]",
+                  "      ,[PRODUCT_WID]",
+                  "      ,[INVOICED_QTY]",
+                  "      ,[NET_AMT]",
+                  "      ,[COST_AMT]",
+                  "      ,[DISCOUNT_AMT]",
+                  "      ,[GROSS_WEIGHT]",
+                  "      ,[NET_WEIGHT]",
+                  "      ,[CHANNEL_CODE]",
+                  "      ,[INVOICE_TYPE]",
+                  "      ,[CUSTOMER_SOLD_TO_WID]",
+                  "      ,[COMPANY_WID]",
+                  "      ,[PLANT_WID]",
+                  "      ,[INVOICE_Q10_QTY]",
+                  "      ,[LABOUR_COST]",
+                  "      ,[GOLD_AMT]",
+                  "      ,[Invoice_Hour]",
+                  "      ,[TYPE_PLANT]",
+                  "      ,[CUST_TYPE_MKT] CUST_TYPE_MONTH",
+                  "      ,[CUST_TYPE_YEAR]",
+                  "      ,[SALES_PERSON_WID]",
+                  "      ,[DOC_CONDITION_NUM]",
+                  "      ,[PAYMENT_TERM_WID]",
+                  "      ,[Group_age]",
+                  "      ,[PRODUCT_INVENTORY_WID]",
+                  "      ,[HAOLAI_AMT]",
+                  "      ,[DELIVERY_PRIORITY]",
+                  "      ,[SHIPPING_CONDITION]",
+                  "      ,[PROGRAM_CODE]",
+                  "      ,[KOL_AMT]",
+                  "      ,[PROGRAM_NAME]",
+                  "      ,CUSTOMER_PAYER_WID",
+                  "      ,TRAFFIC",
+                  "      ,Palexy_AGEID",
+                  "      ,ConditionID",
+                  "      ,[SLOC_WID]",
+                  "      ,[PROFIT_AMT]",
+                  "      ,CUST_CARD_DESC",
+                  "      ,MKT_CUSTOMER",
+                  "      ,LUNAR_DT",
+                  "      ,GOTIT_WID",
+                  "      ,INVOICE_ZTG_WID",
+                  "      ,SYS_CUST_PAR_WID",
+                  "  FROM [PNJ_ROLAP].[dbo].[W_VW_SALES_INVOICE_LINE_F] ",
+                  "where [INVOICED_ON_DT_WID] < CAST(Convert(CHAR(8),DATEADD(DAY,- 10,GETDATE()),112) as int) ",
+                  "and [INVOICED_ON_DT_WID] >= 20220101",
+                  "  \"),",
+                  "         #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"INVOICE_NUM\", \"Invoice Number\"}, {\"INVOICED_QTY\", \"Qty\"}, {\"INVOICE_Q10_QTY\", \"Q10\"}, {\"NET_AMT\", \"Net Amount\"}, {\"COST_AMT\", \"Cost Amount\"}, {\"DISCOUNT_AMT\", \"Discount Amount\"}, {\"GROSS_WEIGHT\", \"Gross Weight\"}, {\"NET_WEIGHT\", \"Net Weight\"}, {\"CHANNEL_CODE\", \"Channel Code\"}, {\"INVOICE_TYPE\", \"Invoice Type\"}, {\"LABOUR_COST\", \"Labour Cost\"}, {\"TYPE_PLANT\", \"Type Plant\"}, {\"CUST_TYPE_MONTH\", \"Customer Type (Month)\"}, {\"CUST_TYPE_YEAR\", \"Customer Type (Year)\"}, {\"GOLD_AMT\", \"Gold Amount\"}, {\"CUSTOMER_SOLD_TO_WID\", \"Customer WID\"}, {\"HAOLAI_AMT\", \"Hao Lai Amount\"}, {\"Group_age\", \"Group Age\"}, {\"PROGRAM_CODE\", \"Program Code\"}, {\"CUST_CARD_DESC\", \"Customer Card\"}, {\"PROFIT_AMT\", \"Profit Amount\"}, {\"PROGRAM_NAME\", \"Program Name\"}}),",
+                  "    #\"Replaced Value\" = Table.ReplaceValue(#\"Renamed Columns\",null,\"#Not assign\",Replacer.ReplaceValue,{\"Program Code\"})",
+                  "in",
+                  " #\"Replaced Value\"</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Fact - All Sales Invoice Line 2021",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"SELECT [INVOICED_ON_DT_WID]",
+                "      ,[INVOICE_NUM]",
+                "      ,[PRODUCT_WID]",
+                "      ,[INVOICED_QTY]",
+                "      ,[NET_AMT]",
+                "      ,[COST_AMT]",
+                "      ,[DISCOUNT_AMT]",
+                "      ,[GROSS_WEIGHT]",
+                "      ,[NET_WEIGHT]",
+                "      ,[CHANNEL_CODE]",
+                "      ,[INVOICE_TYPE]",
+                "      ,[CUSTOMER_SOLD_TO_WID]",
+                "      ,[COMPANY_WID]",
+                "      ,[PLANT_WID]",
+                "      ,[INVOICE_Q10_QTY]",
+                "      ,[LABOUR_COST]",
+                "      ,[GOLD_AMT]",
+                "      ,[Invoice_Hour]",
+                "      ,[TYPE_PLANT]",
+                "      ,[CUST_TYPE_MKT] CUST_TYPE_MONTH",
+                "      ,[CUST_TYPE_YEAR]",
+                "      ,[SALES_PERSON_WID]",
+                "      ,[DOC_CONDITION_NUM]",
+                "      ,[PAYMENT_TERM_WID]",
+                "      ,[Group_age]",
+                "      ,[PRODUCT_INVENTORY_WID]",
+                "      ,[HAOLAI_AMT]",
+                "      ,[DELIVERY_PRIORITY]",
+                "      ,[SHIPPING_CONDITION]",
+                "      ,[PROGRAM_CODE]",
+                "      ,[KOL_AMT]",
+                "      ,[PROGRAM_NAME]",
+                "      ,CUSTOMER_PAYER_WID",
+                "      ,TRAFFIC",
+                "      ,Palexy_AGEID",
+                "      ,ConditionID",
+                "      ,[SLOC_WID]",
+                "      ,[PROFIT_AMT]",
+                "      ,CUST_CARD_DESC",
+                "      ,MKT_CUSTOMER",
+                "      ,LUNAR_DT",
+                "      ,GOTIT_WID",
+                "      ,INVOICE_ZTG_WID",
+                "      ,SYS_CUST_PAR_WID",
+                "  FROM [PNJ_ROLAP].[dbo].[W_VW_SALES_INVOICE_LINE_F] ",
+                "where [INVOICED_ON_DT_WID] < 20220101 and [INVOICED_ON_DT_WID] >= 20210101",
+                "  \"),",
+                "         #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"INVOICE_NUM\", \"Invoice Number\"}, {\"INVOICED_QTY\", \"Qty\"}, {\"INVOICE_Q10_QTY\", \"Q10\"}, {\"NET_AMT\", \"Net Amount\"}, {\"COST_AMT\", \"Cost Amount\"}, {\"DISCOUNT_AMT\", \"Discount Amount\"}, {\"GROSS_WEIGHT\", \"Gross Weight\"}, {\"NET_WEIGHT\", \"Net Weight\"}, {\"CHANNEL_CODE\", \"Channel Code\"}, {\"INVOICE_TYPE\", \"Invoice Type\"}, {\"LABOUR_COST\", \"Labour Cost\"}, {\"TYPE_PLANT\", \"Type Plant\"}, {\"CUST_TYPE_MONTH\", \"Customer Type (Month)\"}, {\"CUST_TYPE_YEAR\", \"Customer Type (Year)\"}, {\"GOLD_AMT\", \"Gold Amount\"}, {\"CUSTOMER_SOLD_TO_WID\", \"Customer WID\"}, {\"HAOLAI_AMT\", \"Hao Lai Amount\"}, {\"Group_age\", \"Group Age\"}, {\"PROGRAM_CODE\", \"Program Code\"}, {\"CUST_CARD_DESC\", \"Customer Card\"}, {\"PROFIT_AMT\", \"Profit Amount\"}, {\"PROGRAM_NAME\", \"Program Name\"}}),",
+                "    #\"Replaced Value\" = Table.ReplaceValue(#\"Renamed Columns\",null,\"#Not assign\",Replacer.ReplaceValue,{\"Program Code\"})",
+                "in",
+                " #\"Replaced Value\""
+              ]
+            },
+            "annotations": [
+              {
+                "name": "QueryEditorSerialization",
+                "value": [
+                  "<?xml version=\"1.0\" encoding=\"UTF-16\"?><Gemini xmlns=\"QueryEditorSerialization\"><AnnotationContent><![CDATA[<RSQueryCommandText>let",
+                  "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"SELECT [INVOICED_ON_DT_WID]",
+                  "      ,[INVOICE_NUM]",
+                  "      ,[PRODUCT_WID]",
+                  "      ,[INVOICED_QTY]",
+                  "      ,[NET_AMT]",
+                  "      ,[COST_AMT]",
+                  "      ,[DISCOUNT_AMT]",
+                  "      ,[GROSS_WEIGHT]",
+                  "      ,[NET_WEIGHT]",
+                  "      ,[CHANNEL_CODE]",
+                  "      ,[INVOICE_TYPE]",
+                  "      ,[CUSTOMER_SOLD_TO_WID]",
+                  "      ,[COMPANY_WID]",
+                  "      ,[PLANT_WID]",
+                  "      ,[INVOICE_Q10_QTY]",
+                  "      ,[LABOUR_COST]",
+                  "      ,[GOLD_AMT]",
+                  "      ,[Invoice_Hour]",
+                  "      ,[TYPE_PLANT]",
+                  "      ,[CUST_TYPE_MKT] CUST_TYPE_MONTH",
+                  "      ,[CUST_TYPE_YEAR]",
+                  "      ,[SALES_PERSON_WID]",
+                  "      ,[DOC_CONDITION_NUM]",
+                  "      ,[PAYMENT_TERM_WID]",
+                  "      ,[Group_age]",
+                  "      ,[PRODUCT_INVENTORY_WID]",
+                  "      ,[HAOLAI_AMT]",
+                  "      ,[DELIVERY_PRIORITY]",
+                  "      ,[SHIPPING_CONDITION]",
+                  "      ,[PROGRAM_CODE]",
+                  "      ,[KOL_AMT]",
+                  "      ,[PROGRAM_NAME]",
+                  "      ,CUSTOMER_PAYER_WID",
+                  "      ,TRAFFIC",
+                  "      ,Palexy_AGEID",
+                  "      ,ConditionID",
+                  "      ,[SLOC_WID]",
+                  "      ,[PROFIT_AMT]",
+                  "      ,CUST_CARD_DESC",
+                  "      ,MKT_CUSTOMER",
+                  "      ,LUNAR_DT",
+                  "      ,GOTIT_WID",
+                  "      ,INVOICE_ZTG_WID",
+                  "      ,SYS_CUST_PAR_WID",
+                  "  FROM [PNJ_ROLAP].[dbo].[W_VW_SALES_INVOICE_LINE_F] ",
+                  "where [INVOICED_ON_DT_WID] < 20220101 and [INVOICED_ON_DT_WID] >= 20210101",
+                  "  \"),",
+                  "         #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"INVOICE_NUM\", \"Invoice Number\"}, {\"INVOICED_QTY\", \"Qty\"}, {\"INVOICE_Q10_QTY\", \"Q10\"}, {\"NET_AMT\", \"Net Amount\"}, {\"COST_AMT\", \"Cost Amount\"}, {\"DISCOUNT_AMT\", \"Discount Amount\"}, {\"GROSS_WEIGHT\", \"Gross Weight\"}, {\"NET_WEIGHT\", \"Net Weight\"}, {\"CHANNEL_CODE\", \"Channel Code\"}, {\"INVOICE_TYPE\", \"Invoice Type\"}, {\"LABOUR_COST\", \"Labour Cost\"}, {\"TYPE_PLANT\", \"Type Plant\"}, {\"CUST_TYPE_MONTH\", \"Customer Type (Month)\"}, {\"CUST_TYPE_YEAR\", \"Customer Type (Year)\"}, {\"GOLD_AMT\", \"Gold Amount\"}, {\"CUSTOMER_SOLD_TO_WID\", \"Customer WID\"}, {\"HAOLAI_AMT\", \"Hao Lai Amount\"}, {\"Group_age\", \"Group Age\"}, {\"PROGRAM_CODE\", \"Program Code\"}, {\"CUST_CARD_DESC\", \"Customer Card\"}, {\"PROFIT_AMT\", \"Profit Amount\"}, {\"PROGRAM_NAME\", \"Program Name\"}}),",
+                  "    #\"Replaced Value\" = Table.ReplaceValue(#\"Renamed Columns\",null,\"#Not assign\",Replacer.ReplaceValue,{\"Program Code\"})",
+                  "in",
+                  " #\"Replaced Value\"</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Fact - All Sales Invoice Line",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"SELECT [INVOICED_ON_DT_WID]",
+                "      ,[INVOICE_NUM]",
+                "      ,[PRODUCT_WID]",
+                "      ,[INVOICED_QTY]",
+                "      ,[NET_AMT]",
+                "      ,[COST_AMT]",
+                "      ,[DISCOUNT_AMT]",
+                "      ,[GROSS_WEIGHT]",
+                "      ,[NET_WEIGHT]",
+                "      ,[CHANNEL_CODE]",
+                "      ,[INVOICE_TYPE]",
+                "      ,[CUSTOMER_SOLD_TO_WID]",
+                "      ,[COMPANY_WID]",
+                "      ,[PLANT_WID]",
+                "      ,[INVOICE_Q10_QTY]",
+                "      ,[LABOUR_COST]",
+                "      ,[GOLD_AMT]",
+                "      ,[Invoice_Hour]",
+                "      ,[TYPE_PLANT]",
+                "      ,[CUST_TYPE_MKT] CUST_TYPE_MONTH",
+                "      ,[CUST_TYPE_YEAR]",
+                "      ,[SALES_PERSON_WID]",
+                "      ,[DOC_CONDITION_NUM]",
+                "      ,[PAYMENT_TERM_WID]",
+                "      ,[Group_age]",
+                "      ,[PRODUCT_INVENTORY_WID]",
+                "      ,[HAOLAI_AMT]",
+                "      ,[DELIVERY_PRIORITY]",
+                "      ,[SHIPPING_CONDITION]",
+                "      ,[PROGRAM_CODE]",
+                "      ,[KOL_AMT]",
+                "      ,[PROGRAM_NAME]",
+                "      ,CUSTOMER_PAYER_WID",
+                "      ,TRAFFIC",
+                "      ,Palexy_AGEID",
+                "      ,ConditionID",
+                "      ,[SLOC_WID]",
+                "      ,[PROFIT_AMT]",
+                "      ,CUST_CARD_DESC",
+                "      ,MKT_CUSTOMER",
+                "      ,LUNAR_DT",
+                "      ,GOTIT_WID",
+                "      ,INVOICE_ZTG_WID",
+                "      ,SYS_CUST_PAR_WID",
+                "  FROM [PNJ_ROLAP].[dbo].[W_VW_SALES_INVOICE_LINE_F] ",
+                "where [INVOICED_ON_DT_WID] < 20201231",
+                "  \"),",
+                "         #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"INVOICE_NUM\", \"Invoice Number\"}, {\"INVOICED_QTY\", \"Qty\"}, {\"INVOICE_Q10_QTY\", \"Q10\"}, {\"NET_AMT\", \"Net Amount\"}, {\"COST_AMT\", \"Cost Amount\"}, {\"DISCOUNT_AMT\", \"Discount Amount\"}, {\"GROSS_WEIGHT\", \"Gross Weight\"}, {\"NET_WEIGHT\", \"Net Weight\"}, {\"CHANNEL_CODE\", \"Channel Code\"}, {\"INVOICE_TYPE\", \"Invoice Type\"}, {\"LABOUR_COST\", \"Labour Cost\"}, {\"TYPE_PLANT\", \"Type Plant\"}, {\"CUST_TYPE_MONTH\", \"Customer Type (Month)\"}, {\"CUST_TYPE_YEAR\", \"Customer Type (Year)\"}, {\"GOLD_AMT\", \"Gold Amount\"}, {\"CUSTOMER_SOLD_TO_WID\", \"Customer WID\"}, {\"HAOLAI_AMT\", \"Hao Lai Amount\"}, {\"Group_age\", \"Group Age\"}, {\"PROGRAM_CODE\", \"Program Code\"}, {\"CUST_CARD_DESC\", \"Customer Card\"}, {\"PROFIT_AMT\", \"Profit Amount\"}, {\"PROGRAM_NAME\", \"Program Name\"}}),",
+                "    #\"Replaced Value\" = Table.ReplaceValue(#\"Renamed Columns\",null,\"#Not assign\",Replacer.ReplaceValue,{\"Program Code\"})",
+                "in",
+                " #\"Replaced Value\""
+              ]
+            },
+            "annotations": [
+              {
+                "name": "QueryEditorSerialization",
+                "value": [
+                  "<?xml version=\"1.0\" encoding=\"UTF-16\"?><Gemini xmlns=\"QueryEditorSerialization\"><AnnotationContent><![CDATA[<RSQueryCommandText>let",
+                  "    Source = Value.NativeQuery(#\"SQL/192 168 3 31;PNJ_ROLAP\",\"SELECT [INVOICED_ON_DT_WID]",
+                  "      ,[INVOICE_NUM]",
+                  "      ,[PRODUCT_WID]",
+                  "      ,[INVOICED_QTY]",
+                  "      ,[NET_AMT]",
+                  "      ,[COST_AMT]",
+                  "      ,[DISCOUNT_AMT]",
+                  "      ,[GROSS_WEIGHT]",
+                  "      ,[NET_WEIGHT]",
+                  "      ,[CHANNEL_CODE]",
+                  "      ,[INVOICE_TYPE]",
+                  "      ,[CUSTOMER_SOLD_TO_WID]",
+                  "      ,[COMPANY_WID]",
+                  "      ,[PLANT_WID]",
+                  "      ,[INVOICE_Q10_QTY]",
+                  "      ,[LABOUR_COST]",
+                  "      ,[GOLD_AMT]",
+                  "      ,[Invoice_Hour]",
+                  "      ,[TYPE_PLANT]",
+                  "      ,[CUST_TYPE_MKT] CUST_TYPE_MONTH",
+                  "      ,[CUST_TYPE_YEAR]",
+                  "      ,[SALES_PERSON_WID]",
+                  "      ,[DOC_CONDITION_NUM]",
+                  "      ,[PAYMENT_TERM_WID]",
+                  "      ,[Group_age]",
+                  "      ,[PRODUCT_INVENTORY_WID]",
+                  "      ,[HAOLAI_AMT]",
+                  "      ,[DELIVERY_PRIORITY]",
+                  "      ,[SHIPPING_CONDITION]",
+                  "      ,[PROGRAM_CODE]",
+                  "      ,[KOL_AMT]",
+                  "      ,[PROGRAM_NAME]",
+                  "      ,CUSTOMER_PAYER_WID",
+                  "      ,TRAFFIC",
+                  "      ,Palexy_AGEID",
+                  "      ,ConditionID",
+                  "      ,[SLOC_WID]",
+                  "      ,[PROFIT_AMT]",
+                  "      ,CUST_CARD_DESC",
+                  "      ,MKT_CUSTOMER",
+                  "      ,LUNAR_DT",
+                  "      ,GOTIT_WID",
+                  "      ,INVOICE_ZTG_WID",
+                  "      ,SYS_CUST_PAR_WID",
+                  "  FROM [PNJ_ROLAP].[dbo].[W_VW_SALES_INVOICE_LINE_F] ",
+                  "where [INVOICED_ON_DT_WID] < 20201231",
+                  "  \"),",
+                  "         #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"INVOICE_NUM\", \"Invoice Number\"}, {\"INVOICED_QTY\", \"Qty\"}, {\"INVOICE_Q10_QTY\", \"Q10\"}, {\"NET_AMT\", \"Net Amount\"}, {\"COST_AMT\", \"Cost Amount\"}, {\"DISCOUNT_AMT\", \"Discount Amount\"}, {\"GROSS_WEIGHT\", \"Gross Weight\"}, {\"NET_WEIGHT\", \"Net Weight\"}, {\"CHANNEL_CODE\", \"Channel Code\"}, {\"INVOICE_TYPE\", \"Invoice Type\"}, {\"LABOUR_COST\", \"Labour Cost\"}, {\"TYPE_PLANT\", \"Type Plant\"}, {\"CUST_TYPE_MONTH\", \"Customer Type (Month)\"}, {\"CUST_TYPE_YEAR\", \"Customer Type (Year)\"}, {\"GOLD_AMT\", \"Gold Amount\"}, {\"CUSTOMER_SOLD_TO_WID\", \"Customer WID\"}, {\"HAOLAI_AMT\", \"Hao Lai Amount\"}, {\"Group_age\", \"Group Age\"}, {\"PROGRAM_CODE\", \"Program Code\"}, {\"CUST_CARD_DESC\", \"Customer Card\"}, {\"PROFIT_AMT\", \"Profit Amount\"}, {\"PROGRAM_NAME\", \"Program Name\"}}),",
+                  "    #\"Replaced Value\" = Table.ReplaceValue(#\"Renamed Columns\",null,\"#Not assign\",Replacer.ReplaceValue,{\"Program Code\"})",
+                  "in",
+                  " #\"Replaced Value\"</RSQueryCommandText><RSQueryCommandType>Text</RSQueryCommandType><RSQueryDesignState></RSQueryDesignState>]]></AnnotationContent></Gemini>"
+                ]
+              }
+            ]
           }
         ],
         "measures": [
@@ -7446,13 +7808,13 @@
             "formatString": "#,0"
           },
           {
-            "name": "# All Qty (LM)",
-            "expression": " CALCULATE([# All Qty], DATEADD('Dim - Time'[Date], -1, MONTH))",
+            "name": ". All Qty (LM)",
+            "expression": " CALCULATE([. All Qty], DATEADD('Dim - Time'[Date], -1, MONTH))",
             "formatString": "#,0"
           },
           {
-            "name": "# All Qty (LY)",
-            "expression": " CALCULATE([# All Qty],  DATEADD('Dim - Time'[Date], -1, YEAR))",
+            "name": ". All Qty (LY)",
+            "expression": " CALCULATE([. All Qty],  DATEADD('Dim - Time'[Date], -1, YEAR))",
             "formatString": "#,0"
           },
           {
@@ -7477,15 +7839,18 @@
           },
           {
             "name": ". All QTy Return",
-            "expression": " CALCULATE(sum('Fact - All Sales Invoice Line'[Qty])*-1, FILTER('Fact - All Sales Invoice Line', 'Fact - All Sales Invoice Line'[Invoice Type] = \"ZRE\" ||'Fact - All Sales Invoice Line'[Invoice Type] = \"ZS2\"))"
+            "expression": " CALCULATE(sum('Fact - All Sales Invoice Line'[Qty])*-1, FILTER('Fact - All Sales Invoice Line', 'Fact - All Sales Invoice Line'[Invoice Type] = \"ZRE\" ||'Fact - All Sales Invoice Line'[Invoice Type] = \"ZS2\"))",
+            "formatString": "#,0"
           },
           {
             "name": ". All Qty Return (LM)",
-            "expression": " CALCULATE([. All QTy Return], DATEADD('Dim - Time'[Date], -1, MONTH))"
+            "expression": " CALCULATE([. All QTy Return], DATEADD('Dim - Time'[Date], -1, MONTH))",
+            "formatString": "#,0.00"
           },
           {
             "name": ". All Qty return (LY)",
-            "expression": " CALCULATE([. All QTy Return],  DATEADD('Dim - Time'[Date], -1, YEAR))"
+            "expression": " CALCULATE([. All QTy Return],  DATEADD('Dim - Time'[Date], -1, YEAR))",
+            "formatString": "#,0"
           },
           {
             "name": ". All Labor Cost",
@@ -7523,13 +7888,14 @@
             "formatString": "#,0.00"
           },
           {
-            "name": "# All Qty",
+            "name": ". All Qty",
             "expression": " CALCULATE(sum('Fact - All Sales Invoice Line'[Qty]),FILTER('Fact - All Sales Invoice Line', 'Fact - All Sales Invoice Line'[Invoice Type] <> \"ZRE\" &&'Fact - All Sales Invoice Line'[INVOICE TYPE] <> \"ZS2\" && 'Fact - All Sales Invoice Line'[INVOICE TYPE]<> \"ZPI\"))",
             "formatString": "#,0"
           },
           {
             "name": ". All Net Amt",
-            "expression": " CALCULATE(sum('Fact - All Sales Invoice Line'[Net Amount]), FILTER('Fact - All Sales Invoice Line', 'Fact - All Sales Invoice Line'[Invoice Type] <> \"ZRE\" &&'Fact - All Sales Invoice Line'[Invoice Type] <> \"ZS2\" && 'Fact - All Sales Invoice Line'[Invoice Type] <> \"ZPI\"))"
+            "expression": " CALCULATE(sum('Fact - All Sales Invoice Line'[Net Amount]), FILTER('Fact - All Sales Invoice Line', 'Fact - All Sales Invoice Line'[Invoice Type] <> \"ZRE\" &&'Fact - All Sales Invoice Line'[Invoice Type] <> \"ZS2\" && 'Fact - All Sales Invoice Line'[Invoice Type] <> \"ZPI\"))",
+            "formatString": "#,0"
           },
           {
             "name": ". All Gold Amt",
@@ -7567,7 +7933,7 @@
               "                            filter('Fact - All Sales Invoice Line', 'Fact - All Sales Invoice Line'[INVOICED_ON_DT_WID] >= min('Dim - Program'[EFFECTIVE_FROM_DT]) ",
               "                                && 'Fact - All Sales Invoice Line'[INVOICED_ON_DT_WID] <= Max('Dim - Program'[EFFECTIVE_TO_DT])))"
             ],
-            "formatString": "0"
+            "formatString": "#,0"
           },
           {
             "name": "# Promotion_Trx (PC)",
@@ -7614,7 +7980,7 @@
           },
           {
             "name": "AVG Qty/Trx",
-            "expression": " [# All Qty] / [# All Cust Transaction (PC)]"
+            "expression": " [. All Qty] / [# All Cust Transaction (PC)]"
           },
           {
             "name": "AVG Amt/Trx",
@@ -7628,34 +7994,37 @@
           },
           {
             "name": "AVG Qty/Trx (LM)",
-            "expression": " CALCULATE([# All Qty (LM)]/[# All Customer (LM)])"
+            "expression": " CALCULATE([. All Qty (LM)]/[# All Customer (LM)])",
+            "formatString": "#,0.00"
           },
           {
             "name": "AVG Qty/Trx (LY)",
-            "expression": " CALCULATE([# All Qty (LY)]/[# All Cust Transaction (PC) (LY)])"
+            "expression": " CALCULATE([. All Qty (LY)]/[# All Cust Transaction (PC) (LY)])",
+            "formatString": "#,0.00"
           },
           {
-            "name": "# Q10",
+            "name": ". Q10",
             "expression": " CALCULATE(sum('Fact - All Sales Invoice Line'[Q10]),FILTER('Fact - All Sales Invoice Line', 'Fact - All Sales Invoice Line'[Invoice Type] <> \"ZRE\" &&'Fact - All Sales Invoice Line'[Invoice Type] <> \"ZS2\" &&'Fact - All Sales Invoice Line'[Invoice Type] <> \"ZPI\" ))",
             "formatString": "#,0.00"
           },
           {
-            "name": "# Q10 (LY)",
-            "expression": " CALCULATE([# Q10], DATEADD('Dim - Time'[Date], -1, YEAR))",
+            "name": ". Q10 (LY)",
+            "expression": " CALCULATE([. Q10], DATEADD('Dim - Time'[Date], -1, YEAR))",
             "formatString": "#,0"
           },
           {
-            "name": "# All Qty (YTD)",
-            "expression": " CALCULATE([# All Qty], DATESYTD('Dim - Time'[Date]))"
+            "name": ". All Qty (YTD)",
+            "expression": " CALCULATE([. All Qty], DATESYTD('Dim - Time'[Date]))",
+            "formatString": "#,0"
           },
           {
             "name": "% All Qty (LY)",
-            "expression": " CALCULATE([# All Qty]/[# All Qty (LY)] -1)",
+            "expression": " CALCULATE([. All Qty]/[. All Qty (LY)] -1)",
             "formatString": "0.00%;-0.00%;0.00%"
           },
           {
             "name": "% All Qty (YTD) (LY)",
-            "expression": " CALCULATE(([# All Qty (YTD)]/ [. All Qty (YTD) (LY)])-1)",
+            "expression": " CALCULATE(([. All Qty (YTD)]/ [. All Qty (YTD) (LY)])-1)",
             "formatString": "0.00%;-0.00%;0.00%"
           },
           {
@@ -7665,15 +8034,18 @@
           },
           {
             "name": ". All Qty (YTD) (LY)",
-            "expression": " CALCULATE([# All Qty (YTD)], DATEADD('Dim - Time'[Date], -1, YEAR))"
+            "expression": " CALCULATE([. All Qty (YTD)], DATEADD('Dim - Time'[Date], -1, YEAR))",
+            "formatString": "#,0"
           },
           {
             "name": "AVG All NetAmt/Bill",
-            "expression": " CALCULATE([. All Net Amt]/'Fact - All Sales Invoice Line'[# Invoice])"
+            "expression": " CALCULATE([. All Net Amt]/'Fact - All Sales Invoice Line'[# Invoice])",
+            "formatString": "#,0.00"
           },
           {
             "name": "AVG All NetAmt/Bill (LY)",
-            "expression": " CALCULATE([AVG All NetAmt/Bill], DATEADD('Dim - Time'[Date], -1, YEAR))"
+            "expression": " CALCULATE([AVG All NetAmt/Bill], DATEADD('Dim - Time'[Date], -1, YEAR))",
+            "formatString": "#,0.00"
           },
           {
             "name": ". All Net Amt (Wholesales)",
@@ -7702,31 +8074,38 @@
           },
           {
             "name": "% All Net Amt all (Wholesales) (FC)",
-            "expression": " CALCULATE([. All Net Amt (Wholesales)]/[. Net Amt (Wholesales) (FC) (all)])"
+            "expression": " CALCULATE([. All Net Amt (Wholesales)]/[. Net Amt (Wholesales) (FC) (all)])",
+            "formatString": "0.00%;-0.00%;0.00%"
           },
           {
             "name": "AVG All Net Amt/Cust",
-            "expression": " CALCULATE([. All Net Amt]/[# All Customer])"
+            "expression": " CALCULATE([. All Net Amt]/[# All Customer])",
+            "formatString": "#,0.00"
           },
           {
             "name": "AVG All Net Amt/Cust (LY)",
-            "expression": " CALCULATE([. All Net Amt (LY)]/[# All Customer (LY)])"
+            "expression": " CALCULATE([. All Net Amt (LY)]/[# All Customer (LY)])",
+            "formatString": "#,0.00"
           },
           {
             "name": "AVG All Net Amt/Sales Person",
-            "expression": " CALCULATE([. All Net Amt]/'Fact - All Sales Invoice Line'[# Sales Person])"
+            "expression": " CALCULATE([. All Net Amt]/'Fact - All Sales Invoice Line'[# Sales Person])",
+            "formatString": "#,0.00"
           },
           {
             "name": "# Sales Person",
-            "expression": " CALCULATE(DISTINCTCOUNT('Dim - Employee'[Employee Code]), RELATEDTABLE('Fact - All Sales Invoice Line'))"
+            "expression": " CALCULATE(DISTINCTCOUNT('Dim - Employee'[Employee Code]), RELATEDTABLE('Fact - All Sales Invoice Line'))",
+            "formatString": "#,0"
           },
           {
             "name": "# Sales person (LY)",
-            "expression": " CALCULATE([# Sales Person], DATEADD('Dim - Time'[Date], -1, YEAR))"
+            "expression": " CALCULATE([# Sales Person], DATEADD('Dim - Time'[Date], -1, YEAR))",
+            "formatString": "#,0"
           },
           {
             "name": "AVG All Net Amt/Sales Person (LY)",
-            "expression": " CALCULATE([. All Net Amt (LY)]/[# Sales person (LY)])"
+            "expression": " CALCULATE([. All Net Amt (LY)]/[# Sales person (LY)])",
+            "formatString": "0.00"
           },
           {
             "name": ". All Net Amt LY (YTD)",
@@ -7755,11 +8134,13 @@
           },
           {
             "name": "AVG All Qty/Cust",
-            "expression": " CALCULATE([# All Qty] /[# All Customer])"
+            "expression": " CALCULATE([. All Qty] /[# All Customer])",
+            "formatString": "0.00"
           },
           {
             "name": "AVG All Qty/Cust (LY)",
-            "expression": " CALCULATE([# All Qty (LY)]/[# All Customer (LY)])"
+            "expression": " CALCULATE([. All Qty (LY)]/[# All Customer (LY)])",
+            "formatString": "0.00"
           }
         ]
       },
@@ -9340,7 +9721,7 @@
             "expression": [
               "",
               "",
-              "VAR OnHands  = CALCULATE([. Inven Net Qty], ",
+              "VAR OnHands  = CALCULATE([. Inventory Net Qty], ",
               " TREATAS(VALUES( 'Fact - SC Recommend'[BASIC_MATERIAL]),  'Dim - Product'[RPT_BASIC_MATERIAL]  ))",
               "",
               "RETURN",
@@ -9400,11 +9781,11 @@
               "",
               "VAR MaterialType = DISTINCT('Fact - SC Recommend'[MATERIAL TYPE])",
               "",
-              "VAR OnHands = CALCULATE([. Inven Net Qty], ",
+              "VAR OnHands = CALCULATE([. Inventory Net Qty], ",
               " FILTER('Dim - Product', 'Dim - Product'[Product Type Code] in  MaterialType ))",
               "",
               "RETURN",
-              " DIVIDE([. Inven Net Qty], [SC RCMD .Qty (Min)], 0)"
+              " DIVIDE([. Inventory Net Qty], [SC RCMD .Qty (Min)], 0)"
             ],
             "formatString": "0.00%;-0.00%;0.00%"
           },
@@ -9586,7 +9967,7 @@
               "var x = MIN('Dim - Time'[Date])",
               "VAR OPENING = CALCULATE(sum('Fact - Inventory Transaction'[NET_QTY]), FILTER(All('Dim - Time'),'Dim - Time'[Date] < X))",
               "",
-              "VAR CLOSING =  [. Inven Net Qty]",
+              "VAR CLOSING =  [. Inventory Net Qty]",
               "",
               "VAR _COUNT = IF( OPENING <> BLANK(),1,0) +  IF(CLOSING <> BLANK(),1,0)",
               "RETURN (OPENING + CLOSING)/_COUNT"
@@ -9716,6 +10097,22 @@
               " VAR X = MIN('Dim - Time'[Date])",
               " return CALCULATE(sum('Fact - Inventory Transaction'[NET_AMT]), FILTER(All('Dim - Time'),'Dim - Time'[Date] < X))"
             ]
+          },
+          {
+            "name": ". RCM Inventory Amount",
+            "expression": " CALCULATE('Fact - Inventory Transaction'[. Net Amount], FILTER('Dim - Product','Dim - Product'[RPT_BASIC_MATERIAL] in VALUES('Fact - SC Recommend'[BASIC_MATERIAL])),FILTER('Dim - Plant','Dim - Plant'[ROW_WID] in VALUES('Fact - SC Recommend'[PLANT_WID])))"
+          },
+          {
+            "name": ". RCM Sales Amt",
+            "expression": " CALCULATE([. All Net Amt], FILTER('Dim - Product','Dim - Product'[RPT_BASIC_MATERIAL] in VALUES('Fact - SC Recommend'[BASIC_MATERIAL])),FILTER('Dim - Plant','Dim - Plant'[ROW_WID] in VALUES('Fact - SC Recommend'[PLANT_WID])))"
+          },
+          {
+            "name": ". RCM Inventory Qty",
+            "expression": " CALCULATE('Fact - Inventory Transaction'[. Inventory Net Qty], FILTER('Dim - Product','Dim - Product'[RPT_BASIC_MATERIAL] in VALUES('Fact - SC Recommend'[BASIC_MATERIAL])),FILTER('Dim - Plant','Dim - Plant'[ROW_WID] in VALUES('Fact - SC Recommend'[PLANT_WID])))"
+          },
+          {
+            "name": ". RCM Sales Qty",
+            "expression": " CALCULATE([. All Qty], FILTER('Dim - Product','Dim - Product'[RPT_BASIC_MATERIAL] in VALUES('Fact - SC Recommend'[BASIC_MATERIAL])),FILTER('Dim - Plant','Dim - Plant'[ROW_WID] in VALUES('Fact - SC Recommend'[PLANT_WID])))"
           }
         ]
       },
@@ -9920,7 +10317,7 @@
               "\t\t            'Dim - Time'[Month] <= MAX ('Dim - Time'[Month] )",
               "\t\t),",
               "",
-              "\t[# All Qty]),",
+              "\t[. All Qty]),",
               "\tFILTER('Dim - Time', 'Dim - Time'[Year] = _Year))"
             ],
             "formatString": "#,0"
@@ -15235,7 +15632,7 @@
             "name": "% Feedback vs. Sold",
             "expression": [
               "",
-              "var SoldOut = CALCULATE([# All Qty],'Dim - Plant'[Company Code] = \"5000\")",
+              "var SoldOut = CALCULATE([. All Qty],'Dim - Plant'[Company Code] = \"5000\")",
               "Return [# Feedback]/SoldOut",
               ""
             ],
@@ -16065,7 +16462,7 @@
             "name": "CMR Basket size",
             "expression": [
               "",
-              "CALCULATE(DIVIDE( [# All Qty], [POS #Tranx],0),",
+              "CALCULATE(DIVIDE( [. All Qty], [POS #Tranx],0),",
               "FILTER( 'Fact - All Sales Invoice Line', 'Fact - All Sales Invoice Line'[TRAFFIC] = 1 && 'Fact - All Sales Invoice Line'[CHANNEL CODE] in {\"10\", \"20\"})",
               ")",
               "",
@@ -16266,7 +16663,7 @@
               "var Compare = CALCULATE(",
               "\t [CMR #Interactive], ",
               "\t ALL ( 'Dim - Time' ), ",
-              "\t USERELATIONSHIP( 'Dim - Time'[ROW_WID], 'Dim - Time Compare'[ROW_WID] ) ",
+              "\t USERELATIONSHIP( 'Fact - Camera InStore'[DATE_WID], 'Dim - Time Compare'[ROW_WID] ) ",
               ") --* [Normalization Factor] ",
               "",
               "RETURN IF (AND([CMR #Interactive]>0, Compare >0 ), DIVIDE([CMR #Interactive] , Compare, 0) -1,BLANK())"
@@ -16282,7 +16679,7 @@
               "CALCULATE(",
               "\t [CMR #Visitors], ",
               "\t ALL ( 'Dim - Time' ), ",
-              "\t USERELATIONSHIP( 'Dim - Time'[ROW_WID], 'Dim - Time Compare'[ROW_WID] ) ",
+              "\t USERELATIONSHIP( 'Fact - Camera InStore'[DATE_WID], 'Dim - Time Compare'[ROW_WID] ) ",
               ") --* [Normalization Factor]",
               "",
               "",
@@ -16304,7 +16701,7 @@
               "var Compare = CALCULATE(",
               "\t [CMR CR], ",
               "\t ALL ( 'Dim - Time' ), ",
-              "\t USERELATIONSHIP( 'Dim - Time'[ROW_WID], 'Dim - Time Compare'[ROW_WID] ) ",
+              "\t USERELATIONSHIP('Fact - Camera InStore'[DATE_WID], 'Dim - Time Compare'[ROW_WID] ) ",
               ") --* [Normalization Factor] ",
               "",
               "RETURN IF (and([CMR CR]>0, Compare >0), DIVIDE([CMR CR] , Compare, 0) -1,BLANK())"
@@ -16319,7 +16716,7 @@
               "var Compare = CALCULATE(",
               "\t [CMR .Net Amt], ",
               "\t ALL ( 'Dim - Time' ), ",
-              "\t USERELATIONSHIP( 'Dim - Time'[ROW_WID], 'Dim - Time Compare'[ROW_WID] ) ",
+              "\t USERELATIONSHIP('Fact - Camera InStore'[DATE_WID], 'Dim - Time Compare'[ROW_WID] ) ",
               ") --* [Normalization Factor] ",
               "",
               "RETURN IF (AND([CMR .Net Amt]>0, Compare >0 ), DIVIDE([CMR .Net Amt] , Compare, 0) -1,BLANK())"
@@ -16334,7 +16731,7 @@
               "var Compare = CALCULATE(",
               "\t [CMR .Ticket size], ",
               "\t ALL ( 'Dim - Time' ), ",
-              "\t USERELATIONSHIP( 'Dim - Time'[ROW_WID], 'Dim - Time Compare'[ROW_WID] ) ",
+              "\t USERELATIONSHIP( 'Fact - Camera InStore'[DATE_WID], 'Dim - Time Compare'[ROW_WID] ) ",
               ") --* [Normalization Factor] ",
               "",
               "RETURN IF (AND([CMR .Ticket size]>0, Compare >0 ), DIVIDE([CMR .Ticket size] , Compare, 0) -1,BLANK())"
@@ -16349,7 +16746,7 @@
               "var Compare = CALCULATE(",
               "\t [CMR Basket size], ",
               "\t ALL ( 'Dim - Time' ), ",
-              "\t USERELATIONSHIP( 'Dim - Time'[ROW_WID], 'Dim - Time Compare'[ROW_WID] ) ",
+              "\t USERELATIONSHIP('Fact - Camera InStore'[DATE_WID], 'Dim - Time Compare'[ROW_WID] ) ",
               ") --* [Normalization Factor] ",
               "",
               "RETURN IF ( And([CMR Basket size] >0, Compare >0 ) , DIVIDE([CMR Basket size] , Compare, 0) -1,BLANK())",
@@ -16365,7 +16762,7 @@
               "var Compare = CALCULATE(",
               "\t [CMR Interact. Rate], ",
               "\t ALL ( 'Dim - Time' ), ",
-              "\t USERELATIONSHIP( 'Dim - Time'[ROW_WID], 'Dim - Time Compare'[ROW_WID] ) ",
+              "\t USERELATIONSHIP('Fact - Camera InStore'[DATE_WID], 'Dim - Time Compare'[ROW_WID] ) ",
               ") --* [Normalization Factor] ",
               "",
               "RETURN IF (and([CMR Interact. Rate] >0, Compare >0 ), DIVIDE([CMR Interact. Rate] , Compare, 0) -1,BLANK())",
@@ -16381,7 +16778,7 @@
               "var Compare = CALCULATE(",
               "\t [POS #Customer], ",
               "\t ALL ( 'Dim - Time' ), ",
-              "\t USERELATIONSHIP( 'Dim - Time'[ROW_WID], 'Dim - Time Compare'[ROW_WID] ) ",
+              "\t USERELATIONSHIP('Fact - Camera InStore'[DATE_WID], 'Dim - Time Compare'[ROW_WID] ) ",
               ") --* [Normalization Factor] ",
               "",
               "RETURN IF (AND([POS #Customer] >0, Compare >0 ), DIVIDE([POS #Customer] , Compare, 0) -1,BLANK())",
@@ -16442,7 +16839,7 @@
               " CALCULATE(",
               "\t [Palexy Plant], ",
               "\t ALL ( 'Dim - Time' ), ",
-              "\t USERELATIONSHIP( 'Dim - Time'[ROW_WID], 'Dim - Time Compare'[ROW_WID] ) ",
+              "\t USERELATIONSHIP( 'Fact - Camera InStore'[DATE_WID], 'Dim - Time Compare'[ROW_WID] ) ",
               ")"
             ],
             "formatString": "#,0.00"
@@ -20148,6 +20545,68 @@
             }
           }
         ]
+      },
+      {
+        "name": "Dim - Plant SCD",
+        "columns": [
+          {
+            "name": "DATE_WID",
+            "dataType": "int64",
+            "sourceColumn": "DATE_WID"
+          },
+          {
+            "name": "Plant Parent Code",
+            "dataType": "string",
+            "sourceColumn": "Plant Parent Code"
+          },
+          {
+            "name": "PLANT_WID",
+            "dataType": "int64",
+            "sourceColumn": "PLANT_WID"
+          },
+          {
+            "name": "First Transaction DT",
+            "dataType": "int64",
+            "sourceColumn": "First Transaction DT"
+          },
+          {
+            "name": "Last Transaction DT",
+            "dataType": "int64",
+            "sourceColumn": "Last Transaction DT"
+          },
+          {
+            "name": "ACTIVE_FLG",
+            "dataType": "int64",
+            "sourceColumn": "ACTIVE_FLG"
+          },
+          {
+            "name": "CLOSED_DT",
+            "dataType": "int64",
+            "sourceColumn": "CLOSED_DT"
+          },
+          {
+            "name": "Type Plant",
+            "dataType": "string",
+            "sourceColumn": "Type Plant"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Partition",
+            "dataView": "full",
+            "source": {
+              "type": "m",
+              "expression": [
+                "let",
+                "    Source = #\"SQL/192 168 3 31;PNJ_ROLAP\",",
+                "    dbo_W_VW_PLANT_TYPE_SCD_D = Source{[Schema=\"dbo\",Item=\"W_VW_PLANT_TYPE_SCD_D\"]}[Data],",
+                "    #\"Renamed Columns\" = Table.RenameColumns(dbo_W_VW_PLANT_TYPE_SCD_D,{{\"TYPE_PLANT\", \"Type Plant\"}, {\"LAST_TRX_DT\", \"Last Transaction DT\"}, {\"FIRST_TRX_DT\", \"First Transaction DT\"}, {\"PLANT_PAR_CODE\", \"Plant Parent Code\"}})",
+                "in",
+                "    #\"Renamed Columns\""
+              ]
+            }
+          }
+        ]
       }
     ],
     "relationships": [
@@ -21240,16 +21699,6 @@
         "toColumn": "ROW_WID"
       },
       {
-        "name": "44603c15-a27e-4cca-8a77-721580d1d031",
-        "fromCardinality": "one",
-        "fromTable": "Dim - Time Compare",
-        "fromColumn": "ROW_WID",
-        "toTable": "Dim - Time",
-        "toColumn": "ROW_WID",
-        "isActive": false,
-        "crossFilteringBehavior": "bothDirections"
-      },
-      {
         "name": "ce75a525-5630-44ec-a8d1-46b39ad6b7ed",
         "fromTable": "Fact - Production Opex Faulty",
         "fromColumn": "Date Key",
@@ -21367,3324 +21816,38 @@
         "fromColumn": "STOCK_KEEPER_WID",
         "toTable": "Dim - Production Labor",
         "toColumn": "ROW_WID"
-      }
-    ],
-    "perspectives": [
-      {
-        "name": "Public Sales",
-        "tables": [
-          {
-            "name": "Dim - Plant",
-            "columns": [
-              {
-                "name": "Distribution Channel"
-              },
-              {
-                "name": "Plant Code"
-              },
-              {
-                "name": "Plant Type"
-              },
-              {
-                "name": "REGION"
-              },
-              {
-                "name": "ROW_WID"
-              },
-              {
-                "name": "Sales District Name"
-              },
-              {
-                "name": "TIER"
-              },
-              {
-                "name": "Plant Name"
-              },
-              {
-                "name": "Sales area"
-              },
-              {
-                "name": "ASM_NAME"
-              },
-              {
-                "name": "BRANCH_DIRECTOR_NAME"
-              },
-              {
-                "name": "First Transaction Date"
-              },
-              {
-                "name": "First Transaction DT"
-              },
-              {
-                "name": "Plant Name 1"
-              },
-              {
-                "name": "RSM_NAME"
-              },
-              {
-                "name": "STORE_MANAGER_NAME"
-              },
-              {
-                "name": "Tier (desc)"
-              }
-            ],
-            "measures": [
-              {
-                "name": "# Plant New"
-              },
-              {
-                "name": "..Plant (YTD)"
-              },
-              {
-                "name": "# Plant"
-              }
-            ]
-          },
-          {
-            "name": "Dim - Time",
-            "columns": [
-              {
-                "name": "Date"
-              },
-              {
-                "name": "Day Name"
-              },
-              {
-                "name": "Day of Month"
-              },
-              {
-                "name": "Day of Week Num"
-              },
-              {
-                "name": "Half Year"
-              },
-              {
-                "name": "Month"
-              },
-              {
-                "name": "Month Name"
-              },
-              {
-                "name": "Month Num"
-              },
-              {
-                "name": "Month year"
-              },
-              {
-                "name": "Quater"
-              },
-              {
-                "name": "ROW_WID"
-              },
-              {
-                "name": "Week"
-              },
-              {
-                "name": "WEEKEND_FLG"
-              },
-              {
-                "name": "Year"
-              },
-              {
-                "name": "Day_today"
-              },
-              {
-                "name": "earliest Refresh Date"
-              },
-              {
-                "name": "Holiday Flag"
-              },
-              {
-                "name": "Lunar Date Key"
-              },
-              {
-                "name": "Lunar Day"
-              },
-              {
-                "name": "Lunar Month"
-              },
-              {
-                "name": "Month Format"
-              },
-              {
-                "name": "now"
-              },
-              {
-                "name": "Year Format"
-              }
-            ]
-          },
-          {
-            "name": "Dim - Product",
-            "columns": [
-              {
-                "name": "COLECTION_CODE"
-              },
-              {
-                "name": "Brand class"
-              },
-              {
-                "name": "SIZE"
-              },
-              {
-                "name": "ROW_WID"
-              },
-              {
-                "name": "Purity of Gold"
-              },
-              {
-                "name": "Product Type Name"
-              },
-              {
-                "name": "Product Name"
-              },
-              {
-                "name": "Product Group 4 Name"
-              },
-              {
-                "name": "Product Code"
-              },
-              {
-                "name": "Item Size"
-              },
-              {
-                "name": "SC_PRODUCT_LV4"
-              }
-            ]
-          },
-          {
-            "name": "Dim - Channel",
-            "columns": [
-              {
-                "name": "Channel Code"
-              },
-              {
-                "name": "Channel Description"
-              },
-              {
-                "name": "ROW_WID"
-              }
-            ]
-          },
-          {
-            "name": "Dim - Customer",
-            "columns": [
-              {
-                "name": "Age"
-              },
-              {
-                "name": "BIRTHDAY"
-              },
-              {
-                "name": "CREATED_ON_DT"
-              },
-              {
-                "name": "Customer Code"
-              },
-              {
-                "name": "Customer Group"
-              },
-              {
-                "name": "Customer Name"
-              },
-              {
-                "name": "CUSTOMER_KOL"
-              },
-              {
-                "name": "Gender"
-              },
-              {
-                "name": "KOL_FLG"
-              },
-              {
-                "name": "Number of month Not Buy"
-              },
-              {
-                "name": "PHONE_FLAG"
-              },
-              {
-                "name": "REGION_WID"
-              },
-              {
-                "name": "ROW_WID"
-              },
-              {
-                "name": "VL_Flag"
-              }
-            ],
-            "measures": [
-              {
-                "name": "# Customer (Master)"
-              },
-              {
-                "name": "# Customer (master) (create)"
-              },
-              {
-                "name": "# Customer NOT Buy"
-              }
-            ]
-          },
-          {
-            "name": "Dim - Program",
-            "columns": [
-              {
-                "name": "CK_DL_SDate"
-              },
-              {
-                "name": "COMPANY_WID"
-              },
-              {
-                "name": "DATASOURCE_NUM_ID"
-              },
-              {
-                "name": "DATE_KEY"
-              },
-              {
-                "name": "EFFECTIVE_FROM_DT"
-              },
-              {
-                "name": "EFFECTIVE_TO_DT"
-              },
-              {
-                "name": "PLANT_WID"
-              },
-              {
-                "name": "PROGRAM_CATEGORY"
-              },
-              {
-                "name": "PROGRAM_NAME"
-              },
-              {
-                "name": "PROGRAM_TYPE"
-              },
-              {
-                "name": "ROW_WID"
-              }
-            ]
-          },
-          {
-            "name": "Fact - All Sales Invoice Line",
-            "columns": [
-              {
-                "name": "Channel Code"
-              },
-              {
-                "name": "Customer WID"
-              },
-              {
-                "name": "Discount Amount"
-              },
-              {
-                "name": "Gold Amount"
-              },
-              {
-                "name": "Gross Weight"
-              },
-              {
-                "name": "Invoice Number"
-              },
-              {
-                "name": "Invoice Type"
-              },
-              {
-                "name": "INVOICED_ON_DT_WID"
-              },
-              {
-                "name": "Labour Cost"
-              },
-              {
-                "name": "Net Amount"
-              },
-              {
-                "name": "Net Weight"
-              },
-              {
-                "name": "Q10"
-              },
-              {
-                "name": "Qty"
-              },
-              {
-                "name": "Type Plant"
-              },
-              {
-                "name": "COMPANY_WID"
-              },
-              {
-                "name": "Invoice Date"
-              },
-              {
-                "name": "Invoice_Hour"
-              },
-              {
-                "name": "PLANT_WID"
-              },
-              {
-                "name": "PRODUCT_INVENTORY_WID"
-              },
-              {
-                "name": "PRODUCT_WID"
-              }
-            ],
-            "measures": [
-              {
-                "name": "# Invoice"
-              },
-              {
-                "name": "# All Qty (LM)"
-              },
-              {
-                "name": "# All Qty (LY)"
-              },
-              {
-                "name": ". All Net Amt (LM)"
-              },
-              {
-                "name": ". All Net Amt (LY)"
-              },
-              {
-                "name": ". All Net Amt Return (LY)"
-              },
-              {
-                "name": ". All Net Amt Return (LM)"
-              },
-              {
-                "name": ". All Net Amt Return"
-              },
-              {
-                "name": "# All Active Plant"
-              },
-              {
-                "name": "# All Cust Transaction (PC)"
-              },
-              {
-                "name": "# All Cust Transaction (PC) (LM)"
-              },
-              {
-                "name": "# All Cust Transaction (PC) (LY)"
-              },
-              {
-                "name": "# All Customer"
-              },
-              {
-                "name": "# All Customer (LM)"
-              },
-              {
-                "name": "# All Customer (LY)"
-              },
-              {
-                "name": ". All QTy Return"
-              },
-              {
-                "name": ". All Qty Return (LM)"
-              },
-              {
-                "name": ". All Qty return (LY)"
-              },
-              {
-                "name": ". All HaoLai Amt"
-              },
-              {
-                "name": ". All HaoLai Amt (LM)"
-              },
-              {
-                "name": ". All HaoLai Amt (LY)"
-              },
-              {
-                "name": ". All Labor Cost"
-              },
-              {
-                "name": ". All Labor Cost (LM)"
-              },
-              {
-                "name": ". All Labor Cost (LY)"
-              },
-              {
-                "name": ". All Net Amt (all Cust)"
-              }
-            ]
-          },
-          {
-            "name": "Fact - SC Recommend",
-            "columns": [
-              {
-                "name": "PLANT_WID"
-              },
-              {
-                "name": "PRODUCT_WID"
-              },
-              {
-                "name": "GIA_VON"
-              },
-              {
-                "name": "MIN"
-              },
-              {
-                "name": "MAX"
-              },
-              {
-                "name": "VON_TON_MIN"
-              },
-              {
-                "name": "VON_TON_MAX"
-              }
-            ]
-          }
-        ]
       },
       {
-        "name": "Private All",
-        "tables": [
-          {
-            "name": "Dim - Program"
-          },
-          {
-            "name": "Dim - Customer",
-            "columns": [
-              {
-                "name": "Age"
-              },
-              {
-                "name": "BIRTHDAY"
-              },
-              {
-                "name": "CREATED_ON_DT"
-              },
-              {
-                "name": "Customer Code"
-              },
-              {
-                "name": "Customer Group"
-              },
-              {
-                "name": "Gender"
-              },
-              {
-                "name": "Number of month Not Buy"
-              },
-              {
-                "name": "PHONE_FLAG"
-              },
-              {
-                "name": "REGION_WID"
-              },
-              {
-                "name": "ROW_WID"
-              },
-              {
-                "name": "VL_Flag"
-              }
-            ],
-            "measures": [
-              {
-                "name": "# Customer (Master)"
-              },
-              {
-                "name": "# Customer (master) (create)"
-              },
-              {
-                "name": "# Customer NOT Buy"
-              }
-            ]
-          },
-          {
-            "name": "Dim - Plant",
-            "columns": [
-              {
-                "name": "Distribution Channel"
-              },
-              {
-                "name": "First Transaction Date"
-              },
-              {
-                "name": "First Transaction DT"
-              },
-              {
-                "name": "Plant Code"
-              },
-              {
-                "name": "Plant Type"
-              },
-              {
-                "name": "REGION"
-              },
-              {
-                "name": "ROW_WID"
-              },
-              {
-                "name": "Sales District Name"
-              },
-              {
-                "name": "TIER"
-              },
-              {
-                "name": "Plant Name"
-              }
-            ]
-          },
-          {
-            "name": "Dim - Territory",
-            "columns": [
-              {
-                "name": "District EN"
-              },
-              {
-                "name": "District XMAN"
-              },
-              {
-                "name": "Province"
-              },
-              {
-                "name": "Province EN"
-              },
-              {
-                "name": "Region"
-              },
-              {
-                "name": "ROW_WID"
-              },
-              {
-                "name": "SALES_REGION"
-              },
-              {
-                "name": "Sub region"
-              }
-            ]
-          },
-          {
-            "name": "Dim - Time",
-            "columns": [
-              {
-                "name": "Date"
-              },
-              {
-                "name": "Day Name"
-              },
-              {
-                "name": "Day of Month"
-              },
-              {
-                "name": "Day of Week Num"
-              },
-              {
-                "name": "Half Year"
-              },
-              {
-                "name": "Holiday Flag"
-              },
-              {
-                "name": "Lunar Date Key"
-              },
-              {
-                "name": "Lunar Day"
-              },
-              {
-                "name": "Lunar Month"
-              },
-              {
-                "name": "Month"
-              },
-              {
-                "name": "Month Name"
-              },
-              {
-                "name": "Month Num"
-              },
-              {
-                "name": "Month year"
-              },
-              {
-                "name": "Quater"
-              },
-              {
-                "name": "ROW_WID"
-              },
-              {
-                "name": "Week"
-              },
-              {
-                "name": "WEEKEND_FLG"
-              },
-              {
-                "name": "Year"
-              },
-              {
-                "name": "earliest Refresh Date"
-              },
-              {
-                "name": "Month Start"
-              }
-            ]
-          },
-          {
-            "name": "Fact - Marketing Plan",
-            "columns": [
-              {
-                "name": "COMPANY_WID"
-              },
-              {
-                "name": "DATE_KEY"
-              },
-              {
-                "name": "PLANT_WID"
-              },
-              {
-                "name": "PROGRAM_WID"
-              },
-              {
-                "name": "TARGET_AMT"
-              }
-            ],
-            "measures": [
-              {
-                "name": ". Target Marketing"
-              }
-            ]
-          },
-          {
-            "name": "Fact - Plan Data",
-            "columns": [
-              {
-                "name": "COMPANY_WID"
-              },
-              {
-                "name": "DATE_KEY"
-              },
-              {
-                "name": "MONTH_KEY"
-              },
-              {
-                "name": "PLAN_REVENUE"
-              },
-              {
-                "name": "PLANT_WID"
-              },
-              {
-                "name": "PROD_WID"
-              },
-              {
-                "name": "LEVEL_NAME"
-              },
-              {
-                "name": "PROD_CAT_4_NAME"
-              }
-            ],
-            "measures": [
-              {
-                "name": ". Net Amt (FC) (YTD)"
-              },
-              {
-                "name": ". Net_Amt_FC"
-              }
-            ]
-          },
-          {
-            "name": "Dim - Product",
-            "columns": [
-              {
-                "name": "Brand class"
-              },
-              {
-                "name": "COLECTION_CODE"
-              },
-              {
-                "name": "Item Size"
-              },
-              {
-                "name": "Product Code"
-              },
-              {
-                "name": "Product Group 4 Name"
-              },
-              {
-                "name": "Product Name"
-              },
-              {
-                "name": "Product Type Name"
-              },
-              {
-                "name": "Purity of Gold"
-              },
-              {
-                "name": "ROW_WID"
-              },
-              {
-                "name": "SIZE"
-              }
-            ]
-          },
-          {
-            "name": "Dim - Transfer Plant",
-            "columns": [
-              {
-                "name": "Distribution Channel"
-              },
-              {
-                "name": "Plant Code"
-              },
-              {
-                "name": "Plant Name"
-              },
-              {
-                "name": "Plant Type"
-              },
-              {
-                "name": "Region"
-              },
-              {
-                "name": "ROW_WID"
-              },
-              {
-                "name": "Sales District Name"
-              },
-              {
-                "name": "TIER"
-              },
-              {
-                "name": "SC_REGION_DESC"
-              },
-              {
-                "name": "DATASOURCE_NUM_ID"
-              },
-              {
-                "name": "Plant Code Name"
-              },
-              {
-                "name": "Plant Parent Code"
-              },
-              {
-                "name": "GT/MT"
-              },
-              {
-                "name": "Plant Kind"
-              },
-              {
-                "name": "SUB_REGION"
-              },
-              {
-                "name": "Sales District Code"
-              },
-              {
-                "name": "ACTIVE_FLG"
-              },
-              {
-                "name": "STORE_MANAGER_CODE"
-              },
-              {
-                "name": "STORE_MANAGER_NAME"
-              },
-              {
-                "name": "Company Code"
-              },
-              {
-                "name": "Company Short Name"
-              }
-            ]
-          },
-          {
-            "name": "Fact - Inventory Transaction",
-            "columns": [
-              {
-                "name": "DATE_KEY"
-              },
-              {
-                "name": "BASE_QTY"
-              },
-              {
-                "name": "BASE_UOM_CODE"
-              },
-              {
-                "name": "PRODUCT_WID"
-              },
-              {
-                "name": "COMPANY_WID"
-              },
-              {
-                "name": "MVMNT_TYPE_WID"
-              },
-              {
-                "name": "PLANT_WID"
-              },
-              {
-                "name": "TRANSFERD_PLANT_WID"
-              },
-              {
-                "name": "STORAGE_LOC_WID"
-              },
-              {
-                "name": "TRANSFERED_SLOC_WID"
-              },
-              {
-                "name": "SPEC_NET_QTY"
-              },
-              {
-                "name": "QI_NET_QTY"
-              },
-              {
-                "name": "BLOCK_NET_QTY"
-              },
-              {
-                "name": "INTRANSIT_NET_QTY"
-              },
-              {
-                "name": "NET_QTY"
-              }
-            ],
-            "measures": [
-              {
-                "name": ". Inven Net Qty"
-              },
-              {
-                "name": ". Special Qty"
-              },
-              {
-                "name": ". Base Qty"
-              },
-              {
-                "name": ". Block Qty"
-              },
-              {
-                "name": ". QI Qty"
-              },
-              {
-                "name": ". Intransit Qty"
-              },
-              {
-                "name": ". Intransit Net Amt"
-              },
-              {
-                "name": ". Net Amount"
-              }
-            ]
-          },
-          {
-            "name": "Dim - Transfer Sloc",
-            "columns": [
-              {
-                "name": "ROW_WID"
-              },
-              {
-                "name": "PLANT_WID"
-              },
-              {
-                "name": "Sloc Code"
-              },
-              {
-                "name": "Sloc Name"
-              },
-              {
-                "name": "Type"
-              },
-              {
-                "name": "Address"
-              },
-              {
-                "name": "SLOC_GROUP"
-              }
-            ]
-          },
-          {
-            "name": "Dim - Product Cost",
-            "columns": [
-              {
-                "name": "PRODUCT_WID"
-              },
-              {
-                "name": "PLANT_WID"
-              },
-              {
-                "name": "V_STD_PRICE"
-              },
-              {
-                "name": "S_STD_PRICE"
-              },
-              {
-                "name": "V_MVAVG_PRICE"
-              },
-              {
-                "name": "S_MVAVG_PRICE"
-              }
-            ]
-          },
-          {
-            "name": "Dim - Inventory Product",
-            "columns": [
-              {
-                "name": "ROW_WID"
-              },
-              {
-                "name": "MRP Type"
-              },
-              {
-                "name": "MRP_NAME"
-              },
-              {
-                "name": "MRP_CODE"
-              }
-            ]
-          },
-          {
-            "name": "Fact - All Sales Invoice Line",
-            "columns": [
-              {
-                "name": "Channel Code"
-              },
-              {
-                "name": "COMPANY_WID"
-              },
-              {
-                "name": "Customer WID"
-              },
-              {
-                "name": "Discount Amount"
-              },
-              {
-                "name": "Gold Amount"
-              },
-              {
-                "name": "Gross Weight"
-              },
-              {
-                "name": "Invoice Number"
-              },
-              {
-                "name": "Invoice Type"
-              },
-              {
-                "name": "INVOICED_ON_DT_WID"
-              },
-              {
-                "name": "Labour Cost"
-              },
-              {
-                "name": "Net Amount"
-              },
-              {
-                "name": "Net Weight"
-              },
-              {
-                "name": "PLANT_WID"
-              },
-              {
-                "name": "PRODUCT_WID"
-              },
-              {
-                "name": "Q10"
-              },
-              {
-                "name": "Qty"
-              },
-              {
-                "name": "Type Plant"
-              },
-              {
-                "name": "Invoice_Hour"
-              }
-            ],
-            "measures": [
-              {
-                "name": "# All Active Plant"
-              },
-              {
-                "name": "# All Cust Transaction (PC)"
-              },
-              {
-                "name": "# All Cust Transaction (PC) (LM)"
-              },
-              {
-                "name": "# All Cust Transaction (PC) (LY)"
-              },
-              {
-                "name": "# All Customer"
-              },
-              {
-                "name": "# All Customer (LM)"
-              },
-              {
-                "name": "# All Customer (LY)"
-              },
-              {
-                "name": "# Invoice"
-              },
-              {
-                "name": "# All Qty (LM)"
-              },
-              {
-                "name": "# All Qty (LY)"
-              },
-              {
-                "name": ". All Net Amt (all Cust)"
-              },
-              {
-                "name": ". All Net Amt (LM)"
-              },
-              {
-                "name": ". All Net Amt (LY)"
-              }
-            ]
-          },
-          {
-            "name": "Dim - Product Lot",
-            "columns": [
-              {
-                "name": "Batch Number"
-              },
-              {
-                "name": "Gold Weight"
-              },
-              {
-                "name": "Stone Weight"
-              },
-              {
-                "name": "ROW_WID"
-              },
-              {
-                "name": "Certificate 01"
-              },
-              {
-                "name": "Certificate 02"
-              },
-              {
-                "name": "BATCH_NUMBER2"
-              }
-            ]
-          }
-        ]
+        "name": "d2d90a85-821d-4016-8583-d8c74964bbc7",
+        "fromTable": "Fact - Camera InStore",
+        "fromColumn": "DATE_WID",
+        "toTable": "Dim - Time Compare",
+        "toColumn": "ROW_WID",
+        "isActive": false
       },
       {
-        "name": "Shipment",
-        "tables": [
-          {
-            "name": "Dim - Plant",
-            "columns": [
-              {
-                "name": "Distribution Channel"
-              },
-              {
-                "name": "First Transaction Date"
-              },
-              {
-                "name": "First Transaction DT"
-              },
-              {
-                "name": "Plant Code"
-              },
-              {
-                "name": "Plant Name"
-              },
-              {
-                "name": "Plant Name 1"
-              },
-              {
-                "name": "Plant Type"
-              },
-              {
-                "name": "REGION"
-              },
-              {
-                "name": "ROW_WID"
-              },
-              {
-                "name": "Sales area"
-              },
-              {
-                "name": "Sales District Name"
-              },
-              {
-                "name": "TIER"
-              },
-              {
-                "name": "Tier (desc)"
-              }
-            ],
-            "measures": [
-              {
-                "name": "# Plant New"
-              },
-              {
-                "name": "..Plant (YTD)"
-              },
-              {
-                "name": "# Plant"
-              }
-            ]
-          },
-          {
-            "name": "Dim - Transfer Plant",
-            "columns": [
-              {
-                "name": "Distribution Channel"
-              },
-              {
-                "name": "Plant Code"
-              },
-              {
-                "name": "Plant Name"
-              },
-              {
-                "name": "Plant Type"
-              },
-              {
-                "name": "Region"
-              },
-              {
-                "name": "ROW_WID"
-              },
-              {
-                "name": "Sales District Name"
-              },
-              {
-                "name": "TIER"
-              },
-              {
-                "name": "SC_REGION_DESC"
-              },
-              {
-                "name": "DATASOURCE_NUM_ID"
-              },
-              {
-                "name": "Plant Code Name"
-              },
-              {
-                "name": "Plant Parent Code"
-              },
-              {
-                "name": "GT/MT"
-              },
-              {
-                "name": "Plant Kind"
-              },
-              {
-                "name": "SUB_REGION"
-              },
-              {
-                "name": "Sales District Code"
-              },
-              {
-                "name": "ACTIVE_FLG"
-              },
-              {
-                "name": "STORE_MANAGER_CODE"
-              },
-              {
-                "name": "STORE_MANAGER_NAME"
-              },
-              {
-                "name": "Company Code"
-              },
-              {
-                "name": "Company Short Name"
-              }
-            ]
-          },
-          {
-            "name": "Dim - Product",
-            "columns": [
-              {
-                "name": "Brand class"
-              },
-              {
-                "name": "COLECTION_CODE"
-              },
-              {
-                "name": "Item Size"
-              },
-              {
-                "name": "Product Code"
-              },
-              {
-                "name": "Product Group 4 Name"
-              },
-              {
-                "name": "Product Name"
-              },
-              {
-                "name": "Product Type Name"
-              },
-              {
-                "name": "Purity of Gold"
-              },
-              {
-                "name": "ROW_WID"
-              },
-              {
-                "name": "SIZE"
-              }
-            ]
-          },
-          {
-            "name": "Dim - Time",
-            "columns": [
-              {
-                "name": "Date"
-              },
-              {
-                "name": "Day Name"
-              },
-              {
-                "name": "Day of Month"
-              },
-              {
-                "name": "Day of Week Num"
-              },
-              {
-                "name": "Half Year"
-              },
-              {
-                "name": "Holiday Flag"
-              },
-              {
-                "name": "Lunar Date Key"
-              },
-              {
-                "name": "Lunar Day"
-              },
-              {
-                "name": "Lunar Month"
-              },
-              {
-                "name": "Month"
-              },
-              {
-                "name": "Month Name"
-              },
-              {
-                "name": "Month Num"
-              },
-              {
-                "name": "Month year"
-              },
-              {
-                "name": "Quater"
-              },
-              {
-                "name": "ROW_WID"
-              },
-              {
-                "name": "Week"
-              },
-              {
-                "name": "WEEKEND_FLG"
-              },
-              {
-                "name": "Year"
-              },
-              {
-                "name": "Month Start"
-              }
-            ]
-          }
-        ]
+        "name": "6be11b1f-c020-414e-b070-d69dce798a7c",
+        "fromTable": "Dim - Plant SCD",
+        "fromColumn": "DATE_WID",
+        "toTable": "Dim - Time",
+        "toColumn": "ROW_WID"
       },
       {
-        "name": "NHVV",
-        "tables": [
-          {
-            "name": "Dim - Plant",
-            "columns": [
-              {
-                "name": "ASM_NAME"
-              },
-              {
-                "name": "BRANCH_DIRECTOR_NAME"
-              },
-              {
-                "name": "Distribution Channel"
-              },
-              {
-                "name": "First Transaction Date"
-              },
-              {
-                "name": "First Transaction DT"
-              },
-              {
-                "name": "Plant Code"
-              },
-              {
-                "name": "Plant Name"
-              },
-              {
-                "name": "Plant Name 1"
-              },
-              {
-                "name": "Plant Type"
-              },
-              {
-                "name": "REGION"
-              },
-              {
-                "name": "ROW_WID"
-              },
-              {
-                "name": "RSM_NAME"
-              },
-              {
-                "name": "Sales area"
-              },
-              {
-                "name": "Sales District Name"
-              },
-              {
-                "name": "STORE_MANAGER_NAME"
-              },
-              {
-                "name": "TIER"
-              },
-              {
-                "name": "Tier (desc)"
-              }
-            ],
-            "measures": [
-              {
-                "name": "# Plant New"
-              },
-              {
-                "name": "..Plant (YTD)"
-              },
-              {
-                "name": "# Plant"
-              }
-            ]
-          },
-          {
-            "name": "Dim - Product",
-            "columns": [
-              {
-                "name": "Brand class"
-              },
-              {
-                "name": "COLECTION_CODE"
-              },
-              {
-                "name": "Item Size"
-              },
-              {
-                "name": "Product Code"
-              },
-              {
-                "name": "Product Group 4 Name"
-              },
-              {
-                "name": "Product Name"
-              },
-              {
-                "name": "Product Type Name"
-              },
-              {
-                "name": "Purity of Gold"
-              },
-              {
-                "name": "ROW_WID"
-              },
-              {
-                "name": "SIZE"
-              }
-            ]
-          },
-          {
-            "name": "Dim - Time",
-            "columns": [
-              {
-                "name": "Date"
-              },
-              {
-                "name": "Day Name"
-              },
-              {
-                "name": "Day of Month"
-              },
-              {
-                "name": "Day of Week Num"
-              },
-              {
-                "name": "Half Year"
-              },
-              {
-                "name": "Holiday Flag"
-              },
-              {
-                "name": "Lunar Date Key"
-              },
-              {
-                "name": "Lunar Day"
-              },
-              {
-                "name": "Lunar Month"
-              },
-              {
-                "name": "Month"
-              },
-              {
-                "name": "Month Format"
-              },
-              {
-                "name": "Month Name"
-              },
-              {
-                "name": "Month Num"
-              },
-              {
-                "name": "Month year"
-              },
-              {
-                "name": "now"
-              },
-              {
-                "name": "Quater"
-              },
-              {
-                "name": "ROW_WID"
-              },
-              {
-                "name": "Week"
-              },
-              {
-                "name": "WEEKEND_FLG"
-              },
-              {
-                "name": "Year"
-              },
-              {
-                "name": "Year Format"
-              }
-            ]
-          },
-          {
-            "name": "Dim - Transfer Plant",
-            "columns": [
-              {
-                "name": "Distribution Channel"
-              },
-              {
-                "name": "Plant Code"
-              },
-              {
-                "name": "Plant Name"
-              },
-              {
-                "name": "Plant Type"
-              },
-              {
-                "name": "Region"
-              },
-              {
-                "name": "ROW_WID"
-              },
-              {
-                "name": "Sales District Name"
-              },
-              {
-                "name": "TIER"
-              },
-              {
-                "name": "SC_REGION_DESC"
-              },
-              {
-                "name": "DATASOURCE_NUM_ID"
-              },
-              {
-                "name": "Plant Code Name"
-              },
-              {
-                "name": "Plant Parent Code"
-              },
-              {
-                "name": "GT/MT"
-              },
-              {
-                "name": "Plant Kind"
-              },
-              {
-                "name": "SUB_REGION"
-              },
-              {
-                "name": "Sales District Code"
-              },
-              {
-                "name": "ACTIVE_FLG"
-              },
-              {
-                "name": "STORE_MANAGER_CODE"
-              },
-              {
-                "name": "STORE_MANAGER_NAME"
-              },
-              {
-                "name": "Company Code"
-              },
-              {
-                "name": "Company Short Name"
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "name": "Production"
-      },
-      {
-        "name": "HR_PNJP",
-        "tables": [
-          {
-            "name": "Dim - Employee",
-            "columns": [
-              {
-                "name": "Company Code"
-              },
-              {
-                "name": "COMPANY_WID"
-              },
-              {
-                "name": "Department Code"
-              },
-              {
-                "name": "Department Name"
-              },
-              {
-                "name": "Division Name"
-              },
-              {
-                "name": "Effect From DT"
-              },
-              {
-                "name": "Effect To DT"
-              },
-              {
-                "name": "Employee Code"
-              },
-              {
-                "name": "Employee FLG"
-              },
-              {
-                "name": "Employee Name"
-              },
-              {
-                "name": "Gender"
-              },
-              {
-                "name": "OT Weekend Flag"
-              },
-              {
-                "name": "Position Name"
-              },
-              {
-                "name": "ROW_WID"
-              },
-              {
-                "name": "Team Name"
-              },
-              {
-                "name": "Total Employee"
-              },
-              {
-                "name": "Indentity Number"
-              },
-              {
-                "name": "Phone"
-              },
-              {
-                "name": "Position Code"
-              },
-              {
-                "name": "Office Email"
-              },
-              {
-                "name": "Personal Email"
-              },
-              {
-                "name": "BIRTH_DATE"
-              }
-            ]
-          },
-          {
-            "name": "Dim - Inventory Product",
-            "columns": [
-              {
-                "name": "MRP Type"
-              },
-              {
-                "name": "MRP_CODE"
-              },
-              {
-                "name": "MRP_NAME"
-              },
-              {
-                "name": "ROW_WID"
-              }
-            ]
-          },
-          {
-            "name": "Dim - Product",
-            "columns": [
-              {
-                "name": "Brand class"
-              },
-              {
-                "name": "COLECTION_CODE"
-              },
-              {
-                "name": "Item Size"
-              },
-              {
-                "name": "Product Code"
-              },
-              {
-                "name": "Product Group 4 Name"
-              },
-              {
-                "name": "Product Name"
-              },
-              {
-                "name": "Product Type Name"
-              },
-              {
-                "name": "Purity of Gold"
-              },
-              {
-                "name": "ROW_WID"
-              },
-              {
-                "name": "SC_PRODUCT_LV4"
-              },
-              {
-                "name": "SIZE"
-              }
-            ]
-          },
-          {
-            "name": "Dim - Time",
-            "columns": [
-              {
-                "name": "Date"
-              },
-              {
-                "name": "Day Name"
-              },
-              {
-                "name": "Day of Month"
-              },
-              {
-                "name": "Day of Week Num"
-              },
-              {
-                "name": "earliest Refresh Date"
-              },
-              {
-                "name": "Half Year"
-              },
-              {
-                "name": "Holiday Flag"
-              },
-              {
-                "name": "Lunar Date Key"
-              },
-              {
-                "name": "Lunar Day"
-              },
-              {
-                "name": "Lunar Month"
-              },
-              {
-                "name": "Month"
-              },
-              {
-                "name": "Month Format"
-              },
-              {
-                "name": "Month Name"
-              },
-              {
-                "name": "Month Num"
-              },
-              {
-                "name": "Month year"
-              },
-              {
-                "name": "now"
-              },
-              {
-                "name": "Quater"
-              },
-              {
-                "name": "ROW_WID"
-              },
-              {
-                "name": "Week"
-              },
-              {
-                "name": "WEEKEND_FLG"
-              },
-              {
-                "name": "Year"
-              },
-              {
-                "name": "Year Format"
-              }
-            ]
-          },
-          {
-            "name": "Fact - Actual Production",
-            "columns": [
-              {
-                "name": "DATE_KEY"
-              },
-              {
-                "name": "Document Number"
-              },
-              {
-                "name": "Order Number"
-              },
-              {
-                "name": "PRODUCT_WID"
-              },
-              {
-                "name": "UOM"
-              },
-              {
-                "name": "PLANT_WID"
-              },
-              {
-                "name": "MRP_CONTROLLER_WID"
-              },
-              {
-                "name": "TYPES"
-              },
-              {
-                "name": "Actual QTY"
-              },
-              {
-                "name": "Location Wid"
-              },
-              {
-                "name": "Q10"
-              },
-              {
-                "name": "STK Keeper Code"
-              },
-              {
-                "name": "Standard Weight"
-              },
-              {
-                "name": "STD Weight Flag"
-              },
-              {
-                "name": "Output sloc"
-              },
-              {
-                "name": "STD Text Key"
-              },
-              {
-                "name": "Batch"
-              },
-              {
-                "name": "Booklet_ID"
-              },
-              {
-                "name": "Total Weight"
-              },
-              {
-                "name": "STK_KEEPING_GROUP"
-              },
-              {
-                "name": "STK Keeper Transfer Code"
-              },
-              {
-                "name": "Cooling Score"
-              },
-              {
-                "name": "Prong Score"
-              },
-              {
-                "name": "STOCK_KEEPER_WID"
-              },
-              {
-                "name": "Time"
-              }
-            ]
-          },
-          {
-            "name": "Fact - Plan Revenue - PNJP",
-            "columns": [
-              {
-                "name": "Product Wid"
-              },
-              {
-                "name": "INVOICE_GRP"
-              },
-              {
-                "name": "DATE_KEY"
-              },
-              {
-                "name": "PLANT_NAME"
-              },
-              {
-                "name": "PROD_CAT_2_CODE"
-              },
-              {
-                "name": "PROD_CAT_3_CODE"
-              },
-              {
-                "name": "PROD_CAT_4_CODE"
-              },
-              {
-                "name": "PROD_CAT_4_NAME"
-              },
-              {
-                "name": "NET_AMT"
-              },
-              {
-                "name": "CHANNEL_CODE"
-              },
-              {
-                "name": "Plant_wid"
-              }
-            ]
-          },
-          {
-            "name": "Fact - Production Plan",
-            "columns": [
-              {
-                "name": "DATE_KEY"
-              },
-              {
-                "name": "Labor not OT"
-              },
-              {
-                "name": "Labor OT"
-              },
-              {
-                "name": "PrO Plan"
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "name": "MARKETING",
-        "tables": [
-          {
-            "name": "Dim - Customer",
-            "columns": [
-              {
-                "name": "Age"
-              },
-              {
-                "name": "BIRTHDAY"
-              },
-              {
-                "name": "CREATED_ON_DT"
-              },
-              {
-                "name": "Customer Code"
-              },
-              {
-                "name": "Customer Group"
-              },
-              {
-                "name": "Customer Name"
-              },
-              {
-                "name": "CUSTOMER_KOL"
-              },
-              {
-                "name": "Gender"
-              },
-              {
-                "name": "KOL_FLG"
-              },
-              {
-                "name": "Number of month Not Buy"
-              },
-              {
-                "name": "PHONE_FLAG"
-              },
-              {
-                "name": "REGION_WID"
-              },
-              {
-                "name": "ROW_WID"
-              },
-              {
-                "name": "VL_Flag"
-              }
-            ],
-            "measures": [
-              {
-                "name": "# Customer (Master)"
-              },
-              {
-                "name": "# Customer (master) (create)"
-              },
-              {
-                "name": "# Customer NOT Buy"
-              }
-            ]
-          },
-          {
-            "name": "Dim - Plant",
-            "columns": [
-              {
-                "name": "ASM_NAME"
-              },
-              {
-                "name": "BRANCH_DIRECTOR_NAME"
-              },
-              {
-                "name": "Distribution Channel"
-              },
-              {
-                "name": "First Transaction Date"
-              },
-              {
-                "name": "First Transaction DT"
-              },
-              {
-                "name": "Plant Code"
-              },
-              {
-                "name": "Plant Name"
-              },
-              {
-                "name": "Plant Name 1"
-              },
-              {
-                "name": "Plant Type"
-              },
-              {
-                "name": "REGION"
-              },
-              {
-                "name": "ROW_WID"
-              },
-              {
-                "name": "RSM_NAME"
-              },
-              {
-                "name": "Sales area"
-              },
-              {
-                "name": "Sales District Name"
-              },
-              {
-                "name": "STORE_MANAGER_NAME"
-              },
-              {
-                "name": "TIER"
-              },
-              {
-                "name": "Tier (desc)"
-              },
-              {
-                "name": "ASM_CODE"
-              },
-              {
-                "name": "BRANCH_DIRECTOR_CODE"
-              },
-              {
-                "name": "Company Code"
-              },
-              {
-                "name": "Plant Kind"
-              },
-              {
-                "name": "RSM_CODE"
-              },
-              {
-                "name": "SC_REGION_DESC"
-              },
-              {
-                "name": "STORE_MANAGER_CODE"
-              },
-              {
-                "name": "DAL_Group"
-              },
-              {
-                "name": "Plant Code Name"
-              },
-              {
-                "name": "Plant Parent Code"
-              },
-              {
-                "name": "GT/MT"
-              },
-              {
-                "name": "SUB_REGION"
-              },
-              {
-                "name": "Sales District Code"
-              },
-              {
-                "name": "Last Transaction Date"
-              },
-              {
-                "name": "Company Short Name"
-              },
-              {
-                "name": "Sub-region Name"
-              },
-              {
-                "name": "AGING"
-              }
-            ],
-            "measures": [
-              {
-                "name": "# Plant New"
-              },
-              {
-                "name": "..Plant (YTD)"
-              },
-              {
-                "name": "# Plant"
-              }
-            ]
-          },
-          {
-            "name": "Dim - Product",
-            "columns": [
-              {
-                "name": "Brand class"
-              },
-              {
-                "name": "COLECTION_CODE"
-              },
-              {
-                "name": "Item Size"
-              },
-              {
-                "name": "Product Code"
-              },
-              {
-                "name": "Product Group 4 Name"
-              },
-              {
-                "name": "Product Name"
-              },
-              {
-                "name": "Product Type Name"
-              },
-              {
-                "name": "Purity of Gold"
-              },
-              {
-                "name": "ROW_WID"
-              },
-              {
-                "name": "SC_PRODUCT_LV4"
-              },
-              {
-                "name": "SIZE"
-              },
-              {
-                "name": "Co-Operate Brand"
-              },
-              {
-                "name": "Gem Group Size"
-              },
-              {
-                "name": "Gem Group Size (MKT)"
-              },
-              {
-                "name": "Gem Group Size (SAP)"
-              },
-              {
-                "name": "Gem Main"
-              },
-              {
-                "name": "Gem Second"
-              },
-              {
-                "name": "Gem Type"
-              },
-              {
-                "name": "MKT_PRODUCT_GRP4_RPT"
-              },
-              {
-                "name": "net_weight"
-              },
-              {
-                "name": "Product Kind"
-              },
-              {
-                "name": "RPT - Product Group 2 Code"
-              },
-              {
-                "name": "Colection Name"
-              },
-              {
-                "name": "RPT_Product Group 4 Name"
-              },
-              {
-                "name": "RPT_Product Group 2 Name"
-              }
-            ]
-          },
-          {
-            "name": "Dim - Program",
-            "columns": [
-              {
-                "name": "CK_DL_SDate"
-              },
-              {
-                "name": "COMPANY_WID"
-              },
-              {
-                "name": "DATASOURCE_NUM_ID"
-              },
-              {
-                "name": "DATE_KEY"
-              },
-              {
-                "name": "EFFECTIVE_FROM_DT"
-              },
-              {
-                "name": "EFFECTIVE_TO_DT"
-              },
-              {
-                "name": "PLANT_WID"
-              },
-              {
-                "name": "PROGRAM_CATEGORY"
-              },
-              {
-                "name": "PROGRAM_NAME"
-              },
-              {
-                "name": "PROGRAM_TYPE"
-              },
-              {
-                "name": "ROW_WID"
-              },
-              {
-                "name": "Date From"
-              },
-              {
-                "name": "Date To"
-              },
-              {
-                "name": "Program Length"
-              },
-              {
-                "name": "MKT.Year"
-              },
-              {
-                "name": "CK_DL_EDate"
-              }
-            ],
-            "measures": [
-              {
-                "name": "Length"
-              },
-              {
-                "name": "Length (LY)"
-              }
-            ]
-          },
-          {
-            "name": "Dim - Time",
-            "columns": [
-              {
-                "name": "Date"
-              },
-              {
-                "name": "Day Name"
-              },
-              {
-                "name": "Day of Month"
-              },
-              {
-                "name": "Day of Week Num"
-              },
-              {
-                "name": "Day_today"
-              },
-              {
-                "name": "earliest Refresh Date"
-              },
-              {
-                "name": "Half Year"
-              },
-              {
-                "name": "Holiday Flag"
-              },
-              {
-                "name": "Lunar Date Key"
-              },
-              {
-                "name": "Lunar Day"
-              },
-              {
-                "name": "Lunar Month"
-              },
-              {
-                "name": "Month"
-              },
-              {
-                "name": "Month Format"
-              },
-              {
-                "name": "Month Name"
-              },
-              {
-                "name": "Month Num"
-              },
-              {
-                "name": "Month year"
-              },
-              {
-                "name": "now"
-              },
-              {
-                "name": "Quater"
-              },
-              {
-                "name": "ROW_WID"
-              },
-              {
-                "name": "Week"
-              },
-              {
-                "name": "WEEKEND_FLG"
-              },
-              {
-                "name": "Year"
-              },
-              {
-                "name": "Year Format"
-              }
-            ]
-          },
-          {
-            "name": "Fact - Marketing Plan",
-            "columns": [
-              {
-                "name": "COMPANY_WID"
-              },
-              {
-                "name": "DATE_KEY"
-              },
-              {
-                "name": "PLANT_WID"
-              },
-              {
-                "name": "PROGRAM_WID"
-              },
-              {
-                "name": "TARGET_AMT"
-              },
-              {
-                "name": "PRODUCT_WID"
-              },
-              {
-                "name": "MKT.Year"
-              },
-              {
-                "name": "Program Category"
-              }
-            ],
-            "measures": [
-              {
-                "name": ". Target Marketing"
-              },
-              {
-                "name": ". Target Maketing (Region)"
-              },
-              {
-                "name": ". Target Marketing (LY)"
-              }
-            ]
-          },
-          {
-            "name": "Fact - Sales Invoice Line",
-            "columns": [
-              {
-                "name": "PRODUCT_WID"
-              },
-              {
-                "name": "PLANT_WID"
-              },
-              {
-                "name": "INVOICED_ON_DT_WID"
-              },
-              {
-                "name": "Invoice date"
-              },
-              {
-                "name": "Customer Type (Month)"
-              },
-              {
-                "name": "Customer Type (Year)"
-              },
-              {
-                "name": "Discount Amount"
-              },
-              {
-                "name": "Invoice Number"
-              },
-              {
-                "name": "Invoice Type"
-              },
-              {
-                "name": "INVOICE_ITEM"
-              },
-              {
-                "name": "Net Amount"
-              },
-              {
-                "name": "Qty"
-              },
-              {
-                "name": "Program_wid"
-              },
-              {
-                "name": "CHANNEL_CODE"
-              },
-              {
-                "name": "CUSTOMER_SOLD_TO_WID"
-              },
-              {
-                "name": "CUST_CARD_DESC"
-              },
-              {
-                "name": "DATE_KEY"
-              },
-              {
-                "name": "EFFECTIVE_FROM_DT"
-              },
-              {
-                "name": "EFFECTIVE_TO_DT"
-              },
-              {
-                "name": "Group Age"
-              },
-              {
-                "name": "MKT_Customer"
-              },
-              {
-                "name": "Program Category"
-              },
-              {
-                "name": "Program Name"
-              },
-              {
-                "name": "Program Type"
-              },
-              {
-                "name": "SALES_DEAL"
-              },
-              {
-                "name": "SALES_DEAL_NAME"
-              },
-              {
-                "name": "PROGRAM_LENGTH"
-              },
-              {
-                "name": "TRAFFIC"
-              },
-              {
-                "name": "Lunar Date"
-              }
-            ],
-            "measures": [
-              {
-                "name": ". Net Amt"
-              },
-              {
-                "name": ". Net Amt (LY)"
-              },
-              {
-                "name": "# Customer"
-              },
-              {
-                "name": "# Customer (LY)"
-              },
-              {
-                "name": "# Cust Transaction (PC)"
-              },
-              {
-                "name": "# Cust Transaction (PC) (LY)"
-              },
-              {
-                "name": "# Active Plant"
-              },
-              {
-                "name": ". MKT Net Amt (LY)"
-              },
-              {
-                "name": "% MKT Net Amt/Store (LY)"
-              },
-              {
-                "name": "% MKT Net Amt/Store (CK)"
-              },
-              {
-                "name": "% MKT Active Plant (CK)"
-              },
-              {
-                "name": "MKT Net Amt/Store (LY)"
-              },
-              {
-                "name": "% MKT Net Amt/Qty (CK)"
-              },
-              {
-                "name": "% MKT Cust Transaction (CK)"
-              },
-              {
-                "name": "% MKT Cust Transaction (LY)"
-              },
-              {
-                "name": "% MKT Customer/Store/Day (CK)"
-              },
-              {
-                "name": "% MKT Net Qty (CK)"
-              },
-              {
-                "name": "AVG MKT Net Amt/Qty (CK)"
-              },
-              {
-                "name": "AVG MKT Customer/Store/Day (LY)"
-              },
-              {
-                "name": "% Net Amt (LY)"
-              },
-              {
-                "name": "% MKT Net Amt (LY)"
-              },
-              {
-                "name": "AVG Net Amt/Day"
-              },
-              {
-                "name": "% MKT Net Qty (LY)"
-              },
-              {
-                "name": ". MKT Net Qty (LY)"
-              },
-              {
-                "name": "# MKT Customer (LY)"
-              },
-              {
-                "name": "% MKT Customer (LY)"
-              },
-              {
-                "name": "# MKT Cust Transaction (LY)"
-              },
-              {
-                "name": "% MKT Ticket Size (LY)"
-              },
-              {
-                "name": "AVG Ticket Size"
-              },
-              {
-                "name": "AVG Ticket Size (LY)"
-              },
-              {
-                "name": "AVG MKT Ticket Size (LY)"
-              },
-              {
-                "name": "% Ticket Size (LY)"
-              },
-              {
-                "name": "AVG MKT Qty/Bill (LY)"
-              },
-              {
-                "name": "# MKT Bill (LY)"
-              },
-              {
-                "name": "# Bill"
-              },
-              {
-                "name": "AVG Net Amt/Bill"
-              },
-              {
-                "name": "% Qty/Bill (LY)"
-              },
-              {
-                "name": "AVG Qty/Bill"
-              },
-              {
-                "name": "AVG Qty/Bill (LY)"
-              },
-              {
-                "name": "# Bill (LY)"
-              },
-              {
-                "name": ". Net Qty"
-              },
-              {
-                "name": ". Net Qty (LY)"
-              },
-              {
-                "name": "% MKT Qty/Bill (LY)"
-              },
-              {
-                "name": "AVG Net Amt/Bill (LY)"
-              },
-              {
-                "name": "AVG MKT Net Amt/Bill (LY)"
-              },
-              {
-                "name": "AVG Net Amt/Store"
-              },
-              {
-                "name": "AVG Customer/Store"
-              },
-              {
-                "name": "AVG Net Amt/Store/Day"
-              },
-              {
-                "name": "AVG Customer/Store/Day"
-              },
-              {
-                "name": "# MKT Active Plant (LY)"
-              },
-              {
-                "name": "% MKT Active Plant (LY)"
-              },
-              {
-                "name": "Day"
-              },
-              {
-                "name": "AVG MKT Net Amt/Day (LY)"
-              },
-              {
-                "name": "% MKT Net Amt/Day (LY)"
-              },
-              {
-                "name": "% Net Amt/Bill (LY)"
-              },
-              {
-                "name": "% MKT Net Amt/Bill (LY)"
-              },
-              {
-                "name": "AVG Net Amt/Qty (In)"
-              },
-              {
-                "name": "AVG Net Amt/Qty (LY)"
-              },
-              {
-                "name": "AVG MKT Net Amt/Qty (LY)"
-              },
-              {
-                "name": "% MKT Net Amt/Qty (LY)"
-              },
-              {
-                "name": "% Net Amt/Qty (LY)"
-              },
-              {
-                "name": "AVG Net Amt/Qty (before)"
-              },
-              {
-                "name": "% Net Amt/Qty (B4)"
-              },
-              {
-                "name": "Date Lost Customer"
-              },
-              {
-                "name": ". MKT Net Amt"
-              },
-              {
-                "name": "All Customer"
-              },
-              {
-                "name": "# MKT Cust Transaction (CK)"
-              },
-              {
-                "name": "% MKT Net Amt (CK)"
-              },
-              {
-                "name": ". MKT Net Amt (CK)"
-              },
-              {
-                "name": "% MKT Customer (CK)"
-              },
-              {
-                "name": "AVG MKT Ticket Size (CK)"
-              },
-              {
-                "name": "% MKT Ticket Size (CK)"
-              },
-              {
-                "name": ". MKT Net Qty (CK)"
-              },
-              {
-                "name": "AVG MKT Net Amt/Bill (CK)"
-              },
-              {
-                "name": "% MKT Net Amt/Bill (CK)"
-              },
-              {
-                "name": "AVG MKT Net Amt/Day (CK)"
-              },
-              {
-                "name": "# MKT Customer (CK)"
-              },
-              {
-                "name": "# MKT Bill (CK)"
-              },
-              {
-                "name": "AVG MKT Qty/Bill (CK)"
-              },
-              {
-                "name": "% MKT Qty/Bill (CK)"
-              },
-              {
-                "name": "% MKT Net Amt/Day (CK)"
-              },
-              {
-                "name": "# MKT Active Plant (CK)"
-              },
-              {
-                "name": "AVG MKT Customer/Store (LY)"
-              },
-              {
-                "name": "AVG MKT Customer/Store (CK)"
-              },
-              {
-                "name": "MKT Net Amt/Store (CK)"
-              },
-              {
-                "name": "% Net Amt (Target)"
-              },
-              {
-                "name": "%Net Amt (Region)"
-              },
-              {
-                "name": "% Net Qty (LY)"
-              },
-              {
-                "name": ". MKT Net Amt(Corr)"
-              },
-              {
-                "name": "Date New Customer"
-              }
-            ]
-          },
-          {
-            "name": "Fact - Marketing Spend",
-            "columns": [
-              {
-                "name": "PROGRAM_WID"
-              },
-              {
-                "name": "Cost Group"
-              },
-              {
-                "name": "Item Cost"
-              },
-              {
-                "name": "COST"
-              },
-              {
-                "name": "MKT.Year"
-              },
-              {
-                "name": "CHARGEBY"
-              },
-              {
-                "name": "Date_key"
-              },
-              {
-                "name": "Program Category"
-              }
-            ]
-          },
-          {
-            "name": "Dim - Sale Deals",
-            "columns": [
-              {
-                "name": "ROW_WID"
-              },
-              {
-                "name": "PROGRAM_CODE"
-              },
-              {
-                "name": "PROGRAM_NAME"
-              },
-              {
-                "name": "EFFECTIVE_FROM_DT"
-              },
-              {
-                "name": "EFFECTIVE_TO_DT"
-              },
-              {
-                "name": "SD_Category"
-              },
-              {
-                "name": "SALEDEAL_ParentGrp"
-              }
-            ]
-          },
-          {
-            "name": "Fact - Condition",
-            "columns": [
-              {
-                "name": "DOC_CONDITION_NUM"
-              },
-              {
-                "name": "CONDITION_TYPE"
-              },
-              {
-                "name": "CONDITION_VALUE"
-              },
-              {
-                "name": "INVOICE_WID"
-              },
-              {
-                "name": "INVOICE_NUM"
-              },
-              {
-                "name": "INVOICE_ITEM"
-              },
-              {
-                "name": "INVOICED_ON_DT_WID"
-              },
-              {
-                "name": "SALE_DEAL_WID"
-              },
-              {
-                "name": "PRODUCT_WID"
-              },
-              {
-                "name": "PLANT_WID"
-              },
-              {
-                "name": "ConditionID"
-              },
-              {
-                "name": "Saledeal_ParentGrp"
-              }
-            ],
-            "measures": [
-              {
-                "name": ". Discount Amt"
-              },
-              {
-                "name": "# MKT Cust. Use Saledeal"
-              },
-              {
-                "name": "# MKT Cust. Use Saledeal (LY)"
-              },
-              {
-                "name": "% MKT Cust. Use Saledeal"
-              },
-              {
-                "name": "MKT Discount Amt (LY)"
-              },
-              {
-                "name": "MKT Discount / Revenue"
-              },
-              {
-                "name": "MKT Discount / Revenue (LY)"
-              },
-              {
-                "name": "% MKT Discount Amt (LY)"
-              },
-              {
-                "name": "% MKT Discount / Revenue (LY)"
-              },
-              {
-                "name": "% MKT Cust. Use Saledeal (LY)"
-              }
-            ]
-          },
-          {
-            "name": "Dim - Camera Age",
-            "columns": [
-              {
-                "name": "Palexy AGEID"
-              },
-              {
-                "name": "Palexy Age"
-              }
-            ]
-          },
-          {
-            "name": "Fact - Camera InStore",
-            "columns": [
-              {
-                "name": "DATE_WID"
-              },
-              {
-                "name": "age_range"
-              },
-              {
-                "name": "duration"
-              },
-              {
-                "name": "recording_time"
-              },
-              {
-                "name": "action_type"
-              }
-            ]
-          },
-          {
-            "name": "Fact - ATL",
-            "columns": [
-              {
-                "name": "Plant_wid"
-              },
-              {
-                "name": "PROGRAM_WID"
-              },
-              {
-                "name": "Date_key"
-              },
-              {
-                "name": "Source"
-              },
-              {
-                "name": "Layer"
-              },
-              {
-                "name": "Region"
-              },
-              {
-                "name": "Impressions"
-              },
-              {
-                "name": "Clicks"
-              },
-              {
-                "name": "Reach"
-              },
-              {
-                "name": "Ads_Spend"
-              },
-              {
-                "name": "CTR"
-              },
-              {
-                "name": "Frequency"
-              },
-              {
-                "name": "Engagement"
-              },
-              {
-                "name": "CPC"
-              },
-              {
-                "name": "users"
-              },
-              {
-                "name": "newUsers"
-              },
-              {
-                "name": "pageviews"
-              },
-              {
-                "name": "sessions"
-              },
-              {
-                "name": "bounceRate"
-              },
-              {
-                "name": "TimeOnPage"
-              },
-              {
-                "name": "Program Category"
-              },
-              {
-                "name": "PROGRAM_TYPE"
-              },
-              {
-                "name": "MKT.Year"
-              },
-              {
-                "name": "SessionDuration"
-              }
-            ]
-          },
-          {
-            "name": "MKT_CAC",
-            "columns": [
-              {
-                "name": "Value"
-              },
-              {
-                "name": "Value 1"
-              }
-            ],
-            "measures": [
-              {
-                "name": ". Acquisition Cost"
-              },
-              {
-                "name": ". Ads per Customer"
-              },
-              {
-                "name": ". Ttl MKT Cost"
-              },
-              {
-                "name": "MKT Cost / Revenue"
-              },
-              {
-                "name": ". Ttl MKT Cost (LY)"
-              },
-              {
-                "name": "% Ttl MKT Cost (LY)"
-              },
-              {
-                "name": "% MKT Cost / Revenue (LY)"
-              },
-              {
-                "name": "MKT Cost /Revenue (LY)"
-              },
-              {
-                "name": "% MKT Prog Cost / Target"
-              },
-              {
-                "name": "% MKT Prog Cost/ Revenue"
-              },
-              {
-                "name": ". Ttl MKT Prog Cost"
-              },
-              {
-                "name": ". Ttl MKT Prog Cost (LY)"
-              },
-              {
-                "name": "MKT Prog Cost / Target"
-              },
-              {
-                "name": "MKT Prog Cost / Target (LY)"
-              },
-              {
-                "name": "MKT Prog Cost/ Revenue"
-              },
-              {
-                "name": "MKT Prog Cost/ Revenue (LY)"
-              },
-              {
-                "name": "CPO"
-              },
-              {
-                "name": "CPO (LY)"
-              },
-              {
-                "name": "% Ttl MKT Prog Cost"
-              }
-            ]
-          },
-          {
-            "name": "Fact - All Sales Invoice Line",
-            "columns": [
-              {
-                "name": "Channel Code"
-              },
-              {
-                "name": "COMPANY_WID"
-              },
-              {
-                "name": "Customer WID"
-              },
-              {
-                "name": "Discount Amount"
-              },
-              {
-                "name": "Gold Amount"
-              },
-              {
-                "name": "Gross Weight"
-              },
-              {
-                "name": "Invoice Date"
-              },
-              {
-                "name": "Invoice Number"
-              },
-              {
-                "name": "Invoice Type"
-              },
-              {
-                "name": "Invoice_Hour"
-              },
-              {
-                "name": "INVOICED_ON_DT_WID"
-              },
-              {
-                "name": "Labour Cost"
-              },
-              {
-                "name": "Net Amount"
-              },
-              {
-                "name": "Net Weight"
-              },
-              {
-                "name": "PLANT_WID"
-              },
-              {
-                "name": "PRODUCT_INVENTORY_WID"
-              },
-              {
-                "name": "PRODUCT_WID"
-              },
-              {
-                "name": "Q10"
-              },
-              {
-                "name": "Qty"
-              },
-              {
-                "name": "Type Plant"
-              }
-            ],
-            "measures": [
-              {
-                "name": "# All Active Plant"
-              },
-              {
-                "name": "# All Cust Transaction (PC)"
-              },
-              {
-                "name": "# All Cust Transaction (PC) (LM)"
-              },
-              {
-                "name": "# All Cust Transaction (PC) (LY)"
-              },
-              {
-                "name": "# All Customer"
-              },
-              {
-                "name": "# All Customer (LM)"
-              },
-              {
-                "name": "# All Customer (LY)"
-              },
-              {
-                "name": "# Invoice"
-              },
-              {
-                "name": "# All Qty (LM)"
-              },
-              {
-                "name": "# All Qty (LY)"
-              },
-              {
-                "name": ". All QTy Return"
-              },
-              {
-                "name": ". All Qty Return (LM)"
-              },
-              {
-                "name": ". All Qty return (LY)"
-              },
-              {
-                "name": ". All HaoLai Amt"
-              },
-              {
-                "name": ". All HaoLai Amt (LM)"
-              },
-              {
-                "name": ". All HaoLai Amt (LY)"
-              },
-              {
-                "name": ". All Labor Cost"
-              },
-              {
-                "name": ". All Labor Cost (LM)"
-              },
-              {
-                "name": ". All Labor Cost (LY)"
-              },
-              {
-                "name": ". All Net Amt (all Cust)"
-              },
-              {
-                "name": ". All Net Amt (LM)"
-              },
-              {
-                "name": ". All Net Amt (LY)"
-              },
-              {
-                "name": ". All Net Amt Return"
-              },
-              {
-                "name": ". All Net Amt Return (LM)"
-              },
-              {
-                "name": ". All Net Amt Return (LY)"
-              },
-              {
-                "name": ". Net Weight"
-              },
-              {
-                "name": "# All Qty"
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "name": "CAMERA"
+        "name": "197c3247-e34d-4eb6-8af5-83db4e90c4a3",
+        "fromTable": "Dim - Plant SCD",
+        "fromColumn": "PLANT_WID",
+        "toTable": "Dim - Plant",
+        "toColumn": "ROW_WID"
       }
     ],
     "roles": [
       {
         "name": "PowerUser",
-        "modelPermission": "read",
-        "members": [
-          {
-            "memberName": "PNJCORP\\nha.lt",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-22126"
-          },
-          {
-            "memberName": "PNJCORP\\tam.ptt03",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-3930"
-          },
-          {
-            "memberName": "PNJCORP\\hoa.ch",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-29423"
-          },
-          {
-            "memberName": "PNJCORP\\toan.nb01",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-24224"
-          },
-          {
-            "memberName": "PNJCORP\\trung.lnt",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-26770"
-          },
-          {
-            "memberName": "PNJCORP\\tuyen.ptn",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-2863"
-          },
-          {
-            "memberName": "PNJCORP\\phong.tq",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-21829"
-          },
-          {
-            "memberName": "PNJCORP\\tien.tv",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-21576"
-          },
-          {
-            "memberName": "PNJCORP\\bang.pny",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-28652"
-          },
-          {
-            "memberName": "PNJCORP\\hai.dx",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-29405"
-          },
-          {
-            "memberName": "PNJCORP\\phong.nv03",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-28655"
-          },
-          {
-            "memberName": "PNJCORP\\huong.ntl01",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-22092"
-          },
-          {
-            "memberName": "PNJCORP\\thuy.ntd02",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-24367"
-          },
-          {
-            "memberName": "PNJCORP\\bao.tg01",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-22315"
-          },
-          {
-            "memberName": "PNJCORP\\duy.ltq",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-3994"
-          },
-          {
-            "memberName": "PNJCORP\\hoai.pt",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-13769"
-          },
-          {
-            "memberName": "PNJCORP\\thanh.lk",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-27607"
-          },
-          {
-            "memberName": "PNJCORP\\cuong.pv01",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-2463"
-          },
-          {
-            "memberName": "PNJCORP\\tam.tpt",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-18726"
-          },
-          {
-            "memberName": "PNJCORP\\dung.nth02",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-16502"
-          },
-          {
-            "memberName": "PNJCORP\\thuy.nt12",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-16659"
-          },
-          {
-            "memberName": "PNJCORP\\nam.tl",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-28446"
-          }
-        ]
+        "modelPermission": "read"
       },
       {
         "name": "Brands",
         "modelPermission": "read",
-        "members": [
-          {
-            "memberName": "PNJCORP\\ngoc.pth",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-17599"
-          },
-          {
-            "memberName": "PNJCORP\\anh.bln",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-25377"
-          },
-          {
-            "memberName": "PNJCORP\\phuong.ntt07",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-15122"
-          },
-          {
-            "memberName": "PNJCORP\\ngoc.ntn03",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-24158"
-          },
-          {
-            "memberName": "PNJCORP\\trang.ntm07",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-28688"
-          },
-          {
-            "memberName": "PNJCORP\\ngan.ntk02",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-6323"
-          },
-          {
-            "memberName": "PNJCORP\\ngoc.pa",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-28516"
-          },
-          {
-            "memberName": "PNJCORP\\nhan.vc",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-25244"
-          },
-          {
-            "memberName": "PNJCORP\\tho.la",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-23873"
-          },
-          {
-            "memberName": "PNJCORP\\khang.dt",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-28073"
-          },
-          {
-            "memberName": "PNJCORP\\tu.ntc03",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-27488"
-          },
-          {
-            "memberName": "PNJCORP\\khanh.pp",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-26080"
-          },
-          {
-            "memberName": "PNJCORP\\huong.tt05",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-27216"
-          },
-          {
-            "memberName": "PNJCORP\\hoa.ntm03",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-25844"
-          },
-          {
-            "memberName": "PNJCORP\\hang.ntt11",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-22400"
-          },
-          {
-            "memberName": "PNJCORP\\loan.lk",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-1677"
-          },
-          {
-            "memberName": "PNJCORP\\gia.ch",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-28863"
-          }
-        ],
         "tablePermissions": [
           {
             "name": "Dim - Product",
@@ -24705,18 +21868,6 @@
             "memberId": "S-1-5-21-3941070233-2248949771-1228141224-29403"
           },
           {
-            "memberName": "PNJCORP\\hao.lna",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-23971"
-          },
-          {
-            "memberName": "PNJCORP\\hao.vt05",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-29401"
-          },
-          {
-            "memberName": "PNJCORP\\hoa.ntt04",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-29600"
-          },
-          {
             "memberName": "bi_support@pnj.com.vn",
             "memberId": "bi_support@pnj.com.vn",
             "identityProvider": "AzureAD"
@@ -24726,704 +21877,6 @@
       {
         "name": "StandardUser",
         "modelPermission": "read",
-        "members": [
-          {
-            "memberName": "PNJCORP\\thao.pt08",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-24885"
-          },
-          {
-            "memberName": "PNJCORP\\thong.nc",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-1700"
-          },
-          {
-            "memberName": "PNJCORP\\tri.pk",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-10305"
-          },
-          {
-            "memberName": "PNJCORP\\giang.pv",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-28360"
-          },
-          {
-            "memberName": "PNJCORP\\dung.ctn",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-2828"
-          },
-          {
-            "memberName": "PNJCORP\\lien.htx",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-14254"
-          },
-          {
-            "memberName": "PNJCORP\\thong.lt",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-2846"
-          },
-          {
-            "memberName": "PNJCORP\\huy.vh01",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-1680"
-          },
-          {
-            "memberName": "PNJCORP\\chau.ltb",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-1686"
-          },
-          {
-            "memberName": "PNJCORP\\tram.lth01",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-25965"
-          },
-          {
-            "memberName": "PNJCORP\\duy.lnh",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-27822"
-          },
-          {
-            "memberName": "PNJCORP\\mai.tn",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-14116"
-          },
-          {
-            "memberName": "PNJCORP\\duy.th01",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-28231"
-          },
-          {
-            "memberName": "PNJCORP\\kiet.pq",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-23345"
-          },
-          {
-            "memberName": "PNJCORP\\kien.dt",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-2795"
-          },
-          {
-            "memberName": "PNJCORP\\huy.pd01",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-24102"
-          },
-          {
-            "memberName": "PNJCORP\\duy.ln",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-2798"
-          },
-          {
-            "memberName": "PNJCORP\\tram.ltn03",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-29215"
-          },
-          {
-            "memberName": "PNJCORP\\anh.pnh",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-12167"
-          },
-          {
-            "memberName": "PNJCORP\\toan.ns",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-27626"
-          },
-          {
-            "memberName": "PNJCORP\\tu.nm",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-12504"
-          },
-          {
-            "memberName": "PNJCORP\\anh.nt02",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-2802"
-          },
-          {
-            "memberName": "PNJCORP\\lai.dt",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-1505"
-          },
-          {
-            "memberName": "PNJCORP\\hai.dq",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-1509"
-          },
-          {
-            "memberName": "PNJCORP\\tuan.na01",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-3811"
-          },
-          {
-            "memberName": "PNJCORP\\liem.nt01",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-10131"
-          },
-          {
-            "memberName": "PNJCORP\\trang.ntp",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-1552"
-          },
-          {
-            "memberName": "PNJCORP\\hanh.ptm",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-2841"
-          },
-          {
-            "memberName": "PNJCORP\\hieu.ht",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-5515"
-          },
-          {
-            "memberName": "PNJCORP\\diep.bq",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-25537"
-          },
-          {
-            "memberName": "PNJCORP\\ha.ttt",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-1675"
-          },
-          {
-            "memberName": "PNJCORP\\cuong.tk01",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-1682"
-          },
-          {
-            "memberName": "PNJCORP\\phuong.dd",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-2803"
-          },
-          {
-            "memberName": "PNJCORP\\dung.pt",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-4013"
-          },
-          {
-            "memberName": "PNJCORP\\dung.ln",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-22191"
-          },
-          {
-            "memberName": "PNJCORP\\tuan.hm",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-25263"
-          },
-          {
-            "memberName": "PNJCORP\\trung.nb01",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-21244"
-          },
-          {
-            "memberName": "PNJCORP\\loi.lq",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-6263"
-          },
-          {
-            "memberName": "PNJCORP\\huy.nn01",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-6304"
-          },
-          {
-            "memberName": "PNJCORP\\giang.lt",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-6308"
-          },
-          {
-            "memberName": "PNJCORP\\thanh.tq",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-5029"
-          },
-          {
-            "memberName": "PNJCORP\\tien.ltt",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-5032"
-          },
-          {
-            "memberName": "PNJCORP\\ha.ntt12",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-24707"
-          },
-          {
-            "memberName": "PNJCORP\\nha.tt",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-5484"
-          },
-          {
-            "memberName": "PNJCORP\\thao.ttt07",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-24946"
-          },
-          {
-            "memberName": "PNJCORP\\long.tnp",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-22543"
-          },
-          {
-            "memberName": "PNJCORP\\hien.ntl",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-2742"
-          },
-          {
-            "memberName": "PNJCORP\\linh.nk03",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-28521"
-          },
-          {
-            "memberName": "PNJCORP\\xuan.ntl",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-27511"
-          },
-          {
-            "memberName": "PNJCORP\\anh.ntb",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-23523"
-          },
-          {
-            "memberName": "PNJCORP\\ngan.ttk08",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-26203"
-          },
-          {
-            "memberName": "PNJCORP\\quynh.ntn06",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-14672"
-          },
-          {
-            "memberName": "PNJCORP\\phung.dbk",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-21366"
-          },
-          {
-            "memberName": "PNJCORP\\nhut.np",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-24903"
-          },
-          {
-            "memberName": "PNJCORP\\hien.bm",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-29247"
-          },
-          {
-            "memberName": "PNJCORP\\tam.nt09",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-25227"
-          },
-          {
-            "memberName": "PNJCORP\\vu.dm",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-25099"
-          },
-          {
-            "memberName": "PNJCORP\\dung.pdt",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-26295"
-          },
-          {
-            "memberName": "PNJCORP\\truc.ns",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-10289"
-          },
-          {
-            "memberName": "PNJCORP\\phuong.ntl",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-10168"
-          },
-          {
-            "memberName": "PNJCORP\\khoi.ntd",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-25352"
-          },
-          {
-            "memberName": "PNJCORP\\quan.nnv",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-23383"
-          },
-          {
-            "memberName": "PNJCORP\\ngoc.ntt01",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-24498"
-          },
-          {
-            "memberName": "PNJCORP\\anh.phn",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-1681"
-          },
-          {
-            "memberName": "PNJCORP\\hieu.nv06",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-26105"
-          },
-          {
-            "memberName": "PNJCORP\\tram.nh",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-28862"
-          },
-          {
-            "memberName": "PNJCORP\\khoa.nvd",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-14649"
-          },
-          {
-            "memberName": "PNJCORP\\cuc.nt01",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-4178"
-          },
-          {
-            "memberName": "PNJCORP\\suong.btt",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-13057"
-          },
-          {
-            "memberName": "PNJCORP\\yen.ltk",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-5265"
-          },
-          {
-            "memberName": "PNJCORP\\an.tv",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-10284"
-          },
-          {
-            "memberName": "PNJCORP\\hong.ntt02",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-6631"
-          },
-          {
-            "memberName": "PNJCORP\\trang.tth",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-5741"
-          },
-          {
-            "memberName": "PNJCORP\\ngoc.nt04",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-9895"
-          },
-          {
-            "memberName": "PNJCORP\\nguyet.ntm",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-4127"
-          },
-          {
-            "memberName": "PNJCORP\\huong.ctm",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-4331"
-          },
-          {
-            "memberName": "PNJCORP\\hieu.th",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-16275"
-          },
-          {
-            "memberName": "PNJCORP\\diep.ntn04",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-27213"
-          },
-          {
-            "memberName": "PNJCORP\\suong.ltc",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-5768"
-          },
-          {
-            "memberName": "PNJCORP\\tran.lhb",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-5359"
-          },
-          {
-            "memberName": "PNJCORP\\hung.nh02",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-5480"
-          },
-          {
-            "memberName": "PNJCORP\\tam.ntb",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-5497"
-          },
-          {
-            "memberName": "PNJCORP\\vu.nd",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-6510"
-          },
-          {
-            "memberName": "PNJCORP\\quynh.tdt",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-2395"
-          },
-          {
-            "memberName": "PNJCORP\\sang.lk",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-2536"
-          },
-          {
-            "memberName": "PNJCORP\\an.nt06",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-20437"
-          },
-          {
-            "memberName": "PNJCORP\\binh.ht01",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-12884"
-          },
-          {
-            "memberName": "PNJCORP\\hau.nth",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-2471"
-          },
-          {
-            "memberName": "PNJCORP\\vy.nt",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-1767"
-          },
-          {
-            "memberName": "PNJCORP\\khanh.dt01",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-10171"
-          },
-          {
-            "memberName": "PNJCORP\\dinh.hn",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-5223"
-          },
-          {
-            "memberName": "PNJCORP\\truc.tn",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-1850"
-          },
-          {
-            "memberName": "PNJCORP\\anh.nn",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-1852"
-          },
-          {
-            "memberName": "PNJCORP\\tien.dm01",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-28081"
-          },
-          {
-            "memberName": "PNJCORP\\huong.dtm",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-5650"
-          },
-          {
-            "memberName": "PNJCORP\\trang.ntt07",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-2137"
-          },
-          {
-            "memberName": "PNJCORP\\khang.da",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-2277"
-          },
-          {
-            "memberName": "PNJCORP\\ngoc.lnb",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-5033"
-          },
-          {
-            "memberName": "PNJCORP\\phuong.ntm05",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-14711"
-          },
-          {
-            "memberName": "PNJCORP\\toan.ts",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-14695"
-          },
-          {
-            "memberName": "PNJCORP\\huong.pt02",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-13699"
-          },
-          {
-            "memberName": "PNJCORP\\tan.tq01",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-5718"
-          },
-          {
-            "memberName": "PNJCORP\\phuong.dtd",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-1586"
-          },
-          {
-            "memberName": "PNJCORP\\thuy.pt",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-4070"
-          },
-          {
-            "memberName": "PNJCORP\\han.ltn",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-1585"
-          },
-          {
-            "memberName": "PNJCORP\\loan.ttp01",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-1593"
-          },
-          {
-            "memberName": "PNJCORP\\trung.lnt",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-26770"
-          },
-          {
-            "memberName": "PNJCORP\\tuan.nm",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-14670"
-          },
-          {
-            "memberName": "PNJCORP\\duong.pq",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-22098"
-          },
-          {
-            "memberName": "PNJCORP\\that.hl",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-25106"
-          },
-          {
-            "memberName": "PNJCORP\\lam.th01",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-27250"
-          },
-          {
-            "memberName": "PNJCORP\\son.dtk",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-4104"
-          },
-          {
-            "memberName": "PNJCORP\\vu.nvt",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-12566"
-          },
-          {
-            "memberName": "PNJCORP\\uyen.hp",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-1678"
-          },
-          {
-            "memberName": "PNJCORP\\huy.qhn",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-1690"
-          },
-          {
-            "memberName": "PNJCORP\\lam.lk",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-24119"
-          },
-          {
-            "memberName": "PNJCORP\\tuan.ta03",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-23807"
-          },
-          {
-            "memberName": "PNJCORP\\cuong.th01",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-25053"
-          },
-          {
-            "memberName": "PNJCORP\\giang.l",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-6309"
-          },
-          {
-            "memberName": "PNJCORP\\binh.nlv",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-15418"
-          },
-          {
-            "memberName": "PNJCORP\\cong.lt01",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-25324"
-          },
-          {
-            "memberName": "PNJCORP\\trang.lm",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-4024"
-          },
-          {
-            "memberName": "PNJCORP\\dung.lv",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-4023"
-          },
-          {
-            "memberName": "PNJCORP\\nam.mt",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-20963"
-          },
-          {
-            "memberName": "PNJCORP\\thinh.vm",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-4029"
-          },
-          {
-            "memberName": "PNJCORP\\thao.ndm",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-16370"
-          },
-          {
-            "memberName": "PNJCORP\\trung.nk",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-14589"
-          },
-          {
-            "memberName": "PNJCORP\\phuc.nt02",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-6307"
-          },
-          {
-            "memberName": "PNJCORP\\tho.tm",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-19009"
-          },
-          {
-            "memberName": "PNJCORP\\dung.pth01",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-12692"
-          },
-          {
-            "memberName": "PNJCORP\\hiep.tn",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-27467"
-          },
-          {
-            "memberName": "PNJCORP\\hung.pv05",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-28321"
-          },
-          {
-            "memberName": "PNJCORP\\quyen.ndb",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-28083"
-          },
-          {
-            "memberName": "PNJCORP\\thanh.nt11",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-26051"
-          },
-          {
-            "memberName": "PNJCORP\\chuong.ph01",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-15199"
-          },
-          {
-            "memberName": "PNJCORP\\thai.lv",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-2675"
-          },
-          {
-            "memberName": "PNJCORP\\ngan.nn",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-13066"
-          },
-          {
-            "memberName": "PNJCORP\\nhan.vc",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-25244"
-          },
-          {
-            "memberName": "PNJCORP\\hai.dtt",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-4077"
-          },
-          {
-            "memberName": "PNJCORP\\anh.ttn05",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-27392"
-          },
-          {
-            "memberName": "PNJCORP\\ngoc.pa",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-28516"
-          },
-          {
-            "memberName": "PNJCORP\\ngan.ntk02",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-6323"
-          },
-          {
-            "memberName": "PNJCORP\\bi.ptkd",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-25208"
-          },
-          {
-            "memberName": "PNJCORP\\DTC",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-27866"
-          },
-          {
-            "memberName": "PNJCORP\\hoi.vx",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-28963"
-          },
-          {
-            "memberName": "PNJCORP\\an.pd01",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-26874"
-          },
-          {
-            "memberName": "PNJCORP\\anh.nl02",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-24002"
-          },
-          {
-            "memberName": "PNJCORP\\phuoc.nt",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-1873"
-          },
-          {
-            "memberName": "PNJCORP\\tan.tq",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-3197"
-          },
-          {
-            "memberName": "PNJCORP\\ha.nt",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-4015"
-          },
-          {
-            "memberName": "PNJCORP\\ha.ntt",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-5034"
-          },
-          {
-            "memberName": "PNJCORP\\loan.ntt01",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-6303"
-          },
-          {
-            "memberName": "PNJCORP\\loan.tth01",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-10123"
-          },
-          {
-            "memberName": "PNJCORP\\hien.htt",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-5485"
-          },
-          {
-            "memberName": "PNJCORP\\yen.bh",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-14673"
-          },
-          {
-            "memberName": "PNJCORP\\toan.nv02",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-23217"
-          },
-          {
-            "memberName": "PNJCORP\\vinh.t",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-26338"
-          },
-          {
-            "memberName": "PNJCORP\\quyen.ct",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-28769"
-          },
-          {
-            "memberName": "PNJCORP\\uyen.dp",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-29293"
-          },
-          {
-            "memberName": "PNJCORP\\nhu.lq",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-2761"
-          },
-          {
-            "memberName": "PNJCORP\\truc.nht",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-1589"
-          },
-          {
-            "memberName": "PNJCORP\\trinh.ntt05",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-7493"
-          },
-          {
-            "memberName": "PNJCORP\\yen.vn",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-18767"
-          },
-          {
-            "memberName": "PNJCORP\\phuong.pt04",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-23491"
-          },
-          {
-            "memberName": "PNJCORP\\thao.ttt13",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-29072"
-          },
-          {
-            "memberName": "PNJCORP\\thuyen.nnm",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-28790"
-          },
-          {
-            "memberName": "PNJCORP\\huyen.lm",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-10026"
-          },
-          {
-            "memberName": "PNJCORP\\nhung.nh04",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-29187"
-          },
-          {
-            "memberName": "PNJCORP\\thao.tp07",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-29089"
-          },
-          {
-            "memberName": "PNJCORP\\linh.pth01",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-27346"
-          },
-          {
-            "memberName": "PNJCORP\\nghiem.mbt",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-23341"
-          },
-          {
-            "memberName": "PNJCORP\\thanh.vk01",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-27478"
-          },
-          {
-            "memberName": "PNJCORP\\linh.ttt07",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-24850"
-          },
-          {
-            "memberName": "PNJCORP\\biqtcl",
-            "memberId": "S-1-5-21-3941070233-2248949771-1228141224-23430"
-          }
-        ],
         "tablePermissions": [
           {
             "name": "Dim - Plant",
@@ -25805,6 +22258,236 @@
           },
           {
             "name": "Dim - GL Account PL",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - Production Labor STK IN",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Production Opex Faulty",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - Hour",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Direct Labor Costs",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - Production Order",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Production Lead Time",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Production MRP Planned",
+            "metadataPermission": "none"
+          }
+        ]
+      },
+      {
+        "name": "Self Service",
+        "modelPermission": "read",
+        "tablePermissions": [
+          {
+            "name": "Dim - Authoring",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - Vendor",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Purchase Order Line",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Customer Visit",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Actual Production",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Plan Revenue - PNJP",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Production Plan",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Sales Invoice Line",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - ATL",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Production Plan Order",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Production Plan Agreement",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Booklet Quota",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Capacity Segment",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - Work Center",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Q10 Quota Daily",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Planned Order Time Rule",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Resource Usage",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Production Order",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Production Deffects",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - Production Deffects",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - SO Type",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - PO SO Schedule Line",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - Production Planned Order",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Gemstone Deffects",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Plating",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - Actual Production",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Customer Feedback",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Capacity Planned Order",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Gemstone GR",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Deffects Quota",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Plating Liquid",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Quality Control Comments",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Finance",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - Production Labor",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Actual Production Process",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - GL Account COPA",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - Cost Center",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - Profit Center",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - Payment Term",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - GL Account VN",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - GL Account PL",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - Production Labor STK IN",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Production Labor Planned",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Production Opex Faulty",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - Hour",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Direct Labor Costs",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Dim - Production Order",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Production Lead Time",
+            "metadataPermission": "none"
+          },
+          {
+            "name": "Fact - Production MRP Planned",
             "metadataPermission": "none"
           }
         ]
