@@ -4486,7 +4486,7 @@
           },
           {
             "name": "Time",
-            "dataType": "string",
+            "dataType": "dateTime",
             "isNullable": false,
             "sourceColumn": "Time",
             "formatString": "HH:mm",
