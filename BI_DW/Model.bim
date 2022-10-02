@@ -24,7 +24,7 @@
           "AuthenticationKind": "UsernamePassword",
           "kind": "SQL",
           "path": "192.168.2.19;PNJ_ROLAP",
-          "Username": "Biread",
+          "Username": "biread",
           "EncryptConnection": false
         }
       },
@@ -48,7 +48,7 @@
           "AuthenticationKind": "UsernamePassword",
           "kind": "SQL",
           "path": "192.168.2.19;DW_RAW",
-          "Username": "Biread",
+          "Username": "biread",
           "EncryptConnection": false
         }
       }
@@ -1033,13 +1033,13 @@
             "formatString": "#,0"
           },
           {
-            "name": "# Plant (YTD)",
-            "expression": " CALCULATE('Dim - Plant'[# Plant New],FILTER(ALL('Dim - Time'[Date]),'Dim - Time'[Date]<= Max('Dim - Time'[Date])))",
+            "name": "# Plant",
+            "expression": " CALCULATE(DISTINCTCOUNT('Dim - Plant'[Plant Code]), 'Dim - Plant'[Active Flag] = 1)",
             "formatString": "#,0"
           },
           {
-            "name": "# Plant",
-            "expression": " CALCULATE(DISTINCTCOUNT('Dim - Plant'[Plant Code]), 'Dim - Plant'[Active Flag] = 1)",
+            "name": "# Plant (YTD)",
+            "expression": " CALCULATE('Dim - Plant'[# Plant New],FILTER(ALL('Dim - Time'[Date]),'Dim - Time'[Date]<= Max('Dim - Time'[Date])))",
             "formatString": "#,0"
           }
         ]
@@ -3608,16 +3608,6 @@
         ],
         "measures": [
           {
-            "name": ". Inventory Net Qty",
-            "expression": [
-              " ",
-              "var _currdate = max('Dim - Time'[Date])",
-              "Return",
-              "CALCULATE(SUM('Fact - Inventory Transaction'[net_qty]), FILTER(ALL('Dim - Time'[Date]),",
-              "'Dim - Time'[Date] <= _currdate))"
-            ]
-          },
-          {
             "name": ". Special Qty",
             "expression": [
               " ",
@@ -3688,15 +3678,6 @@
               ""
             ],
             "formatString": "#,0"
-          },
-          {
-            "name": ". Q10 (Inventory)",
-            "expression": [
-              " var _currdate = max('Dim - Time'[Date])",
-              "Return",
-              "CALCULATE(SUM('Fact - Inventory Transaction'[Q10]), FILTER(ALL('Dim - Time'[Date]), ISONORAFTER('Dim - Time'[Date], _currdate, Desc)))"
-            ],
-            "formatString": "#,0.00"
           },
           {
             "name": ". GI Net Amt (Daily)",
@@ -4029,6 +4010,25 @@
               "var _currdate = max('Dim - Time'[Date])",
               "Return",
               "CALCULATE(SUM('Fact - Inventory Transaction'[UNRESTRICTED_QTY]), FILTER(ALLSELECTED('Dim - Time'[Date]), ISONORAFTER('Dim - Time'[Date], _currdate, Desc)))"
+            ],
+            "formatString": "#,0.00"
+          },
+          {
+            "name": ". Inventory Net Qty",
+            "expression": [
+              " ",
+              "var _currdate = max('Dim - Time'[Date])",
+              "Return",
+              "CALCULATE(SUM('Fact - Inventory Transaction'[net_qty]), FILTER(ALL('Dim - Time'[Date]),",
+              "'Dim - Time'[Date] <= _currdate))"
+            ]
+          },
+          {
+            "name": ". Q10 (Inventory)",
+            "expression": [
+              " var _currdate = max('Dim - Time'[Date])",
+              "Return",
+              "CALCULATE(SUM('Fact - Inventory Transaction'[Q10]), FILTER(ALL('Dim - Time'[Date]), ISONORAFTER('Dim - Time'[Date], _currdate, Desc)))"
             ],
             "formatString": "#,0.00"
           }
@@ -4561,28 +4561,22 @@
             "expression": [
               "var Area_code = LOOKUPVALUE('Dim - Production Labor'[Area Code], 'Dim - Production Labor'[ROW_WID],'Fact - Actual Production'[STOCK_KEEPER_WID])",
               "var Area_transfer_code = LOOKUPVALUE('Dim - Production Labor STK IN'[Area Code], 'Dim - Production Labor STK IN'[ROW_WID],'Fact - Actual Production'[STOCK_KEEPER_TRANSFER_WID])",
-              "var Stock_Keeper_Type = LOOKUPVALUE('Dim - Production Labor STK IN'[Stock Keeper Type], 'Dim - Production Labor STK IN'[ROW_WID],'Fact - Actual Production'[STOCK_KEEPER_TRANSFER_WID])",
+              "var Stock_Keeper_Transfer_Type = LOOKUPVALUE('Dim - Production Labor STK IN'[Stock Keeper Type], 'Dim - Production Labor STK IN'[ROW_WID],'Fact - Actual Production'[STOCK_KEEPER_TRANSFER_WID])",
+              "var Productivity_Type = LOOKUPVALUE('Dim - Production Labor STK IN'[Productivity Type], 'Dim - Production Labor STK IN'[ROW_WID],'Fact - Actual Production'[STOCK_KEEPER_TRANSFER_WID])",
               "",
               "return",
-              "",
-              "if( ISBLANK('Fact - Actual Production'[STOCK_KEEPER_WID]), blank(), ",
               "if( AND (",
-              "\t(Area_code <> Area_transfer_code), ",
-              " \tif( (Area_code) in CALCULATETABLE(SELECTCOLUMNS('Dim - Production Labor STK IN', \"Area Code\", 'Dim - Production Labor STK IN'[Area Code]), ",
-              "\tfilter ('Dim - Production Labor STK IN', 'Dim - Production Labor STK IN'[Stock Keeper Code] = \"%\"),",
-              "\tfilter ('Dim - Production Labor STK IN', 'Dim - Production Labor STK IN'[Stock Keeper Type] = \"IN\")",
-              "\t),\"Y\",\"N\") = \"Y\"",
-              " \t), \"Outsite\", ",
-              "\t  \tif( AND (",
-              "\t  \t(Area_code <> Area_transfer_code), ",
-              "\t \tif( Area_code in CALCULATETABLE(SELECTCOLUMNS('Dim - Production Labor STK IN', \"Area Code\", 'Dim - Production Labor STK IN'[Area Code]), ",
-              "\tfilter ('Dim - Production Labor STK IN', 'Dim - Production Labor STK IN'[Stock Keeper Code] = \"%\"),",
-              "\tfilter ('Dim - Production Labor STK IN', 'Dim - Production Labor STK IN'[Stock Keeper Type] = \"IN\")",
-              "\t),\"Y\",\"N\") = \"N\"",
-              "\t \t), Blank(),",
-              "\t\t\tif(AND(",
-              "\t\t\t(Area_code = Area_transfer_code),",
-              "\t\t\tStock_Keeper_Type = \"IN\"),\"Outsite\", \"Insite\"))))"
+              "\t(Area_code = Area_transfer_code), ",
+              " \tStock_Keeper_Transfer_Type = \"IN\"            ",
+              "            ), \"Outsite_GR\", ",
+              "     if (AND (",
+              "\t     (Area_code = Area_transfer_code), ",
+              " \t      Stock_Keeper_Transfer_Type = \"OUT\"",
+              "                 ), \"Insite\", \t      ",
+              "\t if( (Area_code <> Area_transfer_code),\"Outsite_Non-GR\", blank())",
+              "         )",
+              "   )",
+              ""
             ]
           },
           {
@@ -4633,8 +4627,12 @@
               " ",
               "if(ISBLANK('Fact - Actual Production'[Aging]), BLANK(),",
               "if(and('Fact - Actual Production'[Aging]>=0 ,'Fact - Actual Production'[Aging]<=5), \"a. <=5 days\",",
-              "\tif('Fact - Actual Production'[Aging]<=10, \"b. 5 - 10 days\",",
-              "\tif('Fact - Actual Production'[Aging]>10, \"c. >10 days\"))))"
+              "\tif('Fact - Actual Production'[Aging]=6, \"b. 6 days\",",
+              "\tif('Fact - Actual Production'[Aging]=7, \"c. 7 days\",",
+              "\tif('Fact - Actual Production'[Aging]=8, \"d. 8 days\",",
+              "\tif('Fact - Actual Production'[Aging]=9, \"e. 9 days\",",
+              "\tif('Fact - Actual Production'[Aging]=10, \"f. 10 days\",",
+              "\tif('Fact - Actual Production'[Aging]>10, \"g. >10 days\"))))))))"
             ]
           }
         ],
@@ -5708,8 +5706,9 @@
               "CALCULATE(",
               "    SUM('Fact - Actual Production'[Actual QTY])*(-1),",
               "    FILTER ('Fact - Actual Production','Fact - Actual Production'[TYPES] = \"OUT\"),",
-              "    FILTER('Fact - Actual Production', 'Fact - Actual Production'[Delivery Type] = \"Outsite\"),",
-              "    FILTER('Dim - Production Labor','Dim - Production Labor'[Productivity Type] <> blank())",
+              "    FILTER('Fact - Actual Production', 'Fact - Actual Production'[Delivery Type] = \"Outsite_GR\" || 'Fact - Actual Production'[Delivery Type] = \"Outsite_Non-GR\"),",
+              "    FILTER('Dim - Production Labor','Dim - Production Labor'[Productivity Type] <> blank()),",
+              "    FILTER('Dim - Production Labor STK IN','Dim - Production Labor STK IN'[Productivity Type] <> blank())",
               "    )"
             ]
           },
@@ -7808,16 +7807,6 @@
             "formatString": "#,0"
           },
           {
-            "name": ". All Qty (LM)",
-            "expression": " CALCULATE([. All Qty], DATEADD('Dim - Time'[Date], -1, MONTH))",
-            "formatString": "#,0"
-          },
-          {
-            "name": ". All Qty (LY)",
-            "expression": " CALCULATE([. All Qty],  DATEADD('Dim - Time'[Date], -1, YEAR))",
-            "formatString": "#,0"
-          },
-          {
             "name": ". All Net Amt (all Cust)",
             "expression": " CALCULATE([. All Net Amt], all('Dim - Product'[RPT_Product Group 4 Name]))",
             "formatString": "#,0"
@@ -7886,11 +7875,6 @@
             "name": ". Net Weight",
             "expression": " CALCULATE(sum('Fact - All Sales Invoice Line'[Net Weight]))",
             "formatString": "#,0.00"
-          },
-          {
-            "name": ". All Qty",
-            "expression": " CALCULATE(sum('Fact - All Sales Invoice Line'[Qty]),FILTER('Fact - All Sales Invoice Line', 'Fact - All Sales Invoice Line'[Invoice Type] <> \"ZRE\" &&'Fact - All Sales Invoice Line'[INVOICE TYPE] <> \"ZS2\" && 'Fact - All Sales Invoice Line'[INVOICE TYPE]<> \"ZPI\"))",
-            "formatString": "#,0"
           },
           {
             "name": ". All Net Amt",
@@ -8001,21 +7985,6 @@
             "name": "AVG Qty/Trx (LY)",
             "expression": " CALCULATE([. All Qty (LY)]/[# All Cust Transaction (PC) (LY)])",
             "formatString": "#,0.00"
-          },
-          {
-            "name": ". Q10",
-            "expression": " CALCULATE(sum('Fact - All Sales Invoice Line'[Q10]),FILTER('Fact - All Sales Invoice Line', 'Fact - All Sales Invoice Line'[Invoice Type] <> \"ZRE\" &&'Fact - All Sales Invoice Line'[Invoice Type] <> \"ZS2\" &&'Fact - All Sales Invoice Line'[Invoice Type] <> \"ZPI\" ))",
-            "formatString": "#,0.00"
-          },
-          {
-            "name": ". Q10 (LY)",
-            "expression": " CALCULATE([. Q10], DATEADD('Dim - Time'[Date], -1, YEAR))",
-            "formatString": "#,0"
-          },
-          {
-            "name": ". All Qty (YTD)",
-            "expression": " CALCULATE([. All Qty], DATESYTD('Dim - Time'[Date]))",
-            "formatString": "#,0"
           },
           {
             "name": "% All Qty (LY)",
@@ -8141,6 +8110,36 @@
             "name": "AVG All Qty/Cust (LY)",
             "expression": " CALCULATE([. All Qty (LY)]/[# All Customer (LY)])",
             "formatString": "0.00"
+          },
+          {
+            "name": ". All Qty (LM)",
+            "expression": " CALCULATE([. All Qty], DATEADD('Dim - Time'[Date], -1, MONTH))",
+            "formatString": "#,0"
+          },
+          {
+            "name": ". All Qty (LY)",
+            "expression": " CALCULATE([. All Qty],  DATEADD('Dim - Time'[Date], -1, YEAR))",
+            "formatString": "#,0"
+          },
+          {
+            "name": ". All Qty",
+            "expression": " CALCULATE(sum('Fact - All Sales Invoice Line'[Qty]),FILTER('Fact - All Sales Invoice Line', 'Fact - All Sales Invoice Line'[Invoice Type] <> \"ZRE\" &&'Fact - All Sales Invoice Line'[INVOICE TYPE] <> \"ZS2\" && 'Fact - All Sales Invoice Line'[INVOICE TYPE]<> \"ZPI\"))",
+            "formatString": "#,0"
+          },
+          {
+            "name": ". Q10",
+            "expression": " CALCULATE(sum('Fact - All Sales Invoice Line'[Q10]),FILTER('Fact - All Sales Invoice Line', 'Fact - All Sales Invoice Line'[Invoice Type] <> \"ZRE\" &&'Fact - All Sales Invoice Line'[Invoice Type] <> \"ZS2\" &&'Fact - All Sales Invoice Line'[Invoice Type] <> \"ZPI\" ))",
+            "formatString": "#,0.00"
+          },
+          {
+            "name": ". Q10 (LY)",
+            "expression": " CALCULATE([. Q10], DATEADD('Dim - Time'[Date], -1, YEAR))",
+            "formatString": "#,0"
+          },
+          {
+            "name": ". All Qty (YTD)",
+            "expression": " CALCULATE([. All Qty], DATESYTD('Dim - Time'[Date]))",
+            "formatString": "#,0"
           }
         ]
       },
@@ -19982,6 +19981,11 @@
             "name": "Stock Keeper Type",
             "dataType": "string",
             "sourceColumn": "Stock Keeper Type"
+          },
+          {
+            "name": "Productivity Type",
+            "dataType": "string",
+            "sourceColumn": "Productivity Type"
           }
         ],
         "partitions": [
@@ -19999,10 +20003,11 @@
                 "      ,[TEAM_NAME]",
                 "      ,[STOCK_KEEPER_CODE]",
                 "      ,[STOCK_KEEPER_TYPE]",
+                "      ,[PRODUCTIVITY_TYPE]",
                 "      ,[EFFECT_FROM_DT_WID]",
                 "      ,[EFFECT_TO_DT_WID]",
                 "  FROM [PNJ_ROLAP].[dbo].[W_VW_PRODUCTION_LABOR_D]\"),",
-                "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"STOCK_KEEPER_CODE\", \"Stock Keeper Code\"}, {\"AREA_CODE\", \"Area Code\"}, {\"TEAM_CODE\", \"Team Code\"}, {\"TEAM_NAME\", \"Team Name\"}, {\"EFFECT_FROM_DT_WID\", \"Effect From DT\"}, {\"EFFECT_TO_DT_WID\", \"Effect To DT\"}, {\"STOCK_KEEPER_TYPE\", \"Stock Keeper Type\"}})",
+                "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"STOCK_KEEPER_CODE\", \"Stock Keeper Code\"}, {\"AREA_CODE\", \"Area Code\"}, {\"TEAM_CODE\", \"Team Code\"}, {\"TEAM_NAME\", \"Team Name\"}, {\"EFFECT_FROM_DT_WID\", \"Effect From DT\"}, {\"EFFECT_TO_DT_WID\", \"Effect To DT\"}, {\"STOCK_KEEPER_TYPE\", \"Stock Keeper Type\"}, {\"PRODUCTIVITY_TYPE\", \"Productivity Type\"}})",
                 "in",
                 "    #\"Renamed Columns\""
               ]
@@ -20013,11 +20018,6 @@
       {
         "name": "Fact - Production Labor Planned",
         "columns": [
-          {
-            "name": "Date Key",
-            "dataType": "int64",
-            "sourceColumn": "Date Key"
-          },
           {
             "name": "Team Code",
             "dataType": "string",
@@ -20082,6 +20082,12 @@
             "name": "Inventory Quota",
             "dataType": "double",
             "sourceColumn": "Inventory Quota"
+          },
+          {
+            "name": "DATE_KEY",
+            "dataType": "int64",
+            "isHidden": true,
+            "sourceColumn": "DATE_KEY"
           }
         ],
         "partitions": [
@@ -20107,7 +20113,7 @@
                 "      ,[ACTUAL_WORKING_TIME]",
                 "      ,[INVENTORY_QUOTA]",
                 "  FROM [PNJ_ROLAP].[dbo].[W_VW_PRODUCTION_LABOR_PLANNED_F]\"),",
-                "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"DATE_KEY\", \"Date Key\"}, {\"TEAM_CODE\", \"Team Code\"}, {\"ACTUAL_RESOURCE\", \"Actual Resource\"}, {\"PLANNED_RESOURCE\", \"Planned Resource\"}, {\"PLANNED_QTY\", \"Planned Qty\"}, {\"PLANNED_TURNOVER_Q10\", \"Planned TurnOver Q10\"}, {\"PLANNED_PRODUCTIVITY\", \"Planned Productivity\"}, {\"WORKING_DAY_STANDARD\", \"Working Day Standard\"}}),",
+                "    #\"Renamed Columns\" = Table.RenameColumns(Source,{{\"TEAM_CODE\", \"Team Code\"}, {\"ACTUAL_RESOURCE\", \"Actual Resource\"}, {\"PLANNED_RESOURCE\", \"Planned Resource\"}, {\"PLANNED_QTY\", \"Planned Qty\"}, {\"PLANNED_TURNOVER_Q10\", \"Planned TurnOver Q10\"}, {\"PLANNED_PRODUCTIVITY\", \"Planned Productivity\"}, {\"WORKING_DAY_STANDARD\", \"Working Day Standard\"}}),",
                 "    #\"Changed Type\" = Table.TransformColumnTypes(#\"Renamed Columns\",{{\"Actual Resource\", type number}, {\"Planned Resource\", type number}, {\"Planned Qty\", type number}, {\"Planned Productivity\", type number}}),",
                 "    #\"Renamed Columns1\" = Table.RenameColumns(#\"Changed Type\",{{\"PLANNED_QUALITY\", \"Planned Quality\"}, {\"PLANNED_LEADTIME\", \"Planned Leadtime\"}, {\"ACTUAL_WORKING_TIME\", \"Actual Working Time\"}, {\"INVENTORY_QUOTA\", \"Inventory Quota\"}})",
                 "in",
@@ -21615,13 +21621,6 @@
         "toColumn": "ROW_WID"
       },
       {
-        "name": "669665c1-3b82-4a77-8d1b-3ad5b3e2c614",
-        "fromTable": "Fact - Production Labor Planned",
-        "fromColumn": "Date Key",
-        "toTable": "Dim - Time",
-        "toColumn": "ROW_WID"
-      },
-      {
         "name": "c1219833-97cd-4bef-9722-5393b1e19ea7",
         "fromTable": "Fact - Production Labor Planned",
         "fromColumn": "STOCK_KEEPER_WID",
@@ -21837,6 +21836,13 @@
         "fromTable": "Dim - Plant SCD",
         "fromColumn": "PLANT_WID",
         "toTable": "Dim - Plant",
+        "toColumn": "ROW_WID"
+      },
+      {
+        "name": "8832286e-deaf-4c67-b26f-f70ff0596bda",
+        "fromTable": "Fact - Production Labor Planned",
+        "fromColumn": "DATE_KEY",
+        "toTable": "Dim - Time",
         "toColumn": "ROW_WID"
       }
     ],
