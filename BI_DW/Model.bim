@@ -62,6 +62,7 @@
             "name": "Plant_Wid",
             "dataType": "int64",
             "sourceColumn": "PLANT_WID",
+            "formatString": "0",
             "summarizeBy": "none"
           },
           {
@@ -7050,7 +7051,7 @@
             "name": "Net Amount",
             "dataType": "double",
             "sourceColumn": "Net Amount",
-            "formatString": "#,0.00"
+            "formatString": "#,0"
           },
           {
             "name": "Discount Amount",
@@ -7062,7 +7063,7 @@
             "name": "Gross Weight",
             "dataType": "double",
             "sourceColumn": "Gross Weight",
-            "formatString": "0.00"
+            "formatString": "0"
           },
           {
             "name": "Net Weight",
