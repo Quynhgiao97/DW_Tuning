@@ -7941,7 +7941,7 @@
           },
           {
             "name": "% Net_Amt_FC",
-            "expression": " if(ISBLANK([. Net_Amt_FC] ) = TRUE,BLANK(), DIVIDE([. All Net Amt], [. Net_Amt_FC])-1)",
+            "expression": " if(OR(ISBLANK([. Net_Amt_FC]), ISBLANK([. All Net Amt])),BLANK(), DIVIDE([. All Net Amt], [. Net_Amt_FC])-1)",
             "formatString": "0.00%;-0.00%;0.00%"
           },
           {
@@ -7960,7 +7960,7 @@
           },
           {
             "name": "% Net_Amt_LY",
-            "expression": "if(ISBLANK([. All Net Amt (LY)]), BLANK(), ([. All Net Amt]/[. All Net Amt (LY)]-1 ))",
+            "expression": "if(OR(ISBLANK([. All Net Amt (LY)]), ISBLANK([. All Net Amt])), BLANK(), ([. All Net Amt]/[. All Net Amt (LY)]-1 ))",
             "formatString": "0.00%;-0.00%;0.00%"
           },
           {
